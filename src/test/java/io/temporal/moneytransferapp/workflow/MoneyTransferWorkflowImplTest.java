@@ -1,27 +1,37 @@
-package io.temporal;
+package io.temporal.moneytransferapp.workflow;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.moneytransferapp.activity.AccountService;
+import io.temporal.moneytransferapp.activity.AccountServiceImpl;
 import io.temporal.testing.TestWorkflowRule;
-import io.temporal.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.worker.Worker;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-public class MoneyTransferAppTest {
+public class MoneyTransferWorkflowImplTest {
 
 
     @Rule
     public TestWorkflowRule testWorkflowRule =
             TestWorkflowRule.newBuilder()
-                    .setWorkflowTypes(MoneyTransferWorkflowImpl.class)
                     .setDoNotStart(true)
                     .build();
 
 
     @Test
     public void testTransfer() {
+
+
+        AccountService accountService = Mockito.mock(AccountServiceImpl.class);
+
+
+        Worker worker = testWorkflowRule.getWorker();
+        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+        worker.registerActivitiesImplementations(accountService);
+
 
         testWorkflowRule.getTestEnvironment().start();
 
@@ -44,6 +54,6 @@ public class MoneyTransferAppTest {
         /////////////
 
 
-
     }
+
 }
