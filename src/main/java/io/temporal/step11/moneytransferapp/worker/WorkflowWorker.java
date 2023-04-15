@@ -21,40 +21,28 @@ package io.temporal.step11.moneytransferapp.worker;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
-import io.temporal.common.converter.CodecDataConverter;
-import io.temporal.common.converter.DefaultDataConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step11.moneytransferapp.httpserver.CryptCodec;
+import io.temporal.step11.moneytransferapp.MyCustomDataConverter;
+import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.step11.moneytransferapp.workflow.activity.AccountServiceImpl;
 import io.temporal.step11.moneytransferapp.workflow.activity.BankingClient;
-import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
-import java.util.Collections;
-
-
-
-
 public class WorkflowWorker {
 
     public static void main(String[] args) {
 
-
         // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-
 
         /*
          * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
          */
         final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions.newBuilder()
-                .setDataConverter(
-                        new CodecDataConverter(
-                                DefaultDataConverter.newDefaultInstance(),
-                                Collections.singletonList(new CryptCodec())))
+                .setDataConverter(new MyCustomDataConverter())
                 .build());
 
         /*

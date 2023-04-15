@@ -85,7 +85,7 @@ public class MoneyTransferWorkflowImplTest {
 
         //Start workflow
         TransferRequest transferRequest = new TransferRequest("account1",
-                "account2",
+                "toAccount",
                 "reference1",
                 1.23);
 
@@ -141,7 +141,7 @@ public class MoneyTransferWorkflowImplTest {
 
         //Start workflow
         TransferRequest transferRequest = new TransferRequest("account1",
-                "account2",
+                "toAccount",
                 "reference1",
                 1.23);
 
@@ -196,7 +196,7 @@ public class MoneyTransferWorkflowImplTest {
 
         //Start workflow
         TransferRequest transferRequest = new TransferRequest("account1",
-                "account2",
+                "toAccount",
                 "reference1",
                 1.23);
         try {

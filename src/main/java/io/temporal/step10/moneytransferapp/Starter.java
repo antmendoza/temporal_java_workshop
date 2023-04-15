@@ -60,9 +60,9 @@ public class Starter {
 
         final List request = IntStream.rangeClosed(1, 100)
                 .mapToObj(i ->
-                        new TransferRequest("accountFrom" + i,
-                                "accountTo" + i,
-                                "referenceId" + i,
+                        new TransferRequest("fromAccount-" + i,
+                                "toAccount-" + i,
+                                "referenceId-" + i,
                                 200 + i))
                 .collect(Collectors.toList());
 

@@ -54,7 +54,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         final List<Promise<Void>> promises = new ArrayList<>();
         transferRequests.transferRequests().forEach(request -> {
-            String childWFId = "transfer::from_"+request.fromAccountId()+"_to_"+request.toAccountId();
+            String childWFId = "transfer:: _"+request.fromAccountId()+"_"+request.toAccountId();
             final MoneyTransferChildWorkflow child = Workflow.newChildWorkflowStub(MoneyTransferChildWorkflow.class,
                 ChildWorkflowOptions.newBuilder().setWorkflowId(childWFId).build());
             promises.add(Async.procedure(child::transfer, request));
