@@ -22,16 +22,10 @@ package io.temporal.step11.moneytransferapp;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.common.converter.CodecDataConverter;
-import io.temporal.common.converter.DefaultDataConverter;
+import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.step11.moneytransferapp.httpserver.CryptCodec;
 import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step11.moneytransferapp.workflow.TransferRequest;
-
-import java.util.Collections;
-
 
 
 public class Starter {
@@ -61,7 +55,7 @@ public class Starter {
                         build);
 
 
-        workflow.transfer(new TransferRequest("account1", "toAccount", "referenceId", 200));
+        workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 200));
 
         
     }

@@ -27,6 +27,7 @@ import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowFailedException;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.model.TransferRequest;
 import io.temporal.step1.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.step1.moneytransferapp.workflow.activity.AccountServiceImpl;
 import io.temporal.step1.moneytransferapp.workflow.activity.DepositRequest;
@@ -84,7 +85,7 @@ public class MoneyTransferWorkflowImplTest {
 
 
         //Start workflow
-        TransferRequest transferRequest = new TransferRequest("account1",
+        TransferRequest transferRequest = new TransferRequest("fromAccount",
                 "toAccount",
                 "reference1",
                 1.23);
@@ -140,7 +141,7 @@ public class MoneyTransferWorkflowImplTest {
 
 
         //Start workflow
-        TransferRequest transferRequest = new TransferRequest("account1",
+        TransferRequest transferRequest = new TransferRequest("fromAccount",
                 "toAccount",
                 "reference1",
                 1.23);
@@ -195,7 +196,7 @@ public class MoneyTransferWorkflowImplTest {
 
 
         //Start workflow
-        TransferRequest transferRequest = new TransferRequest("account1",
+        TransferRequest transferRequest = new TransferRequest("fromAccount",
                 "toAccount",
                 "reference1",
                 1.23);

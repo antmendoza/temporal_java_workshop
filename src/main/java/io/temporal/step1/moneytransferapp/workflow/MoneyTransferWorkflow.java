@@ -19,6 +19,7 @@
 
 package io.temporal.step1.moneytransferapp.workflow;
 
+import io.temporal.model.TransferRequest;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 

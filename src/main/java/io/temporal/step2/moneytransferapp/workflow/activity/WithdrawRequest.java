@@ -17,19 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step10.moneytransferapp.workflow;
+package io.temporal.step2.moneytransferapp.workflow.activity;
 
-import io.temporal.model.TransferRequest;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
-
-/**
- * Workflow interface has to have at least one method annotated with @WorkflowMethod.
- */
-@WorkflowInterface
-public interface MoneyTransferChildWorkflow {
-
-    // The Workflow method is called by the initiator either via code or CLI.
-    @WorkflowMethod
-    void transfer(TransferRequest transferRequest);
+public record WithdrawRequest(String accountId, String referenceId, double amount) {
 }

@@ -21,10 +21,12 @@ package io.temporal.step11.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.model.TransferRequest;
 import io.temporal.step11.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.step11.moneytransferapp.workflow.activity.DepositRequest;
 import io.temporal.step11.moneytransferapp.workflow.activity.WithdrawRequest;
 import io.temporal.workflow.Workflow;
+import org.slf4j.Logger;
 
 import java.time.Duration;
 
@@ -33,7 +35,7 @@ import java.time.Duration;
  */
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-    //private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
+    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
     public static final String TASK_QUEUE = "MoneyTransfer";
 
@@ -47,8 +49,11 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     @Override
     public void transfer(TransferRequest transferRequest) {
 
-        accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+
+            log.info("init transfer: "+ transferRequest);
+            accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
         accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+        log.info("end transfer: "+ transferRequest);
 
     }
 }

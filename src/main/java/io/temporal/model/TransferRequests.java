@@ -1,4 +1,4 @@
-package io.temporal.step10.moneytransferapp.workflow;
+package io.temporal.model;
 
 import java.util.List;
 

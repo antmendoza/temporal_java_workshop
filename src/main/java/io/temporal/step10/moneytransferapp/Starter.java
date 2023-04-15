@@ -21,10 +21,10 @@ package io.temporal.step10.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step10.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step10.moneytransferapp.workflow.TransferRequest;
-import io.temporal.step10.moneytransferapp.workflow.TransferRequests;
+import io.temporal.model.TransferRequests;
 
 import java.util.List;
 import java.util.stream.Collectors;

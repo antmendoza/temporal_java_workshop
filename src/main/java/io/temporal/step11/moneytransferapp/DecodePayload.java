@@ -3,8 +3,8 @@ package io.temporal.step11.moneytransferapp;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryRequest;
 import io.temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryResponse;
+import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step11.moneytransferapp.workflow.TransferRequest;
 
 public class DecodePayload {
 
@@ -27,9 +27,8 @@ public class DecodePayload {
 
         res.getHistory().getEvents(0).getWorkflowExecutionStartedEventAttributes().getInput().getPayloadsList()
                 .forEach(payload -> {
-
-
-                    System.out.println("Detail: " + new MyCustomDataConverter().fromPayload(payload, TransferRequest.class, TransferRequest.class));
+                    System.out.println("Payload: " + new MyCustomDataConverter().fromPayload(payload,
+                            TransferRequest.class, TransferRequest.class));
 
                 });
 

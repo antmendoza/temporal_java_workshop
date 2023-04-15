@@ -21,11 +21,13 @@ package io.temporal.step10.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.model.TransferRequests;
 import io.temporal.step10.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.workflow.Async;
 import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
+import org.slf4j.Logger;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ import java.util.List;
  */
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-    //private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
+    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
     public static final String TASK_QUEUE = "MoneyTransfer";
 
@@ -49,6 +51,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     @Override
     public void transfer(TransferRequests transferRequests) {
+        log.info("init transfer size: "+ transferRequests.transferRequests().size());
 
 
 
@@ -62,6 +65,9 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
 
         Promise.allOf(promises).get();
+
+        log.info("end transfer size: "+ transferRequests.transferRequests().size());
+
 
     }
 }
