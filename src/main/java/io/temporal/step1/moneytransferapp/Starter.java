@@ -56,8 +56,7 @@ public class Starter {
 
         workflow.transfer(new TransferRequest("account1", "account2", "referenceId", 200));
 
-        //System.out.println("result -> " + result);
-
+        
     }
 
 }
