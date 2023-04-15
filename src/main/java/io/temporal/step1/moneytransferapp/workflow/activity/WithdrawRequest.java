@@ -17,18 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step1.moneytransferapp.activity;
+package io.temporal.step1.moneytransferapp.workflow.activity;
 
-import io.temporal.activity.ActivityInterface;
-import io.temporal.activity.ActivityMethod;
-
-@ActivityInterface
-public interface AccountService {
-
-
-    @ActivityMethod
-    void deposit(DepositRequest depositRequest);
-
-    @ActivityMethod
-    void withdraw(WithdrawRequest withdrawRequest);
+public record WithdrawRequest(String accountId, String referenceId, double amount) {
 }

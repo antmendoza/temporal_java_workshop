@@ -17,13 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step1.moneytransferapp.worker;
+package io.temporal.step11.moneytransferapp.worker;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.step1.moneytransferapp.workflow.activity.AccountServiceImpl;
-import io.temporal.step1.moneytransferapp.workflow.activity.BankingClient;
-import io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.step11.moneytransferapp.workflow.activity.AccountServiceImpl;
+import io.temporal.step11.moneytransferapp.workflow.activity.BankingClient;
+import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
