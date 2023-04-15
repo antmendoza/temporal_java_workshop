@@ -7,8 +7,7 @@
 ### Temporal CLI
 - https://docs.temporal.io/kb/all-the-ways-to-run-a-cluster#temporal-cli
 
-
-`db-filename`
+`temporal server start-dev --f temporal_java_workshop`
 
 - UI: http://localhost:8233/
 
