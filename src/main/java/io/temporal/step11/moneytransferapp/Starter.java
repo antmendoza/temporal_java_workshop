@@ -20,30 +20,41 @@
 package io.temporal.step11.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.common.converter.CodecDataConverter;
+import io.temporal.common.converter.DefaultDataConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.step11.moneytransferapp.httpserver.CryptCodec;
 import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflow;
 import io.temporal.step11.moneytransferapp.workflow.TransferRequest;
 
-import static io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
+import java.util.Collections;
 
-class Starter {
 
-    private static final String MY_BUSINESS_ID = "transfer-request";
+
+public class Starter {
+
+    private static final String MY_BUSINESS_ID = "money-transfer";
 
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-        final WorkflowClient client = WorkflowClient.newInstance(service);
-
+        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions.newBuilder()
+                .setDataConverter(
+                        new CodecDataConverter(
+                                DefaultDataConverter.newDefaultInstance(),
+                                Collections.singletonList(new CryptCodec())))
+                .build());
 
 
         // Create the workflow client stub. It is used to start our workflow execution.
         final WorkflowOptions build = WorkflowOptions.newBuilder()
                 .setWorkflowId(MY_BUSINESS_ID)
-                .setTaskQueue(TASK_QUEUE)
+                .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
                 .build();
 
 

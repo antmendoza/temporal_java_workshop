@@ -20,7 +20,11 @@
 package io.temporal.step11.moneytransferapp.worker;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowClientOptions;
+import io.temporal.common.converter.CodecDataConverter;
+import io.temporal.common.converter.DefaultDataConverter;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.step11.moneytransferapp.httpserver.CryptCodec;
 import io.temporal.step11.moneytransferapp.workflow.activity.AccountServiceImpl;
 import io.temporal.step11.moneytransferapp.workflow.activity.BankingClient;
 import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
@@ -29,7 +33,9 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
-import static io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
+import java.util.Collections;
+
+
 
 
 public class WorkflowWorker {
@@ -44,7 +50,12 @@ public class WorkflowWorker {
         /*
          * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
          */
-        WorkflowClient client = WorkflowClient.newInstance(service);
+        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions.newBuilder()
+                .setDataConverter(
+                        new CodecDataConverter(
+                                DefaultDataConverter.newDefaultInstance(),
+                                Collections.singletonList(new CryptCodec())))
+                .build());
 
         /*
          * Define the workflow factory. It is used to create workflow workers for a specific task queue.
@@ -56,7 +67,7 @@ public class WorkflowWorker {
          * Define the workflow worker. Workflow workers listen to a defined task queue and process
          * workflows and activities.
          */
-        Worker worker = factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder()
+        Worker worker = factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder()
                 .build());
 
         worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);

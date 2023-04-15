@@ -29,7 +29,7 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
-import static io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
+
 
 
 public class WorkflowWorker {
@@ -56,7 +56,7 @@ public class WorkflowWorker {
          * Define the workflow worker. Workflow workers listen to a defined task queue and process
          * workflows and activities.
          */
-        Worker worker = factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder()
+        Worker worker = factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder()
                 .build());
 
         worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);

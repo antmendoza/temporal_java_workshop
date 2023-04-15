@@ -30,11 +30,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
+import static io.temporal.step10.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
+
 
 public class Starter {
 
-    private static final String MY_BUSINESS_ID = "transfer-request";
+    private static final String MY_BUSINESS_ID = "money-transfer";
 
     public static void main(String[] args) {
 

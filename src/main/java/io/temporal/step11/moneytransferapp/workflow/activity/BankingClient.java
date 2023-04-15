@@ -27,8 +27,8 @@ public class BankingClient {
 
 
     public void deposit(DepositRequest depositRequest) {
-        throw new NullPointerException("whatever.... ");
+        //throw new NullPointerException("whatever.... ");
 
-        //System.out.println("Deposit: " + depositRequest);
+        System.out.println("Deposit: " + depositRequest);
     }
 }

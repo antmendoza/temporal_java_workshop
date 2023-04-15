@@ -21,15 +21,16 @@ package io.temporal.step1.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.step1.moneytransferapp.workflow.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflow;
 
-import static io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
 
-class Starter {
 
-    private static final String MY_BUSINESS_ID = "transfer-request";
+public class Starter {
+
+    private static final String MY_BUSINESS_ID = "money-transfer";
 
     public static void main(String[] args) {
 
@@ -43,7 +44,7 @@ class Starter {
         // Create the workflow client stub. It is used to start our workflow execution.
         final WorkflowOptions build = WorkflowOptions.newBuilder()
                 .setWorkflowId(MY_BUSINESS_ID)
-                .setTaskQueue(TASK_QUEUE)
+                .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
                 .build();
 
 
