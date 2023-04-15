@@ -48,25 +48,6 @@ public class SignalWorkflow {
 
 
 
-
-
-
-
-        // Create the workflow client stub. It is used to start our workflow execution.
-        final WorkflowOptions build = WorkflowOptions.newBuilder()
-                .setWorkflowId(MY_BUSINESS_ID)
-                .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
-                .build();
-
-
-        final MoneyTransferWorkflow workflow =
-                client.newWorkflowStub(
-                        MoneyTransferWorkflow.class,
-                        build);
-
-
-        workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 200));
-
         
     }
 
