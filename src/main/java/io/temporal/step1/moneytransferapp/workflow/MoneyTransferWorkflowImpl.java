@@ -17,13 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.moneytransferapp.workflow;
+package io.temporal.step1.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
-import io.temporal.moneytransferapp.activity.AccountService;
-import io.temporal.moneytransferapp.activity.DepositRequest;
-import io.temporal.moneytransferapp.activity.WithdrawRequest;
+import io.temporal.step1.moneytransferapp.activity.AccountService;
+import io.temporal.step1.moneytransferapp.activity.DepositRequest;
+import io.temporal.step1.moneytransferapp.activity.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 
 import java.time.Duration;

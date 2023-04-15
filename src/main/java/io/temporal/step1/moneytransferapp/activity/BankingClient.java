@@ -17,7 +17,18 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.moneytransferapp.activity;
+package io.temporal.step1.moneytransferapp.activity;
 
-public record WithdrawRequest(String accountId, String referenceId, double amount) {
+public class BankingClient {
+
+    public void withdraw(WithdrawRequest withdrawRequest) {
+        System.out.println("Withdraw: " + withdrawRequest);
+    }
+
+
+    public void deposit(DepositRequest depositRequest) {
+        throw new NullPointerException("whatever.... ");
+
+        //System.out.println("Deposit: " + depositRequest);
+    }
 }

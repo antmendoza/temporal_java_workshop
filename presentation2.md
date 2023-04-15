@@ -28,7 +28,7 @@ We will need to clone a repository and donwload the Temporal server.
 - **Practical exercise (continuation)**
     - and then, continue with the practical exercise
 
-**Play with it**
+- **Play with it**
   - finally, I am gonna ask you to pick a partner, pick one of the exercises and implement it
 
 
@@ -38,30 +38,132 @@ We will need to clone a repository and donwload the Temporal server.
 
 Why Temporal? 
 
-Our applications usually involve either service/microservice orchestration, invoking upstream services, sometimes we have to write pipelines... 
-And all have one thing in common, we want transactional operations, we have to be sure that either or nothing completes.
+Nowadays most of the applications we write are distributed systems.
+Either they are composed by several microservices and we need something orchestrate them, we need to invoke an upstream services, 
+sometimes we have to write ETLs, pipelines to provision resources... etc etc...
+
+And they all of them have something in common, we want them to either complete successfully or fails, we don't operations them partially completed.
+
+## Introduction
+A typical example is a money transfer application:
+
+The client start a request that invokes calling two upstream services:
+- withdraw
+- and deposit
+
+![img.png](img.png)
+
+And that is fine until we start dealing with errors, retries... one of the services is down.
+
+And then we start writing code around the services we call,saving intermediate states in the database, writing code to reconciliate states.
+
+So we end up writing our own state machines in some way.
+
+Or we decide to move to an even driven architecture which introduces other kinds of problems:
+- For example our logic is distributed
+- Difficult to test end to end
+
+## How temporal helps here
+
+Temporal is an orchestration engine which allows you to write your orchestration as code.
+
+We are gonna do the workshops in Java but you can write your code in other 5 languages: 
+
+- Java
+- Typescript
+- Go
+- Python
+- PHP
+- .Net (WIP)
+
+And as we will see in the workshop you can continue using your favorite IDE, testing framework etc...
+
+## How temporal helps here
+
+There are two main building blocks in Temporal, workflows and activities.
+
+Workflows orchestrate your business logic and activities will operate with upstream services.
+
+As we will see your code will look pretty much the same , 
+and Temporal will take care of saving the state in case of workflow error, or if your server goes down
+
+and take care of retries etc... 
+
+It has timers, queues...
+
+So... let's start.
 
 
-A typical example is a money transfer application: 
+## Environment setup
 
-```
-
-    public String transfer(TransferRequest transferRequest) {
-
-        accountService.withdraw(fromAccountId, referenceId, amount);
-        accountService.deposit(toAccountId, referenceId, amount);
-
-        return "some-transference-id";
-    }
-
-```
+Before star writing the application we need to create the environment where this application is gonna live, where is gonna be executed etc.... Persist workflow state etc...
+There are three main parts involves in a temporal application.
 
 
+Show picture on what we are gonna isntall
+
+- [environment setup](./env-setup.md)
+
+Show picture on what we are gonna get / client / worker
+
+- clone https://github.com/antmendoza/jonthebeach_workshop.git
+
+
+## SLIDE
+### Environment setup
+
+Before star writing the application we need to create the environment where this application is gonna live, where is gonna be executed etc.... Persist workflow state etc...
+There are three main parts involves in a temporal application.
+
+
+Show piMostrar figura de lo que vamos a instalar, y hacer
+
+- [environment setup](./env-setup.md)
+
+- clone
 
 
 
 
 
+
+
+Not to talk, when we have to deal with timers, maybe we want to sleep our code for 2 minutes, 2 days. 
+Save the state again in the database, we have probably something pulling the database... 
+
+
+What I am trying to say is that usually we end up with complex systems difficult to maintains.
+
+The system becomes very complex 
+
+
+If is the first one is more or less ok but if it is the secon
+And everything is working fine until something fails. 
+
+And then we start saving the request state on the database, modifying the code to handle errors and retries. 
+
+No
+
+
+
+
+
+For example 
+
+
+but we don't want to have half things, and then we have to implementa more code to 
+
+
+
+
+
+
+
+
+
+
+
+--- 
 and wait for the response and with
 this kind of interactions in place we have to think about or The way we build applications nowdays is either We in our code or applications have always either micro
 
@@ -111,39 +213,6 @@ Temporal remove all the complexity around Timers, retries, concurrenty, rate lim
 Try to introduce one slide that shows the complexity of having system implace like kafka etc..., timers, retries... between temporal
 
 put messages in kafka and the database fails, or the other way around
-
-
-
-## SLIDE
-### Environment setup
-
-Before star writing the application we need to create the environment where this application is gonna live, where is gonna be executed etc.... Persist workflow state etc...
-There are three main parts involves in a temporal application.
-
-
-Show picture on what we are gonna isntall
-
-- [environment setup](./env-setup.md)
-
-Show picture on what we are gonna get / client / worker
-
-- clone https://github.com/antmendoza/jonthebeach_workshop.git
-
-
-## SLIDE
-### Environment setup
-
-Before star writing the application we need to create the environment where this application is gonna live, where is gonna be executed etc.... Persist workflow state etc...
-There are three main parts involves in a temporal application.
-
-
-Show piMostrar figura de lo que vamos a instalar, y hacer
-
-- [environment setup](./env-setup.md)
-
-
-
-- clone
 
 
 
@@ -351,4 +420,7 @@ https://temporal.io/use-cases
 
 
 https://docs.google.com/presentation/d/1IVerAsGl1aeQ25NdpfmPDabpA7-c_BoS3I5g1g7s_5w/edit#slide=id.g18645205848_0_486
+
+
+Temporal vs Event drive architecture? 
 

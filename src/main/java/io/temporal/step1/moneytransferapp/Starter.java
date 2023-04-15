@@ -17,17 +17,17 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal;
+package io.temporal.step1.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.moneytransferapp.workflow.TransferRequest;
+import io.temporal.step1.moneytransferapp.workflow.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.moneytransferapp.workflow.MoneyTransferWorkflow;
+import io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflow;
 
-import static io.temporal.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
+import static io.temporal.step1.moneytransferapp.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
 
-public class Starter {
+class Starter {
 
     private static final String MY_BUSINESS_ID = "transfer-request";
 
