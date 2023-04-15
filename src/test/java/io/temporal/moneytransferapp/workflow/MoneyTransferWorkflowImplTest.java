@@ -19,10 +19,18 @@
 
 package io.temporal.moneytransferapp.workflow;
 
+import io.temporal.activity.Activity;
+import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.api.enums.v1.WorkflowExecutionStatus;
+import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
+import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowFailedException;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.moneytransferapp.activity.AccountService;
 import io.temporal.moneytransferapp.activity.AccountServiceImpl;
+import io.temporal.moneytransferapp.activity.DepositRequest;
+import io.temporal.moneytransferapp.activity.WithdrawRequest;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;
 import org.junit.Assert;
@@ -30,10 +38,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 public class MoneyTransferWorkflowImplTest {
+
+    private final String myWorkflow = "myWorkflow";
 
 
     @Rule
@@ -77,28 +88,37 @@ public class MoneyTransferWorkflowImplTest {
                 "account2",
                 "reference1",
                 1.23);
-        final String result = workflow.transfer(transferRequest);
 
-        Assert.assertEquals(result, "some-transference-id");
+        workflow.transfer(transferRequest);
+
 
         /////////////
 
     }
 
 
-
-
-
     @Test
-    public void testRetry() {
-
+    public void testRetryAndSuccess() {
 
         AccountService accountService = Mockito.mock(AccountServiceImpl.class);
-        when(accountService.deposit(any())).thenThrow(RuntimeException.class);
+        doThrow(RuntimeException.class).when(accountService).deposit(any());
 
         Worker worker = testWorkflowRule.getWorker();
         worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
-        worker.registerActivitiesImplementations(accountService);
+        worker.registerActivitiesImplementations(new AccountService() {
+            @Override
+            public void deposit(DepositRequest depositRequest) {
+                int attends = Activity.getExecutionContext().getInfo().getAttempt();
+                if (attends <= 2) {
+                    throw new NullPointerException("something is null");
+                }
+            }
+
+            @Override
+            public void withdraw(WithdrawRequest withdrawRequest) {
+
+            }
+        });
 
 
         // Start server
@@ -107,6 +127,7 @@ public class MoneyTransferWorkflowImplTest {
 
         final WorkflowOptions options = WorkflowOptions.newBuilder()
                 .setTaskQueue(testWorkflowRule.getTaskQueue())
+                .setWorkflowId(myWorkflow)
                 .build();
 
         final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
@@ -123,14 +144,85 @@ public class MoneyTransferWorkflowImplTest {
                 "account2",
                 "reference1",
                 1.23);
-        final String result = workflow.transfer(transferRequest);
 
-        Assert.assertEquals(result, "some-transference-id");
+        workflow.transfer(transferRequest);
+
+        DescribeWorkflowExecutionResponse describeResponse =
+                describeWorkflowExecutionResponse(WorkflowExecution.newBuilder().setWorkflowId(myWorkflow));
+
+        Assert.assertEquals(describeResponse.getWorkflowExecutionInfo().getStatus(), WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
         /////////////
 
     }
 
+
+    @Test
+    public void testRetryExhaustedAndFail() {
+
+        AccountService accountService = Mockito.mock(AccountServiceImpl.class);
+        doThrow(RuntimeException.class).when(accountService).deposit(any());
+
+        Worker worker = testWorkflowRule.getWorker();
+        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+        worker.registerActivitiesImplementations(new AccountService() {
+            @Override
+            public void deposit(DepositRequest depositRequest) {
+                throw new RuntimeException("something when wrong");
+            }
+
+            @Override
+            public void withdraw(WithdrawRequest withdrawRequest) {
+            }
+        });
+
+
+        // Start server
+        testWorkflowRule.getTestEnvironment().start();
+
+        final WorkflowOptions options = WorkflowOptions.newBuilder()
+                .setTaskQueue(testWorkflowRule.getTaskQueue())
+                .setWorkflowId(myWorkflow)
+                .build();
+
+        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+
+        ///////////
+
+
+        final MoneyTransferWorkflow workflow = workflowClient
+                .newWorkflowStub(MoneyTransferWorkflow.class, options);
+
+
+        //Start workflow
+        TransferRequest transferRequest = new TransferRequest("account1",
+                "account2",
+                "reference1",
+                1.23);
+        try {
+            workflow.transfer(transferRequest);
+            fail("Should have failed");
+        } catch (WorkflowFailedException e) {
+        }
+
+        DescribeWorkflowExecutionResponse describeResponse =
+                describeWorkflowExecutionResponse(WorkflowExecution.newBuilder().setWorkflowId(myWorkflow));
+
+        Assert.assertEquals(describeResponse.getWorkflowExecutionInfo().getStatus(),
+                WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_FAILED);
+
+        /////////////
+
+    }
+
+    private DescribeWorkflowExecutionResponse describeWorkflowExecutionResponse(WorkflowExecution.Builder myWorkflow) {
+        String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
+        DescribeWorkflowExecutionResponse describeResponse = testWorkflowRule.getTestEnvironment().getWorkflowClient().getWorkflowServiceStubs().blockingStub()
+                .describeWorkflowExecution(DescribeWorkflowExecutionRequest.newBuilder().setNamespace(namespace)
+                        .setExecution(myWorkflow
+                                .build()).build());
+        return describeResponse;
+    }
 
 
 }

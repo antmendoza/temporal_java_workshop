@@ -30,5 +30,5 @@ public interface MoneyTransferWorkflow {
 
     // The Workflow method is called by the initiator either via code or CLI.
     @WorkflowMethod
-    String transfer(TransferRequest transferRequest);
+    void transfer(TransferRequest transferRequest);
 }

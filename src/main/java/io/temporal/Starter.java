@@ -53,9 +53,9 @@ public class Starter {
                         build);
 
 
-        final String result = workflow.transfer(new TransferRequest("account1", "account2", "referenceId", 200));
+        workflow.transfer(new TransferRequest("account1", "account2", "referenceId", 200));
 
-        System.out.println("result -> " + result);
+        //System.out.println("result -> " + result);
 
     }
 

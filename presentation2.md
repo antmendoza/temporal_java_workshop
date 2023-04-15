@@ -1,64 +1,68 @@
 
-## Para Jesús
+## Intro
 
-
-
-Hola Jesús, te paso material para el workshop: 
-- Ponente: Antonio Mendoza Pérez https://www.linkedin.com/in/antmendoza 
-- Título: Creando aplicaciones tolerantes a fallos con Temporal
-- Fecha y hora propuesta: 25 / 04 / 2023 a las 16:00 (podemos cambiarlo si es necesario)
-- Requisitos previos: tener instalado JDK >= 17 & Docker
-- Temporal intro 2 min: https://www.youtube.com/watch?v=f-18XztyN6c
-
-Proporcionas tú el enlace a Zoom? 
-Entre tu y yo, a ver si puede asistir algún perfil tipo Pedro Delgado / Puche /  Juanmi / P.Gonzalez
-
-
-Gracias
-
----
-
-
-
-## SLIDE
-
-Welcome everyone and thank you for being here. It is a pleasure for me, thank you.
+Welcome everyone, and thank you for being here. 
 
 My name is Antonio, I am a Developer Success Engineer at Temporal, and I am gonna be delivering this workshop
-for you today and answering (or trying) any questions you might have.
 
 BUILDING RELIABLE APPLICATION WITH TEMPORAL
 
+I have tried to create a very practical workshop, the idea is to having you all working more than me, today, so let's start. 
 
-## SLIDE
-
-### Agenda:
+## Agenda:
 Workshop (2h)
-- **Introduction / What is Temporal?**
-  - secondly I am gonna give a small introduction on what is Temporal and go over, just touching the surface, on how it works.
-    - Main components
-    - Main building blocs
+- **Introduction (5-10 minutes)**
+    - firstly, I am gonna give a small introduction of what  and why Temporal is a great (I would say the best) option 
+  to consider when we have to write our applications 
 
-- **Environment setup**
-  - first, i need you to install a couple of components that we are gonna use during the workshop, this is basically
-    Temporal server, clone a repo containing the exersices we are gonna do and from there we can start the workshop.
--
-- **Hands on**
-  - We are gonna introduce a use case, and we are gonna work on it incrementally
-  - money transfer application
+- **Environment setup (5-10 minutes)**
+    - secondly, we are gonna prepare our environment. 
+We will need to clone a repository and donwload the Temporal server.
 
-- **This is your time, choose a use-case and work on it**
-  - Choose a use case
-  - Hands on
-  - Work in couples
+- **Practical exercise (30 minutes)**
+    - thirdly, We are gonna introduce our use-case and iterate over it introducing new concepts on each step.
+
+- **Break (5 minutes)**
+    - we are gonna do a small break
+
+- **Practical exercise (continuation)**
+    - and then, continue with the practical exercise
+
+**Play with it**
+  - finally, I am gonna ask you to pick a partner, pick one of the exercises and implement it
 
 
-## SLIDE
-### Introduction / What is Temporal?
+--- 
 
-This is a 5-10 minutes introduction on what is temporal and why it can be useful
+## Introduction 
 
-Our applications usually involve either service / microservice orchrestation, invoquing upstream services and with
+Why Temporal? 
+
+Our applications usually involve either service/microservice orchestration, invoking upstream services, sometimes we have to write pipelines... 
+And all have one thing in common, we want transactional operations, we have to be sure that either or nothing completes.
+
+
+A typical example is a money transfer application: 
+
+```
+
+    public String transfer(TransferRequest transferRequest) {
+
+        accountService.withdraw(fromAccountId, referenceId, amount);
+        accountService.deposit(toAccountId, referenceId, amount);
+
+        return "some-transference-id";
+    }
+
+```
+
+
+
+
+
+
+
+and wait for the response and with
 this kind of interactions in place we have to think about or The way we build applications nowdays is either We in our code or applications have always either micro
 
 
@@ -153,8 +157,8 @@ Show piMostrar figura de lo que vamos a instalar, y hacer
 - the enviroment, open the code and run the starter
 - three main components,
 - the client, the server and the worker
-  - worker execute the code, workflows and activities
-  - start the worker and see what has happened.
+    - worker execute the code, workflows and activities
+    - start the worker and see what has happened.
 
 
 
@@ -183,10 +187,10 @@ https://temporal.io/
 #### cluster (server and database)
 - Is responsible for persisting the workflow state, timers etc... which is where workflow lives, is persisted etc..
 - There are different components.
-  - Timers
-  - po....
-    Why we need task queues? beacuse different workflow wihtin the same namespacew could require different configuration at runtime.Like rate limit,
-    resources depending on the heavy load.
+    - Timers
+    - po....
+      Why we need task queues? beacuse different workflow wihtin the same namespacew could require different configuration at runtime.Like rate limit,
+      resources depending on the heavy load.
 - taskqueue allow ... //TODO
 - is and endpoint within the namesapces.
 
@@ -209,7 +213,7 @@ There are different component involved, but at the end there is what we call a w
 There are different ways right now to setup a local cluster, these are three main two.
 - git clone ... docker compose up / `TODO` pedir ayuda Ivan
 - brew install temporal &
-  - Temporal serverl + command line interface.
+    - Temporal serverl + command line interface.
 
 
 
@@ -218,9 +222,9 @@ There are different ways right now to setup a local cluster, these are three mai
 ## SLIDE 4
 #### SDKs
 - API to write workflows
-  - timer Worklow.timer(())
-  - sleep Workflow.sleep
-  - Async.
+    - timer Worklow.timer(())
+    - sleep Workflow.sleep
+    - Async.
 - API to query workflows
 - Different SDKs, Java, Python, Go, Typescript, .Net, Rush..
 
@@ -228,14 +232,14 @@ the SDK is gonna allow us to create:
 - clients
 
   We have seen a little example before, but
-  - workflow.start.. is an example of client.
-  - Workflow.signal is another example.
+    - workflow.start.. is an example of client.
+    - Workflow.signal is another example.
 
 
 
 - write workflow code
 
-  - Workflow.sleep (Duration.ofMinutes(30))
+    - Workflow.sleep (Duration.ofMinutes(30))
 
 - create workers
   //TODO
@@ -285,6 +289,13 @@ think that this can be a long running workflow or short runing workflow like sec
 
 
 
+## Play with it
+
+      - Choose a use case
+      - Groups of two/three devs. (I don't wanna see anyone alone)
+
+
+
 ### Randon notes:
 
 Consistency:
@@ -295,9 +306,9 @@ Determinism:
 - workflow replyer
 - We can not do UUID.rtandom, we have to do instead Workflow.randomID()
 - A workflow workflow type, workflow id, and run id or execution id
-  - Workflow type is the workflow implementation.
-  - Workflow id is a bussines name, we can set the workflow id.
-  - Run id is unique by namespace and is set by the server.
+    - Workflow type is the workflow implementation.
+    - Workflow id is a bussines name, we can set the workflow id.
+    - Run id is unique by namespace and is set by the server.
 
 
 - Concept: Data converters,
@@ -340,5 +351,4 @@ https://temporal.io/use-cases
 
 
 https://docs.google.com/presentation/d/1IVerAsGl1aeQ25NdpfmPDabpA7-c_BoS3I5g1g7s_5w/edit#slide=id.g18645205848_0_486
-
 

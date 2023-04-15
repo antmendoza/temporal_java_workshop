@@ -20,6 +20,7 @@
 package io.temporal.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
+import io.temporal.common.RetryOptions;
 import io.temporal.moneytransferapp.activity.AccountService;
 import io.temporal.moneytransferapp.activity.DepositRequest;
 import io.temporal.moneytransferapp.activity.WithdrawRequest;
@@ -36,19 +37,18 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     public static final String TASK_QUEUE = "MoneyTransfer";
 
+    final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
+            .setStartToCloseTimeout(Duration.ofSeconds(1))
+            .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(3).build())
+            .build());
+
+
 
     @Override
-    public String transfer(TransferRequest transferRequest) {
-        System.out.println("Hello from JOTB23");
-
-
-        final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
-                .setStartToCloseTimeout(Duration.ofSeconds(1))
-                .build());
+    public void transfer(TransferRequest transferRequest) {
 
         accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
         accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
 
-        return "some-transference-id";
     }
 }

@@ -2,7 +2,6 @@
 
 # Env Setup
 
-
 ## Temporal Cluster
 
 ### Temporal CLI
@@ -23,6 +22,7 @@ docker compose up
 - UI: http://localhost:8080
 
 
-## Samples Repo 
+## Workshop repo 
 
+`git clone https://github.com/antmendoza/jonthebeach_workshop`
 
