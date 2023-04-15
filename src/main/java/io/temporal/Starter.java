@@ -21,6 +21,7 @@ package io.temporal;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.moneytransferapp.workflow.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.moneytransferapp.workflow.MoneyTransferWorkflow;
 
@@ -38,6 +39,7 @@ public class Starter {
         final WorkflowClient client = WorkflowClient.newInstance(service);
 
 
+
         // Create the workflow client stub. It is used to start our workflow execution.
         final WorkflowOptions build = WorkflowOptions.newBuilder()
                 .setWorkflowId(MY_BUSINESS_ID)
@@ -51,7 +53,7 @@ public class Starter {
                         build);
 
 
-        final String result = workflow.transfer("account1", "account2", "referenceId", 200);
+        final String result = workflow.transfer(new TransferRequest("account1", "account2", "referenceId", 200));
 
         System.out.println("result -> " + result);
 
