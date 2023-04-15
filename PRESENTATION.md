@@ -123,7 +123,7 @@ Show picture on what we are gonna isntall
 
 Show picture on what we are gonna get / client / worker
 
-- clone https://github.com/antmendoza/jonthebeach_workshop.git
+- clone https://github.com/antmendoza/temporal_java_workshop.git
 
 
 ## SLIDE

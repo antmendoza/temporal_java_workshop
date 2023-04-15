@@ -26,5 +26,5 @@ docker compose up
 
 ## Workshop repo 
 
-`git clone https://github.com/antmendoza/jonthebeach_workshop`
+`git clone https://github.com/antmendoza/temporal_java_workshop`
 
