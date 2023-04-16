@@ -55,8 +55,18 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             needApproval = true;
             log.info("request need approval: " + transferRequest);
 
+            //comment and uncomment the next block. Restart worker, start workflow and wait 10 secods
             Workflow.await(() -> transferApproved != null);
+/*
+            boolean authorizationReceived = Workflow.await(Duration.ofSeconds(10),  () -> transferApproved != null);
+            if(!authorizationReceived){
+               log.info("authorization not received: ");
+                return;
+            }
+*/
+
             log.info("transferApproved: " + transferApproved);
+
 
         }
 
