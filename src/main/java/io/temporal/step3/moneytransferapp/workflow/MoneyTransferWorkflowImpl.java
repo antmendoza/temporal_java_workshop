@@ -22,9 +22,9 @@ package io.temporal.step3.moneytransferapp.workflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
+import io.temporal.services.DepositRequest;
+import io.temporal.services.WithdrawRequest;
 import io.temporal.step3.moneytransferapp.workflow.activity.AccountService;
-import io.temporal.step3.moneytransferapp.workflow.activity.DepositRequest;
-import io.temporal.step3.moneytransferapp.workflow.activity.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
@@ -37,8 +37,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     public static final String TASK_QUEUE = "MoneyTransfer";
     final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
-            .setStartToCloseTimeout(Duration.ofSeconds(1))
-            .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(3).build())
+            .setStartToCloseTimeout(Duration.ofSeconds(3))
+            .setRetryOptions(RetryOptions.newBuilder().build())
             .build());
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
     private TRANSFER_APPROVED transferApproved;

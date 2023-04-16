@@ -19,6 +19,10 @@
 
 package io.temporal.step15.moneytransferapp.workflow.activity;
 
+import io.temporal.services.BankingClient;
+import io.temporal.services.DepositRequest;
+import io.temporal.services.WithdrawRequest;
+
 public class AccountServiceImpl implements AccountService {
 
     private final BankingClient bankingClient;

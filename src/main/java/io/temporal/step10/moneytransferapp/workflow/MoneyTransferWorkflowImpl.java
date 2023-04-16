@@ -43,8 +43,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     public static final String TASK_QUEUE = "MoneyTransfer";
 
     private final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
-            .setStartToCloseTimeout(Duration.ofSeconds(1))
-            .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(3).build())
+            .setStartToCloseTimeout(Duration.ofSeconds(3))
+            .setRetryOptions(RetryOptions.newBuilder().build())
             .build());
 
 

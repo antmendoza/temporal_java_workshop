@@ -21,6 +21,8 @@ package io.temporal.step1.moneytransferapp.workflow.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import io.temporal.services.DepositRequest;
+import io.temporal.services.WithdrawRequest;
 
 @ActivityInterface
 public interface AccountService {

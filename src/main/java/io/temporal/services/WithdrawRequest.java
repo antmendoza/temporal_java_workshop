@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step10.moneytransferapp.workflow.activity;
+package io.temporal.services;
 
-public record DepositRequest(String accountId, String referenceId, double amount) {
+public record WithdrawRequest(String accountId, String referenceId, double amount) {
 }

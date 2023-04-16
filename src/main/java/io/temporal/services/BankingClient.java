@@ -17,18 +17,35 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step2.moneytransferapp.workflow.activity;
+package io.temporal.services;
+
+import java.util.Random;
 
 public class BankingClient {
 
+
     public void withdraw(WithdrawRequest withdrawRequest) {
-        System.out.println("Withdraw: " + withdrawRequest);
+        System.out.println("Withdraw init: " + withdrawRequest);
+        randomSleep();
+        System.out.println("Withdraw end: " + withdrawRequest);
+    }
+
+    public void deposit(DepositRequest depositRequest) {
+        System.out.println("Deposit init: " + depositRequest);
+        randomSleep();
+        System.out.println("Deposit end: " + depositRequest);
     }
 
 
-    public void deposit(DepositRequest depositRequest) {
-        //throw new NullPointerException("whatever.... ");
+    private static void randomSleep() {
 
-        System.out.println("Deposit: " + depositRequest);
+        int r = new Random().nextInt(2 - 1 + 2) + 0;
+
+        try {
+            long millis = (long) (Math.random() * 1500);
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

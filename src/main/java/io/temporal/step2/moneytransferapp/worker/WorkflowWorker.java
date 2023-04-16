@@ -21,9 +21,9 @@ package io.temporal.step2.moneytransferapp.worker;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.services.BankingClient;
 import io.temporal.step2.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.step2.moneytransferapp.workflow.activity.AccountServiceImpl;
-import io.temporal.step2.moneytransferapp.workflow.activity.BankingClient;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;

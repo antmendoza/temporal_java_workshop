@@ -21,13 +21,13 @@ package io.temporal.step10.moneytransferapp.worker;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.services.BankingClient;
 import io.temporal.step10.moneytransferapp.workflow.MoneyTransferChildWorkflowImpl;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 import io.temporal.step10.moneytransferapp.workflow.activity.AccountServiceImpl;
-import io.temporal.step10.moneytransferapp.workflow.activity.BankingClient;
 import io.temporal.step10.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 
 

@@ -21,7 +21,7 @@ package io.temporal.step10.moneytransferapp.workflow.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-
+import io.temporal.services.*;
 @ActivityInterface
 public interface AccountService {
 
