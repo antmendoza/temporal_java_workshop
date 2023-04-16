@@ -17,14 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step2.moneytransferapp.workflow;
+package io.temporal.step3.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
-import io.temporal.step2.moneytransferapp.workflow.activity.AccountService;
-import io.temporal.step2.moneytransferapp.workflow.activity.DepositRequest;
-import io.temporal.step2.moneytransferapp.workflow.activity.WithdrawRequest;
+import io.temporal.step3.moneytransferapp.workflow.activity.AccountService;
+import io.temporal.step3.moneytransferapp.workflow.activity.DepositRequest;
+import io.temporal.step3.moneytransferapp.workflow.activity.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
@@ -42,15 +42,20 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             .build());
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
     private TRANSFER_APPROVED transferApproved;
-
+    private TRANSFER_STATUS transferStatus = null;
     @Override
     public void transfer(TransferRequest transferRequest) {
+
+
+        transferStatus = TRANSFER_STATUS.INITIATED;
 
         log.info("init transfer: " + transferRequest);
 
         boolean needApproval = false;
 
         if (transferRequest.amount() > 1000) {
+            transferStatus = TRANSFER_STATUS.WAITING_APPROVAL;
+
 
             needApproval = true;
             log.info("request need approval: " + transferRequest);
@@ -64,6 +69,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
                 return;
             }
 */
+
             log.info("transferApproved: " + transferApproved);
 
         }
@@ -72,12 +78,16 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
             accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
             accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+
+            transferStatus = TRANSFER_STATUS.APPROVED;
+
         }
 
 
         if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
             //notify customer...
             log.info("notify customer, transferApproved: " + transferRequest);
+            transferStatus = TRANSFER_STATUS.DENIED;
         }
 
 
@@ -88,5 +98,10 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     @Override
     public void approveTransfer(TRANSFER_APPROVED transferApproved) {
         this.transferApproved = transferApproved;
+    }
+
+    @Override
+    public TRANSFER_STATUS queryStatus() {
+        return transferStatus;
     }
 }

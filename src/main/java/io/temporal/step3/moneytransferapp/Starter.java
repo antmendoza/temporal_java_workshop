@@ -17,17 +17,17 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step2.moneytransferapp;
+package io.temporal.step3.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowOptions;
+import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step2.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step2.moneytransferapp.workflow.TRANSFER_APPROVED;
-
-import java.util.Optional;
+import io.temporal.step3.moneytransferapp.workflow.MoneyTransferWorkflow;
+import io.temporal.step3.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 
 
-public class SignalWorkflow {
+public class Starter {
 
     private static final String MY_BUSINESS_ID = "money-transfer";
 
@@ -38,13 +38,21 @@ public class SignalWorkflow {
 
         final WorkflowClient client = WorkflowClient.newInstance(service);
 
-        final MoneyTransferWorkflow workflowStub = client.newWorkflowStub(MoneyTransferWorkflow.class, MY_BUSINESS_ID, Optional.empty());
-        workflowStub.approveTransfer(TRANSFER_APPROVED.YES);
-
-        // newUntypedWorkflowStub
-        //TODO
 
 
+        // Create the workflow client stub. It is used to start our workflow execution.
+        final WorkflowOptions build = WorkflowOptions.newBuilder()
+                .setWorkflowId(MY_BUSINESS_ID)
+                .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
+                .build();
+
+        final MoneyTransferWorkflow workflow =
+                client.newWorkflowStub(
+                        MoneyTransferWorkflow.class,
+                        build);
+
+        workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 2000));
+        
     }
 
 }

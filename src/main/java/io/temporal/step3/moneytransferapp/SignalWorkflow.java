@@ -17,12 +17,12 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step2.moneytransferapp;
+package io.temporal.step3.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step2.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step2.moneytransferapp.workflow.TRANSFER_APPROVED;
+import io.temporal.step3.moneytransferapp.workflow.MoneyTransferWorkflow;
+import io.temporal.step3.moneytransferapp.workflow.TRANSFER_APPROVED;
 
 import java.util.Optional;
 
