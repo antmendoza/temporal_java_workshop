@@ -19,14 +19,10 @@
 
 package io.temporal.step2.moneytransferapp;
 
-import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowOptions;
-import io.temporal.client.WorkflowStub;
-import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step2.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step2.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.step2.moneytransferapp.workflow.TRANSFER_APPROVED;
 
 import java.util.Optional;
 
@@ -42,13 +38,13 @@ public class SignalWorkflow {
 
         final WorkflowClient client = WorkflowClient.newInstance(service);
 
+        final MoneyTransferWorkflow workflowStub = client.newWorkflowStub(MoneyTransferWorkflow.class, MY_BUSINESS_ID, Optional.empty());
+        workflowStub.approveTransfer(TRANSFER_APPROVED.NO);
+
         // newUntypedWorkflowStub
-        WorkflowStub workflowStub = client.newUntypedWorkflowStub(WorkflowExecution.newBuilder().setWorkflowId(MY_BUSINESS_ID).build(), Optional.empty());
-        workflowStub.signal("");
+        //TODO
 
 
-
-        
     }
 
 }

@@ -35,32 +35,50 @@ import java.time.Duration;
  */
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-
     public static final String TASK_QUEUE = "MoneyTransfer";
-
     final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
             .setStartToCloseTimeout(Duration.ofSeconds(1))
             .setRetryOptions(RetryOptions.newBuilder().setMaximumAttempts(3).build())
             .build());
-
-
-    boolean approvalReceived = false;
+    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
+    private TRANSFER_APPROVED transferApproved;
 
     @Override
     public void transfer(TransferRequest transferRequest) {
 
-        log.info("init transfer: "+ transferRequest);
+        log.info("init transfer: " + transferRequest);
 
-        if(transferRequest.amount() > 1000){
-            Workflow.await(() -> approvalReceived);
+        boolean needApproval = false;
+
+        if (transferRequest.amount() > 1000) {
+
+            needApproval = true;
+            log.info("request need approval: " + transferRequest);
+
+            Workflow.await(() -> transferApproved != null);
+            log.info("transferApproved: " + transferApproved);
+
         }
 
-        accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-        accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+
+        if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
+            accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+            accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+        }
 
 
-        log.info("end transfer: "+ transferRequest);
+        if (transferApproved.equals(TRANSFER_APPROVED.NO)) {
+            //notify customer...
+            log.info("notify customer, transferApproved: " + transferRequest);
+        }
 
+
+        log.info("end transfer: " + transferRequest);
+
+    }
+
+    @Override
+    public void approveTransfer(TRANSFER_APPROVED transferApproved) {
+        this.transferApproved = transferApproved;
     }
 }
