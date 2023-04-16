@@ -25,9 +25,10 @@ import io.temporal.step3.moneytransferapp.workflow.MoneyTransferWorkflow;
 
 import java.util.Optional;
 
+import static io.temporal.step3.moneytransferapp.Starter.MY_BUSINESS_ID;
+
 public class QueryWorkflow {
 
-    private static final String MY_BUSINESS_ID = "money-transfer";
 
     public static void main(String[] args) {
 
@@ -39,7 +40,7 @@ public class QueryWorkflow {
         final MoneyTransferWorkflow workflowStub = client.newWorkflowStub(MoneyTransferWorkflow.class, MY_BUSINESS_ID, Optional.empty());
 
         while (true) {
-            System.out.println("queryStatus result" + workflowStub.queryStatus());
+            System.out.println("queryStatus result: " + workflowStub.queryStatus());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

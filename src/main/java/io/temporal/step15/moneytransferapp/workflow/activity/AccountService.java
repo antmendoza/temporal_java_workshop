@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step11.moneytransferapp.workflow.activity;
+package io.temporal.step15.moneytransferapp.workflow.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

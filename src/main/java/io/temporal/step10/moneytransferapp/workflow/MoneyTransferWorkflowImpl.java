@@ -53,9 +53,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     public void transfer(TransferRequests transferRequests) {
         log.info("init transfer size: "+ transferRequests.transferRequests().size());
 
-
-
         final List<Promise<Void>> promises = new ArrayList<>();
+
         transferRequests.transferRequests().forEach(request -> {
             String childWFId = "transfer:: _"+request.fromAccountId()+"_"+request.toAccountId();
             final MoneyTransferChildWorkflow child = Workflow.newChildWorkflowStub(MoneyTransferChildWorkflow.class,
@@ -63,9 +62,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             promises.add(Async.procedure(child::transfer, request));
         });
 
-
         Promise.allOf(promises).get();
-
         log.info("end transfer size: "+ transferRequests.transferRequests().size());
 
 

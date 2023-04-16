@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-package io.temporal.step11.moneytransferapp.httpserver;
+package io.temporal.step15.moneytransferapp.httpserver;
 
 import com.google.common.net.HttpHeaders;
 import com.sun.net.httpserver.Headers;

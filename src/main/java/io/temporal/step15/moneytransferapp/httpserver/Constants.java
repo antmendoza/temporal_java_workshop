@@ -1,4 +1,4 @@
-package io.temporal.step11.moneytransferapp.httpserver;
+package io.temporal.step15.moneytransferapp.httpserver;
 
 import com.google.protobuf.util.JsonFormat;
 

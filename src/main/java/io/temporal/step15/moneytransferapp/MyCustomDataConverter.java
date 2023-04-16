@@ -1,8 +1,8 @@
-package io.temporal.step11.moneytransferapp;
+package io.temporal.step15.moneytransferapp;
 
 import io.temporal.common.converter.CodecDataConverter;
 import io.temporal.common.converter.DefaultDataConverter;
-import io.temporal.step11.moneytransferapp.httpserver.CryptCodec;
+import io.temporal.step15.moneytransferapp.httpserver.CryptCodec;
 
 import java.util.Collections;
 

@@ -1,4 +1,4 @@
-package io.temporal.step11.moneytransferapp;
+package io.temporal.step15.moneytransferapp;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryRequest;
@@ -8,7 +8,6 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 
 public class DecodePayload {
 
-    private static final String MY_BUSINESS_ID = "money-transfer";
 
     public static void main(String[] args) {
 
@@ -17,7 +16,7 @@ public class DecodePayload {
 
 
         final GetWorkflowExecutionHistoryRequest req = GetWorkflowExecutionHistoryRequest.newBuilder()
-                .setExecution(WorkflowExecution.newBuilder().setWorkflowId(MY_BUSINESS_ID).build())
+                .setExecution(WorkflowExecution.newBuilder().setWorkflowId(Starter.MY_BUSINESS_ID).build())
                 .setNamespace("default").build();
 
 

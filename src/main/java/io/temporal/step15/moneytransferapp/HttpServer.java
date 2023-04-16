@@ -1,7 +1,7 @@
-package io.temporal.step11.moneytransferapp;
+package io.temporal.step15.moneytransferapp;
 
-import io.temporal.step11.moneytransferapp.httpserver.CryptCodec;
-import io.temporal.step11.moneytransferapp.httpserver.RDEHttpServer;
+import io.temporal.step15.moneytransferapp.httpserver.CryptCodec;
+import io.temporal.step15.moneytransferapp.httpserver.RDEHttpServer;
 
 import java.io.IOException;
 import java.util.Collections;

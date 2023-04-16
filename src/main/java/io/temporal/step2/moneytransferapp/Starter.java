@@ -29,7 +29,7 @@ import io.temporal.step2.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 
 public class Starter {
 
-    private static final String MY_BUSINESS_ID = "money-transfer";
+     static final String MY_BUSINESS_ID = Starter.class.getPackageName()+":money-transfer";
 
     public static void main(String[] args) {
 

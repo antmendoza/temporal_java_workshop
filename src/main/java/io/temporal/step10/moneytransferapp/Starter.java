@@ -35,15 +35,22 @@ import static io.temporal.step10.moneytransferapp.workflow.MoneyTransferWorkflow
 
 public class Starter {
 
-    private static final String MY_BUSINESS_ID = "money-transfer";
+     static final String MY_BUSINESS_ID = Starter.class.getPackageName()+":money-transfer";
+
 
     public static void main(String[] args) {
+
+        int numRequest = 100;
+        startTransfer(numRequest);
+
+    }
+
+    public static void startTransfer(int numRequest) {
 
         // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
         final WorkflowClient client = WorkflowClient.newInstance(service);
-
 
         // Create the workflow client stub. It is used to start our workflow execution.
         final WorkflowOptions build = WorkflowOptions.newBuilder()
@@ -58,7 +65,7 @@ public class Starter {
                         build);
 
 
-        final List request = IntStream.rangeClosed(1, 100)
+        final List request = IntStream.range(0, numRequest)
                 .mapToObj(i ->
                         new TransferRequest("fromAccount-" + i,
                                 "toAccount-" + i,
@@ -68,8 +75,6 @@ public class Starter {
 
 
         workflow.transfer(new TransferRequests(request));
-
-
     }
 
 }

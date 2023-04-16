@@ -17,20 +17,20 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step11.moneytransferapp;
+package io.temporal.step15.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.step11.moneytransferapp.workflow.MoneyTransferWorkflow;
+import io.temporal.step15.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.step15.moneytransferapp.workflow.MoneyTransferWorkflow;
 
 
 public class Starter {
 
-    private static final String MY_BUSINESS_ID = "money-transfer";
+     static final String MY_BUSINESS_ID = Starter.class.getPackageName()+":money-transfer";
 
     public static void main(String[] args) {
 

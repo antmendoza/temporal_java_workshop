@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step11.moneytransferapp.httpserver;
+package io.temporal.step15.moneytransferapp.httpserver;
 
 import com.google.protobuf.ByteString;
 import io.temporal.api.common.v1.Payload;
