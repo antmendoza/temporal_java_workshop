@@ -1,19 +1,22 @@
-package io.temporal.step10.moneytransferapp;
+package io.temporal.step0.moneytransferapp;
 
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
 
     public static void main(String[] args) {
-        //start worker
-        CompletableFuture.runAsync(() -> {
-            Worker.main(args);
-        });
 
         //start workflow
         CompletableFuture.runAsync(() -> {
             ClientStartRequest.main(args);
         });
+
+
+        //start worker
+        CompletableFuture.runAsync(() -> {
+            Worker.main(args);
+        });
+
         waitMillis(2000);
 
         System.exit(0);

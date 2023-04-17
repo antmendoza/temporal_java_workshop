@@ -7,17 +7,23 @@ My name is Antonio, I am a Developer Success Engineer at Temporal, and I am gonn
 
 BUILDING RELIABLE APPLICATION WITH TEMPORAL
 
-I have tried to create a very practical workshop, the idea is to having you all working more than me, today, so let's start. 
+I have tried to create a very practical workshop, the idea is having you all working more than me, today, so let's start. 
+
+
+
+How many of you have heard about Temporal before?
+
+How many of you have played with Temporal in your local environment?
 
 ## Agenda:
 Workshop (2h)
 - **Introduction (5-10 minutes)**
     - firstly, I am gonna give a small introduction of what  and why Temporal is a great (I would say the best) option 
-  to consider when we have to write our applications 
+  to consider when to write our applications 
 
 - **Environment setup (5-10 minutes)**
     - secondly, we are gonna prepare our environment. 
-We will need to clone a repository and donwload the Temporal server.
+We will need to clone a repository and donwload the Temporal Server.
 
 - **Practical exercise (30 minutes)**
     - thirdly, We are gonna introduce our use-case and iterate over it introducing new concepts on each step.
@@ -38,7 +44,23 @@ We will need to clone a repository and donwload the Temporal server.
 
 Why Temporal? 
 
-Nowadays most of the applications we write are distributed systems.
+We all have either applications that communicates with external services 
+or applications composed by one or more services or microservices.
+
+If wee look at this small operation, it has to  which is about getting money from one account and putting into another account 
+
+this is the example we are gonna work with today, the money transfer application 
+distributed systems as we as developers have to
+orchestrate 
+
+Inconsistent state, and we start saving intermediate states in the database, or introducing code to do retries and compensations. 
+And so on... and at the end we have more code related to error handling than business logic. 
+
+Or we end up with an architecture composed by queues and databases dificult to maintain 
+
+that we have to orcherstraWe live in the world of distributing systems, most of the applications we write either are about .
+
+
 Either they are composed by several microservices and we need something orchestrate them, we need to invoke an upstream services, 
 sometimes we have to write ETLs, pipelines to provision resources... etc etc...
 

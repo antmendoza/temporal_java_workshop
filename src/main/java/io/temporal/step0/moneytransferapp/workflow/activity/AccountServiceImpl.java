@@ -17,32 +17,33 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.services;
+package io.temporal.step0.moneytransferapp.workflow.activity;
 
-import java.util.Random;
+import io.temporal.services.BankingClient;
+import io.temporal.services.DepositRequest;
+import io.temporal.services.WithdrawRequest;
 
-public class BankingClient {
+public class AccountServiceImpl implements AccountService {
+
+    private final BankingClient bankingClient;
+
+    public AccountServiceImpl(BankingClient bankingClient) {
+        this.bankingClient = bankingClient;
+    }
 
 
+    @Override
     public void withdraw(WithdrawRequest withdrawRequest) {
-        System.out.println("Withdraw init: " + withdrawRequest);
-        randomSleep();
-        System.out.println("Withdraw end: " + withdrawRequest);
+        this.bankingClient.withdraw(withdrawRequest);
     }
 
+    @Override
     public void deposit(DepositRequest depositRequest) {
-        System.out.println("Deposit init: " + depositRequest);
-        randomSleep();
-        System.out.println("Deposit end: " + depositRequest);
+        //this.bankingClient.deposit(depositRequest);
+
+        throw new RuntimeException("something is wrong...");
+
     }
 
 
-    private static void randomSleep() {
-        try {
-            long millis = (long) (Math.random() * 1500);
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

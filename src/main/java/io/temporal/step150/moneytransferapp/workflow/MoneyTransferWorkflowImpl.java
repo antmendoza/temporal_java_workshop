@@ -17,14 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step10.moneytransferapp.workflow;
+package io.temporal.step150.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
-import io.temporal.step10.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
+import io.temporal.step150.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
@@ -46,11 +46,11 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     @Override
     public void transfer(TransferRequest transferRequest) {
-        log.info("init transfer: "+ transferRequest);
 
-        accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+
+            log.info("init transfer: "+ transferRequest);
+            accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
         accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-
         log.info("end transfer: "+ transferRequest);
 
     }

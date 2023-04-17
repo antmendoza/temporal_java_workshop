@@ -17,13 +17,11 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step10.moneytransferapp.workflow.activity;
+package io.temporal.step30.moneytransferapp.workflow.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
-import io.temporal.services.DepositRequest;
-import io.temporal.services.WithdrawRequest;
-
+import io.temporal.services.*;
 @ActivityInterface
 public interface AccountService {
 

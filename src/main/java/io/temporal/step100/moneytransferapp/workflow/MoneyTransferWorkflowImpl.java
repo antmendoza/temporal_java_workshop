@@ -17,18 +17,21 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step10.moneytransferapp.workflow;
+package io.temporal.step100.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
-import io.temporal.model.TransferRequest;
-import io.temporal.step10.moneytransferapp.workflow.activity.AccountService;
-import io.temporal.services.DepositRequest;
-import io.temporal.services.WithdrawRequest;
+import io.temporal.model.TransferRequests;
+import io.temporal.step100.moneytransferapp.workflow.activity.AccountService;
+import io.temporal.workflow.Async;
+import io.temporal.workflow.ChildWorkflowOptions;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
@@ -37,7 +40,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     public static final String TASK_QUEUE = "MoneyTransfer";
 
-    final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
+    private final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
             .setStartToCloseTimeout(Duration.ofSeconds(3))
             .setRetryOptions(RetryOptions.newBuilder().build())
             .build());
@@ -45,13 +48,21 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
 
     @Override
-    public void transfer(TransferRequest transferRequest) {
-        log.info("init transfer: "+ transferRequest);
+    public void transfer(TransferRequests transferRequests) {
+        log.info("init transfer size: "+ transferRequests.transferRequests().size());
 
-        accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-        accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
+        final List<Promise<Void>> promises = new ArrayList<>();
 
-        log.info("end transfer: "+ transferRequest);
+        transferRequests.transferRequests().forEach(request -> {
+            String childWFId = "transfer:: _"+request.fromAccountId()+"_"+request.toAccountId();
+            final MoneyTransferChildWorkflow child = Workflow.newChildWorkflowStub(MoneyTransferChildWorkflow.class,
+                ChildWorkflowOptions.newBuilder().setWorkflowId(childWFId).build());
+            promises.add(Async.procedure(child::transfer, request));
+        });
+
+        Promise.allOf(promises).get();
+        log.info("end transfer size: "+ transferRequests.transferRequests().size());
+
 
     }
 }
