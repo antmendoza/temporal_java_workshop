@@ -20,7 +20,8 @@ public class Main {
         waitMillis(1000);
 
         //query workflow
-        CompletableFuture.runAsync(() -> {QueryWorkflow.main(args);});
+        CompletableFuture.runAsync(() -> {
+            QueryWorkflow.main(args);});
         waitMillis(5000);
 
         //signal workflow

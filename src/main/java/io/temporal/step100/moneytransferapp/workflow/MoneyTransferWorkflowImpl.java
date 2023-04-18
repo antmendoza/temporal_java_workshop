@@ -49,7 +49,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     @Override
     public void transfer(TransferRequests transferRequests) {
-        log.info("init transfer size: "+ transferRequests.transferRequests().size());
+        log.info("Init transfer size: "+ transferRequests.transferRequests().size());
 
         final List<Promise<Void>> promises = new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         });
 
         Promise.allOf(promises).get();
-        log.info("end transfer size: "+ transferRequests.transferRequests().size());
+        log.info("End transfer size: "+ transferRequests.transferRequests().size());
 
 
     }

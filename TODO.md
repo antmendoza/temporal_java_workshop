@@ -1,0 +1,1 @@
+- rename worker class by something else

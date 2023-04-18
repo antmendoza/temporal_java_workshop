@@ -47,7 +47,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         transferStatus = TRANSFER_STATUS.INITIATED;
 
-        log.info("init transfer: " + transferRequest);
+        log.info("Init transfer: " + transferRequest);
 
         boolean needApproval = false;
 
@@ -89,7 +89,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         }
 
 
-        log.info("end transfer: " + transferRequest);
+        log.info("End transfer: " + transferRequest);
 
     }
 

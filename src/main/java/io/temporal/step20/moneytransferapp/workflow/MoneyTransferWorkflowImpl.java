@@ -44,7 +44,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     @Override
     public void transfer(TransferRequest transferRequest) {
 
-        log.info("init transfer: " + transferRequest);
+        log.info("Init transfer: " + transferRequest);
 
         boolean needApproval = false;
 
@@ -79,7 +79,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         }
 
 
-        log.info("end transfer: " + transferRequest);
+        log.info("End transfer: " + transferRequest);
 
     }
 

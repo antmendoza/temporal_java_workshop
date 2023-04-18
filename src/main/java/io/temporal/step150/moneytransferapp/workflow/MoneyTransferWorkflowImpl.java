@@ -48,10 +48,10 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     public void transfer(TransferRequest transferRequest) {
 
 
-            log.info("init transfer: "+ transferRequest);
+            log.info("Init transfer: "+ transferRequest);
             accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
         accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-        log.info("end transfer: "+ transferRequest);
+        log.info("End transfer: "+ transferRequest);
 
     }
 }
