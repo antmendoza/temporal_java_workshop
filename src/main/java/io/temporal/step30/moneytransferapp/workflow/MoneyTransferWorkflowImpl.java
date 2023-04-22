@@ -26,80 +26,83 @@ import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
 import io.temporal.step30.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
-import org.slf4j.Logger;
-
 import java.time.Duration;
-
+import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-    public static final String TASK_QUEUE = "MoneyTransfer";
-    final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
-            .setStartToCloseTimeout(Duration.ofSeconds(3))
-            .setRetryOptions(RetryOptions.newBuilder().build())
-            .build());
-    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-    private TRANSFER_APPROVED transferApproved;
-    private TRANSFER_STATUS transferStatus = null;
-    @Override
-    public void transfer(TransferRequest transferRequest) {
+  public static final String TASK_QUEUE = "MoneyTransfer";
+  final AccountService accountService =
+      Workflow.newActivityStub(
+          AccountService.class,
+          ActivityOptions.newBuilder()
+              .setStartToCloseTimeout(Duration.ofSeconds(3))
+              .setRetryOptions(RetryOptions.newBuilder().build())
+              .build());
+  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
+  private TRANSFER_APPROVED transferApproved;
+  private TRANSFER_STATUS transferStatus = null;
 
+  @Override
+  public void transfer(TransferRequest transferRequest) {
 
-        transferStatus = TRANSFER_STATUS.INITIATED;
+    transferStatus = TRANSFER_STATUS.INITIATED;
 
-        log.info("Init transfer: " + transferRequest);
+    log.info("Init transfer: " + transferRequest);
 
-        boolean needApproval = false;
+    boolean needApproval = false;
 
-        if (transferRequest.amount() > 1000) {
-            transferStatus = TRANSFER_STATUS.WAITING_APPROVAL;
+    if (transferRequest.amount() > 1000) {
+      transferStatus = TRANSFER_STATUS.WAITING_APPROVAL;
 
+      needApproval = true;
+      log.info("request need approval: " + transferRequest);
 
-            needApproval = true;
-            log.info("request need approval: " + transferRequest);
+      // comment and uncomment the next block. Stop worker, start workflow, start worker and wait 10
+      // seconds
+      Workflow.await(() -> transferApproved != null);
+      /*
+                  boolean authorizationReceived = Workflow.await(Duration.ofSeconds(10),  () -> transferApproved != null);
+                  if(!authorizationReceived){
+                     log.info("authorization not received: ");
+                      return;
+                  }
+      */
 
-            //comment and uncomment the next block. Stop worker, start workflow, start worker and wait 10 seconds
-            Workflow.await(() -> transferApproved != null);
-/*
-            boolean authorizationReceived = Workflow.await(Duration.ofSeconds(10),  () -> transferApproved != null);
-            if(!authorizationReceived){
-               log.info("authorization not received: ");
-                return;
-            }
-*/
-
-            log.info("transferApproved: " + transferApproved);
-
-        }
-
-
-        if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
-            accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-            accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-
-            transferStatus = TRANSFER_STATUS.APPROVED;
-
-        }
-
-
-        if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
-            //notify customer...
-            log.info("notify customer, transferApproved: " + transferRequest);
-            transferStatus = TRANSFER_STATUS.DENIED;
-        }
-
-
-        log.info("End transfer: " + transferRequest);
-
+      log.info("transferApproved: " + transferApproved);
     }
 
-    @Override
-    public void approveTransfer(TRANSFER_APPROVED transferApproved) {
-        this.transferApproved = transferApproved;
+    if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
+      accountService.withdraw(
+          new WithdrawRequest(
+              transferRequest.fromAccountId(),
+              transferRequest.referenceId(),
+              transferRequest.amount()));
+      accountService.deposit(
+          new DepositRequest(
+              transferRequest.toAccountId(),
+              transferRequest.referenceId(),
+              transferRequest.amount()));
+
+      transferStatus = TRANSFER_STATUS.APPROVED;
     }
 
-    @Override
-    public TRANSFER_STATUS queryStatus() {
-        return transferStatus;
+    if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
+      // notify customer...
+      log.info("notify customer, transferApproved: " + transferRequest);
+      transferStatus = TRANSFER_STATUS.DENIED;
     }
+
+    log.info("End transfer: " + transferRequest);
+  }
+
+  @Override
+  public void approveTransfer(TRANSFER_APPROVED transferApproved) {
+    this.transferApproved = transferApproved;
+  }
+
+  @Override
+  public TRANSFER_STATUS queryStatus() {
+    return transferStatus;
+  }
 }

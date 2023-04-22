@@ -23,7 +23,6 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.services.BankingClient;
-import io.temporal.step150.moneytransferapp.MyCustomDataConverter;
 import io.temporal.step150.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.step150.moneytransferapp.workflow.activity.AccountServiceImpl;
 import io.temporal.worker.WorkerFactory;
@@ -32,36 +31,37 @@ import io.temporal.worker.WorkerOptions;
 
 public class Worker {
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    // Get a Workflow service stub.
+    final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-        /*
-         * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
-         */
-        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions.newBuilder()
+    /*
+     * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
+     */
+    final WorkflowClient client =
+        WorkflowClient.newInstance(
+            service,
+            WorkflowClientOptions.newBuilder()
                 .setDataConverter(new MyCustomDataConverter())
                 .build());
 
-        /*
-         * Define the workflow factory. It is used to create workflow workers for a specific task queue.
-         */
-        WorkerFactory factory = WorkerFactory.newInstance(client, WorkerFactoryOptions.newBuilder()
-                .build());
+    /*
+     * Define the workflow factory. It is used to create workflow workers for a specific task queue.
+     */
+    WorkerFactory factory =
+        WorkerFactory.newInstance(client, WorkerFactoryOptions.newBuilder().build());
 
-        /*
-         * Define the workflow worker. Workflow workers listen to a defined task queue and process
-         * workflows and activities.
-         */
-        io.temporal.worker.Worker worker = factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder()
-                .build());
+    /*
+     * Define the workflow worker. Workflow workers listen to a defined task queue and process
+     * workflows and activities.
+     */
+    io.temporal.worker.Worker worker =
+        factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder().build());
 
-        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
-        worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
+    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+    worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
 
-        factory.start();
-
-    }
-
+    factory.start();
+  }
 }

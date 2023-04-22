@@ -17,33 +17,19 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step1.moneytransferapp.workflow.activity;
+package io.temporal.step5.moneytransferapp.workflow.activity;
 
-import io.temporal.services.BankingClient;
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
 
-public class AccountServiceImpl implements AccountService {
+@ActivityInterface
+public interface AccountService {
 
-    private final BankingClient bankingClient;
+  @ActivityMethod
+  void deposit(DepositRequest depositRequest);
 
-    public AccountServiceImpl(BankingClient bankingClient) {
-        this.bankingClient = bankingClient;
-    }
-
-
-    @Override
-    public void withdraw(WithdrawRequest withdrawRequest) {
-        this.bankingClient.withdraw(withdrawRequest);
-    }
-
-    @Override
-    public void deposit(DepositRequest depositRequest) {
-        this.bankingClient.deposit(depositRequest);
-
-        //throw new RuntimeException("something is wrong...");
-
-    }
-
-
+  @ActivityMethod
+  void withdraw(WithdrawRequest withdrawRequest);
 }

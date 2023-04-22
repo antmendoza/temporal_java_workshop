@@ -19,30 +19,26 @@
 
 package io.temporal.services;
 
-import java.util.Random;
-
 public class BankingClient {
 
+  public void withdraw(WithdrawRequest withdrawRequest) {
+    System.out.println("Withdraw init: " + withdrawRequest);
+    randomSleep();
+    System.out.println("Withdraw end: " + withdrawRequest);
+  }
 
-    public void withdraw(WithdrawRequest withdrawRequest) {
-        System.out.println("Withdraw init: " + withdrawRequest);
-        randomSleep();
-        System.out.println("Withdraw end: " + withdrawRequest);
+  public void deposit(DepositRequest depositRequest) {
+    System.out.println("Deposit init: " + depositRequest);
+    randomSleep();
+    System.out.println("Deposit end: " + depositRequest);
+  }
+
+  private static void randomSleep() {
+    try {
+      long millis = (long) (Math.random() * 1500);
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
-
-    public void deposit(DepositRequest depositRequest) {
-        System.out.println("Deposit init: " + depositRequest);
-        randomSleep();
-        System.out.println("Deposit end: " + depositRequest);
-    }
-
-
-    private static void randomSleep() {
-        try {
-            long millis = (long) (Math.random() * 1500);
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  }
 }

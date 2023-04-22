@@ -27,40 +27,33 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step150.moneytransferapp.workflow.MoneyTransferWorkflow;
 import io.temporal.step150.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 
-
 public class ClientStartRequest {
 
-    static final String MY_BUSINESS_ID = ClientStartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID =
+      ClientStartRequest.class.getPackageName() + ":money-transfer";
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    // Get a Workflow service stub.
+    final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions.newBuilder()
+    final WorkflowClient client =
+        WorkflowClient.newInstance(
+            service,
+            WorkflowClientOptions.newBuilder()
                 .setDataConverter(new MyCustomDataConverter())
                 .build());
 
+    // Create the workflow client stub. It is used to start our workflow execution.
+    final WorkflowOptions build =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId(MY_BUSINESS_ID)
+            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
+            .build();
 
-        // Create the workflow client stub. It is used to start our workflow execution.
-        final WorkflowOptions build = WorkflowOptions.newBuilder()
-                .setWorkflowId(MY_BUSINESS_ID)
-                .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
-                .build();
+    final MoneyTransferWorkflow workflow =
+        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-
-        final MoneyTransferWorkflow workflow =
-                client.newWorkflowStub(
-                        MoneyTransferWorkflow.class,
-                        build);
-
-
-        workflow.transfer(
-                new TransferRequest(
-                        "fromAccount", "toAccount",
-                        "referenceId", 200));
-
-
-    }
-
+    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 200));
+  }
 }

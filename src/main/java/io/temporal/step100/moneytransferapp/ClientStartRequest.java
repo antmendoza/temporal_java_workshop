@@ -22,58 +22,50 @@ package io.temporal.step100.moneytransferapp;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
+import io.temporal.model.TransferRequests;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step100.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.model.TransferRequests;
 import io.temporal.step100.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
 public class ClientStartRequest {
 
-     static final String MY_BUSINESS_ID = ClientStartRequest.class.getPackageName()+":money-transfer";
+  static final String MY_BUSINESS_ID =
+      ClientStartRequest.class.getPackageName() + ":money-transfer";
 
+  public static void main(String[] args) {
 
-    public static void main(String[] args) {
+    int numRequest = 100;
+    startTransfer(numRequest);
+  }
 
-        int numRequest = 100;
-        startTransfer(numRequest);
+  public static void startTransfer(int numRequest) {
 
-    }
+    // Get a Workflow service stub.
+    final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-    public static void startTransfer(int numRequest) {
+    final WorkflowClient client = WorkflowClient.newInstance(service);
 
-        // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    // Create the workflow client stub. It is used to start our workflow execution.
+    final WorkflowOptions build =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId(MY_BUSINESS_ID)
+            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
+            .build();
 
-        final WorkflowClient client = WorkflowClient.newInstance(service);
+    final MoneyTransferWorkflow workflow =
+        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-        // Create the workflow client stub. It is used to start our workflow execution.
-        final WorkflowOptions build = WorkflowOptions.newBuilder()
-                .setWorkflowId(MY_BUSINESS_ID)
-                .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
-                .build();
+    final List request =
+        IntStream.range(0, numRequest)
+            .mapToObj(
+                i ->
+                    new TransferRequest(
+                        "fromAccount-" + i, "toAccount-" + i, "referenceId-" + i, 200 + i))
+            .collect(Collectors.toList());
 
-
-        final MoneyTransferWorkflow workflow =
-                client.newWorkflowStub(
-                        MoneyTransferWorkflow.class,
-                        build);
-
-
-        final List request = IntStream.range(0, numRequest)
-                .mapToObj(i ->
-                        new TransferRequest("fromAccount-" + i,
-                                "toAccount-" + i,
-                                "referenceId-" + i,
-                                200 + i))
-                .collect(Collectors.toList());
-
-
-        workflow.transfer(new TransferRequests(request));
-    }
-
+    workflow.transfer(new TransferRequests(request));
+  }
 }

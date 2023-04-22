@@ -17,24 +17,21 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step150.moneytransferapp.workflow;
+package io.temporal.step5.moneytransferapp.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
-import io.temporal.step150.moneytransferapp.workflow.activity.AccountService;
+import io.temporal.step5.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-
   public static final String TASK_QUEUE = "MoneyTransfer";
-
   final AccountService accountService =
       Workflow.newActivityStub(
           AccountService.class,
@@ -42,21 +39,30 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
               .setStartToCloseTimeout(Duration.ofSeconds(3))
               .setRetryOptions(RetryOptions.newBuilder().build())
               .build());
+  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
   @Override
   public void transfer(TransferRequest transferRequest) {
-
     log.info("Init transfer: " + transferRequest);
+
+    double amount = transferRequest.amount();
     accountService.withdraw(
         new WithdrawRequest(
-            transferRequest.fromAccountId(),
-            transferRequest.referenceId(),
-            transferRequest.amount()));
+            transferRequest.fromAccountId(), transferRequest.referenceId(), amount));
+    if (amount > 20) {
+      // This does not make any sense, the purpose is to demostrate how, in presence of failure,
+      // Temporal recovers the execution state and continue from the point the execution stopped
+      String a = null;
+      String b = a.toString();
+    }
     accountService.deposit(
-        new DepositRequest(
-            transferRequest.toAccountId(),
-            transferRequest.referenceId(),
-            transferRequest.amount()));
+        new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), amount));
+
     log.info("End transfer: " + transferRequest);
+  }
+
+  public static void main(String[] args) {
+
+    double commision = 5.3 / 0; // Introducing an error at runtime to demostrate
   }
 }

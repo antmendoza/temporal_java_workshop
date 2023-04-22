@@ -19,28 +19,24 @@
 
 package io.temporal.step30.moneytransferapp.workflow.activity;
 
-import io.temporal.services.BankingClient;
 import io.temporal.services.*;
+import io.temporal.services.BankingClient;
+
 public class AccountServiceImpl implements AccountService {
 
-    private final BankingClient bankingClient;
+  private final BankingClient bankingClient;
 
-    public AccountServiceImpl(BankingClient bankingClient) {
-        this.bankingClient = bankingClient;
-    }
+  public AccountServiceImpl(BankingClient bankingClient) {
+    this.bankingClient = bankingClient;
+  }
 
+  @Override
+  public void withdraw(WithdrawRequest withdrawRequest) {
+    this.bankingClient.withdraw(withdrawRequest);
+  }
 
-    @Override
-    public void withdraw(WithdrawRequest withdrawRequest) {
-        this.bankingClient.withdraw(withdrawRequest);
-    }
-
-    @Override
-    public void deposit(DepositRequest depositRequest) {
-        this.bankingClient.deposit(depositRequest);
-
-
-    }
-
-
+  @Override
+  public void deposit(DepositRequest depositRequest) {
+    this.bankingClient.deposit(depositRequest);
+  }
 }

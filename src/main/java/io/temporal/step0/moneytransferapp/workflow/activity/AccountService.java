@@ -27,10 +27,9 @@ import io.temporal.services.WithdrawRequest;
 @ActivityInterface
 public interface AccountService {
 
+  @ActivityMethod
+  void deposit(DepositRequest depositRequest);
 
-    @ActivityMethod
-    void deposit(DepositRequest depositRequest);
-
-    @ActivityMethod
-    void withdraw(WithdrawRequest withdrawRequest);
+  @ActivityMethod
+  void withdraw(WithdrawRequest withdrawRequest);
 }

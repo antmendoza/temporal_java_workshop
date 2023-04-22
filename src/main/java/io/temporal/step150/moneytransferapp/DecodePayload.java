@@ -8,29 +8,34 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 
 public class DecodePayload {
 
+  public static void main(String[] args) {
 
-    public static void main(String[] args) {
+    // Get a Workflow service stub.
+    final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-        // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    final GetWorkflowExecutionHistoryRequest req =
+        GetWorkflowExecutionHistoryRequest.newBuilder()
+            .setExecution(
+                WorkflowExecution.newBuilder()
+                    .setWorkflowId(ClientStartRequest.MY_BUSINESS_ID)
+                    .build())
+            .setNamespace("default")
+            .build();
 
+    final GetWorkflowExecutionHistoryResponse res =
+        service.blockingStub().getWorkflowExecutionHistory(req);
 
-        final GetWorkflowExecutionHistoryRequest req = GetWorkflowExecutionHistoryRequest.newBuilder()
-                .setExecution(WorkflowExecution.newBuilder().setWorkflowId(ClientStartRequest.MY_BUSINESS_ID).build())
-                .setNamespace("default").build();
-
-
-        final GetWorkflowExecutionHistoryResponse res =
-                service.blockingStub().getWorkflowExecutionHistory(req);
-
-
-        res.getHistory().getEvents(0).getWorkflowExecutionStartedEventAttributes().getInput().getPayloadsList()
-                .forEach(payload -> {
-                    System.out.println("Payload: " + new MyCustomDataConverter().fromPayload(payload,
-                            TransferRequest.class, TransferRequest.class));
-
-                });
-
-
-    }
+    res.getHistory()
+        .getEvents(0)
+        .getWorkflowExecutionStartedEventAttributes()
+        .getInput()
+        .getPayloadsList()
+        .forEach(
+            payload -> {
+              System.out.println(
+                  "Payload: "
+                      + new MyCustomDataConverter()
+                          .fromPayload(payload, TransferRequest.class, TransferRequest.class));
+            });
+  }
 }

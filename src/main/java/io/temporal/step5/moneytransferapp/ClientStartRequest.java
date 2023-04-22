@@ -17,14 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step0.moneytransferapp;
+package io.temporal.step5.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step0.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step0.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.step5.moneytransferapp.workflow.MoneyTransferWorkflow;
+import io.temporal.step5.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 
 public class ClientStartRequest {
 
@@ -39,15 +39,17 @@ public class ClientStartRequest {
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
     // Create the workflow client stub. It is used to start our workflow execution.
-    final WorkflowOptions options =
+    final WorkflowOptions build =
         WorkflowOptions.newBuilder()
             .setWorkflowId(MY_BUSINESS_ID)
             .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
             .build();
 
     final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 200));
+    TransferRequest transferRequest =
+        new TransferRequest("fromAccount", "toAccount", "referenceId", 200);
+    workflow.transfer(transferRequest);
   }
 }

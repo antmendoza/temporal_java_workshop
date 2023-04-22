@@ -17,14 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step100.moneytransferapp;
+package io.temporal.step5.moneytransferapp;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.services.BankingClient;
-import io.temporal.step100.moneytransferapp.workflow.MoneyTransferChildWorkflowImpl;
-import io.temporal.step100.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.step100.moneytransferapp.workflow.activity.AccountServiceImpl;
+import io.temporal.step5.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.step5.moneytransferapp.workflow.activity.AccountServiceImpl;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
@@ -54,8 +53,7 @@ public class Worker {
     io.temporal.worker.Worker worker =
         factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder().build());
 
-    worker.registerWorkflowImplementationTypes(
-        MoneyTransferWorkflowImpl.class, MoneyTransferChildWorkflowImpl.class);
+    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
     worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
 
     factory.start();

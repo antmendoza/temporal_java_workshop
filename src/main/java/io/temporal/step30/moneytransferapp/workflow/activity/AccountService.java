@@ -22,13 +22,13 @@ package io.temporal.step30.moneytransferapp.workflow.activity;
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 import io.temporal.services.*;
+
 @ActivityInterface
 public interface AccountService {
 
+  @ActivityMethod
+  void deposit(DepositRequest depositRequest);
 
-    @ActivityMethod
-    void deposit(DepositRequest depositRequest);
-
-    @ActivityMethod
-    void withdraw(WithdrawRequest withdrawRequest);
+  @ActivityMethod
+  void withdraw(WithdrawRequest withdrawRequest);
 }

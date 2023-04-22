@@ -22,36 +22,42 @@ package io.temporal.step10.moneytransferapp.workflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
-import io.temporal.step10.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
+import io.temporal.step10.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
-import org.slf4j.Logger;
-
 import java.time.Duration;
-
+import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
+  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
-    public static final String TASK_QUEUE = "MoneyTransfer";
+  public static final String TASK_QUEUE = "MoneyTransfer";
 
-    final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
-            .setStartToCloseTimeout(Duration.ofSeconds(3))
-            .setRetryOptions(RetryOptions.newBuilder().build())
-            .build());
+  final AccountService accountService =
+      Workflow.newActivityStub(
+          AccountService.class,
+          ActivityOptions.newBuilder()
+              .setStartToCloseTimeout(Duration.ofSeconds(3))
+              .setRetryOptions(RetryOptions.newBuilder().build())
+              .build());
 
+  @Override
+  public void transfer(TransferRequest transferRequest) {
+    log.info("Init transfer: " + transferRequest);
 
+    accountService.withdraw(
+        new WithdrawRequest(
+            transferRequest.fromAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
+    accountService.deposit(
+        new DepositRequest(
+            transferRequest.toAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
 
-    @Override
-    public void transfer(TransferRequest transferRequest) {
-        log.info("Init transfer: "+ transferRequest);
-
-        accountService.withdraw(new WithdrawRequest(transferRequest.fromAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-        accountService.deposit(new DepositRequest(transferRequest.toAccountId(), transferRequest.referenceId(), transferRequest.amount()));
-
-        log.info("End transfer: "+ transferRequest);
-
-    }
+    log.info("End transfer: " + transferRequest);
+  }
 }

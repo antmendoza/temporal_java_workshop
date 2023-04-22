@@ -25,17 +25,16 @@ import io.temporal.common.converter.DataConverterException;
 import io.temporal.common.converter.EncodingKeys;
 import io.temporal.payload.codec.PayloadCodec;
 import io.temporal.payload.codec.PayloadCodecException;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class CryptCodec implements PayloadCodec {
 

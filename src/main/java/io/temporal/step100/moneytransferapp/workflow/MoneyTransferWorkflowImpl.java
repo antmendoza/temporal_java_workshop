@@ -27,42 +27,45 @@ import io.temporal.workflow.Async;
 import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
-import org.slf4j.Logger;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-    private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
+  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
-    public static final String TASK_QUEUE = "MoneyTransfer";
+  public static final String TASK_QUEUE = "MoneyTransfer";
 
-    private final AccountService accountService = Workflow.newActivityStub(AccountService.class, ActivityOptions.newBuilder()
-            .setStartToCloseTimeout(Duration.ofSeconds(3))
-            .setRetryOptions(RetryOptions.newBuilder().build())
-            .build());
+  private final AccountService accountService =
+      Workflow.newActivityStub(
+          AccountService.class,
+          ActivityOptions.newBuilder()
+              .setStartToCloseTimeout(Duration.ofSeconds(3))
+              .setRetryOptions(RetryOptions.newBuilder().build())
+              .build());
 
+  @Override
+  public void transfer(TransferRequests transferRequests) {
+    log.info("Init transfer size: " + transferRequests.transferRequests().size());
 
+    final List<Promise<Void>> promises = new ArrayList<>();
 
-    @Override
-    public void transfer(TransferRequests transferRequests) {
-        log.info("Init transfer size: "+ transferRequests.transferRequests().size());
+    transferRequests
+        .transferRequests()
+        .forEach(
+            request -> {
+              String childWFId =
+                  "transfer:: _" + request.fromAccountId() + "_" + request.toAccountId();
+              final MoneyTransferChildWorkflow child =
+                  Workflow.newChildWorkflowStub(
+                      MoneyTransferChildWorkflow.class,
+                      ChildWorkflowOptions.newBuilder().setWorkflowId(childWFId).build());
+              promises.add(Async.procedure(child::transfer, request));
+            });
 
-        final List<Promise<Void>> promises = new ArrayList<>();
-
-        transferRequests.transferRequests().forEach(request -> {
-            String childWFId = "transfer:: _"+request.fromAccountId()+"_"+request.toAccountId();
-            final MoneyTransferChildWorkflow child = Workflow.newChildWorkflowStub(MoneyTransferChildWorkflow.class,
-                ChildWorkflowOptions.newBuilder().setWorkflowId(childWFId).build());
-            promises.add(Async.procedure(child::transfer, request));
-        });
-
-        Promise.allOf(promises).get();
-        log.info("End transfer size: "+ transferRequests.transferRequests().size());
-
-
-    }
+    Promise.allOf(promises).get();
+    log.info("End transfer size: " + transferRequests.transferRequests().size());
+  }
 }

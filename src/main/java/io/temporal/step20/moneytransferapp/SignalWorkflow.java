@@ -23,28 +23,26 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.step20.moneytransferapp.workflow.MoneyTransferWorkflow;
 import io.temporal.step20.moneytransferapp.workflow.TRANSFER_APPROVED;
-
 import java.util.Optional;
-
 
 public class SignalWorkflow {
 
+  public static void main(String[] args) {
+    signalWorkflow(TRANSFER_APPROVED.YES);
+  }
 
-    public static void main(String[] args) {
-        signalWorkflow(TRANSFER_APPROVED.YES);
-    }
+  public static void signalWorkflow(TRANSFER_APPROVED yes) {
+    // Get a Workflow service stub.
+    final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-    public static void signalWorkflow(TRANSFER_APPROVED yes) {
-        // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    final WorkflowClient client = WorkflowClient.newInstance(service);
 
-        final WorkflowClient client = WorkflowClient.newInstance(service);
+    final MoneyTransferWorkflow workflowStub =
+        client.newWorkflowStub(
+            MoneyTransferWorkflow.class, ClientStartRequest.MY_BUSINESS_ID, Optional.empty());
+    workflowStub.approveTransfer(yes);
 
-        final MoneyTransferWorkflow workflowStub = client.newWorkflowStub(MoneyTransferWorkflow.class, ClientStartRequest.MY_BUSINESS_ID, Optional.empty());
-        workflowStub.approveTransfer(yes);
-
-        // newUntypedWorkflowStub
-        //TODO
-    }
-
+    // newUntypedWorkflowStub
+    // TODO
+  }
 }

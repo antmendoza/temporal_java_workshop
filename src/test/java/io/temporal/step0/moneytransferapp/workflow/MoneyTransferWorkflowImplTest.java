@@ -19,6 +19,9 @@
 
 package io.temporal.step0.moneytransferapp.workflow;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+
 import io.temporal.activity.Activity;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
@@ -38,132 +41,115 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-
 public class MoneyTransferWorkflowImplTest {
 
-    private final String myWorkflow = "myWorkflow";
+  private final String myWorkflow = "myWorkflow";
 
+  @Rule
+  public TestWorkflowRule testWorkflowRule =
+      TestWorkflowRule.newBuilder().setDoNotStart(true).build();
 
-    @Rule
-    public TestWorkflowRule testWorkflowRule =
-            TestWorkflowRule.newBuilder()
-                    .setDoNotStart(true)
-                    .build();
+  @Test
+  public void testTransfer() {
 
+    AccountService accountService = Mockito.mock(AccountServiceImpl.class);
 
-    @Test
-    public void testTransfer() {
+    Worker worker = testWorkflowRule.getWorker();
+    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+    worker.registerActivitiesImplementations(accountService);
 
+    // Start server
+    testWorkflowRule.getTestEnvironment().start();
 
-        AccountService accountService = Mockito.mock(AccountServiceImpl.class);
+    final WorkflowOptions options =
+        WorkflowOptions.newBuilder().setTaskQueue(testWorkflowRule.getTaskQueue()).build();
 
+    final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
 
-        Worker worker = testWorkflowRule.getWorker();
-        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
-        worker.registerActivitiesImplementations(accountService);
+    ///////////
 
+    final MoneyTransferWorkflow workflow =
+        workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
-        // Start server
-        testWorkflowRule.getTestEnvironment().start();
+    // Start workflow
+    TransferRequest transferRequest =
+        new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
 
+    workflow.transfer(transferRequest);
 
-        final WorkflowOptions options = WorkflowOptions.newBuilder()
-                .setTaskQueue(testWorkflowRule.getTaskQueue())
-                .build();
+    /////////////
 
-        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+  }
 
-        ///////////
+  @Test
+  public void testRetryAndSuccess() {
 
+    AccountService accountService = Mockito.mock(AccountServiceImpl.class);
+    doThrow(RuntimeException.class).when(accountService).deposit(any());
 
-        final MoneyTransferWorkflow workflow = workflowClient
-                .newWorkflowStub(MoneyTransferWorkflow.class, options);
-
-
-        //Start workflow
-        TransferRequest transferRequest = new TransferRequest("fromAccount",
-                "toAccount",
-                "reference1",
-                1.23);
-
-        workflow.transfer(transferRequest);
-
-
-        /////////////
-
-    }
-
-
-    @Test
-    public void testRetryAndSuccess() {
-
-        AccountService accountService = Mockito.mock(AccountServiceImpl.class);
-        doThrow(RuntimeException.class).when(accountService).deposit(any());
-
-        Worker worker = testWorkflowRule.getWorker();
-        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
-        worker.registerActivitiesImplementations(new AccountService() {
-            @Override
-            public void deposit(DepositRequest depositRequest) {
-                int attends = Activity.getExecutionContext().getInfo().getAttempt();
-                if (attends <= 2) {
-                    throw new NullPointerException("something is null");
-                }
+    Worker worker = testWorkflowRule.getWorker();
+    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+    worker.registerActivitiesImplementations(
+        new AccountService() {
+          @Override
+          public void deposit(DepositRequest depositRequest) {
+            int attends = Activity.getExecutionContext().getInfo().getAttempt();
+            if (attends <= 2) {
+              throw new NullPointerException("something is null");
             }
+          }
 
-            @Override
-            public void withdraw(WithdrawRequest withdrawRequest) {
-
-            }
+          @Override
+          public void withdraw(WithdrawRequest withdrawRequest) {}
         });
 
+    // Start server
+    testWorkflowRule.getTestEnvironment().start();
 
-        // Start server
-        testWorkflowRule.getTestEnvironment().start();
+    final WorkflowOptions options =
+        WorkflowOptions.newBuilder()
+            .setTaskQueue(testWorkflowRule.getTaskQueue())
+            .setWorkflowId(myWorkflow)
+            .build();
 
+    final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
 
-        final WorkflowOptions options = WorkflowOptions.newBuilder()
-                .setTaskQueue(testWorkflowRule.getTaskQueue())
-                .setWorkflowId(myWorkflow)
-                .build();
+    ///////////
 
-        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+    final MoneyTransferWorkflow workflow =
+        workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
-        ///////////
+    // Start workflow
+    TransferRequest transferRequest =
+        new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
 
+    workflow.transfer(transferRequest);
 
-        final MoneyTransferWorkflow workflow = workflowClient
-                .newWorkflowStub(MoneyTransferWorkflow.class, options);
+    DescribeWorkflowExecutionResponse describeResponse =
+        describeWorkflowExecutionResponse(WorkflowExecution.newBuilder().setWorkflowId(myWorkflow));
 
+    Assert.assertEquals(
+        describeResponse.getWorkflowExecutionInfo().getStatus(),
+        WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
-        //Start workflow
-        TransferRequest transferRequest = new TransferRequest("fromAccount",
-                "toAccount",
-                "reference1",
-                1.23);
+    /////////////
 
-        workflow.transfer(transferRequest);
+  }
 
-        DescribeWorkflowExecutionResponse describeResponse =
-                describeWorkflowExecutionResponse(WorkflowExecution.newBuilder().setWorkflowId(myWorkflow));
-
-        Assert.assertEquals(describeResponse.getWorkflowExecutionInfo().getStatus(), WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
-
-        /////////////
-
-    }
-
-
-    private DescribeWorkflowExecutionResponse describeWorkflowExecutionResponse(WorkflowExecution.Builder myWorkflow) {
-        String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
-        DescribeWorkflowExecutionResponse describeResponse = testWorkflowRule.getTestEnvironment().getWorkflowClient().getWorkflowServiceStubs().blockingStub()
-                .describeWorkflowExecution(DescribeWorkflowExecutionRequest.newBuilder().setNamespace(namespace)
-                        .setExecution(myWorkflow
-                                .build()).build());
-        return describeResponse;
-    }
-
-
+  private DescribeWorkflowExecutionResponse describeWorkflowExecutionResponse(
+      WorkflowExecution.Builder myWorkflow) {
+    String namespace = testWorkflowRule.getTestEnvironment().getNamespace();
+    DescribeWorkflowExecutionResponse describeResponse =
+        testWorkflowRule
+            .getTestEnvironment()
+            .getWorkflowClient()
+            .getWorkflowServiceStubs()
+            .blockingStub()
+            .describeWorkflowExecution(
+                DescribeWorkflowExecutionRequest.newBuilder()
+                    .setNamespace(namespace)
+                    .setExecution(myWorkflow.build())
+                    .build());
+    return describeResponse;
+  }
 }
