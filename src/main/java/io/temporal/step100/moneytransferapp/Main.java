@@ -9,14 +9,14 @@ public class Main {
     // worker
     CompletableFuture.runAsync(
         () -> {
-          Worker.main(args);
+          WorkerProcess.main(args);
         });
 
     // start workflow
     CompletableFuture.runAsync(
         () -> {
           int numRequest = 10;
-          ClientStartRequest.startTransfer(numRequest);
+          StartRequest.startTransfer(numRequest);
         });
 
     // start workflow

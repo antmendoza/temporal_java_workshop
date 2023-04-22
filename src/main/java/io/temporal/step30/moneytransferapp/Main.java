@@ -10,13 +10,13 @@ public class Main {
     // worker
     CompletableFuture.runAsync(
         () -> {
-          Worker.main(args);
+          WorkerProcess.main(args);
         });
 
     // start workflow
     CompletableFuture.runAsync(
         () -> {
-          ClientStartRequest.main(args);
+          StartRequest.main(args);
         });
     waitMillis(1000);
 

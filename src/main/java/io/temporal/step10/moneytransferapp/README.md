@@ -2,7 +2,7 @@
 
 
 ## Start workflow
-`mvn compile exec:java -Dexec.mainClass="io.temporal.step100.moneytransferapp.ClientStartRequest"`
+`mvn compile exec:java -Dexec.mainClass="io.temporal.step100.moneytransferapp.StartRequest"`
 
 
 ## Start worker

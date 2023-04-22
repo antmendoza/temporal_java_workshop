@@ -39,7 +39,7 @@ public class SignalWorkflow {
 
     final MoneyTransferWorkflow workflowStub =
         client.newWorkflowStub(
-            MoneyTransferWorkflow.class, ClientStartRequest.MY_BUSINESS_ID, Optional.empty());
+            MoneyTransferWorkflow.class, StartRequest.MY_BUSINESS_ID, Optional.empty());
     workflowStub.approveTransfer(yes);
 
     // newUntypedWorkflowStub

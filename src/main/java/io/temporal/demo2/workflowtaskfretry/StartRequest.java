@@ -17,33 +17,38 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step30.moneytransferapp;
-
-import static io.temporal.step30.moneytransferapp.StartRequest.MY_BUSINESS_ID;
+package io.temporal.demo2.workflowtaskfretry;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowOptions;
+import io.temporal.demo2.workflowtaskfretry.workflow.MoneyTransferWorkflow;
+import io.temporal.demo2.workflowtaskfretry.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step30.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step30.moneytransferapp.workflow.TRANSFER_APPROVED;
-import java.util.Optional;
 
-public class SignalWorkflow {
+public class StartRequest {
+
+  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
-    signalWorkflow(TRANSFER_APPROVED.YES);
-  }
 
-  public static void signalWorkflow(TRANSFER_APPROVED yes) {
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    final MoneyTransferWorkflow workflowStub =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, MY_BUSINESS_ID, Optional.empty());
-    workflowStub.approveTransfer(yes);
+    // Create the workflow client stub. It is used to start our workflow execution.
+    final WorkflowOptions build =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId(MY_BUSINESS_ID)
+            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
+            .build();
 
-    // newUntypedWorkflowStub
-    // TODO
+    final MoneyTransferWorkflow workflow =
+        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
+
+    TransferRequest transferRequest =
+        new TransferRequest("fromAccount", "toAccount", "referenceId", 200);
+    workflow.transfer(transferRequest);
   }
 }

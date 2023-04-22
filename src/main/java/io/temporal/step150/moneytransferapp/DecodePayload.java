@@ -16,9 +16,7 @@ public class DecodePayload {
     final GetWorkflowExecutionHistoryRequest req =
         GetWorkflowExecutionHistoryRequest.newBuilder()
             .setExecution(
-                WorkflowExecution.newBuilder()
-                    .setWorkflowId(ClientStartRequest.MY_BUSINESS_ID)
-                    .build())
+                WorkflowExecution.newBuilder().setWorkflowId(StartRequest.MY_BUSINESS_ID).build())
             .setNamespace("default")
             .build();
 

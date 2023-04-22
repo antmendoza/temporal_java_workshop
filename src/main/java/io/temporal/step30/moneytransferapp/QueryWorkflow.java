@@ -35,7 +35,7 @@ public class QueryWorkflow {
 
     final MoneyTransferWorkflow workflowStub =
         client.newWorkflowStub(
-            MoneyTransferWorkflow.class, ClientStartRequest.MY_BUSINESS_ID, Optional.empty());
+            MoneyTransferWorkflow.class, StartRequest.MY_BUSINESS_ID, Optional.empty());
 
     while (true) {
       System.out.println("queryStatus result: " + workflowStub.queryStatus());
