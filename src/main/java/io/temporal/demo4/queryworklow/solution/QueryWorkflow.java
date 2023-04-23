@@ -17,18 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo3.signalworkflow.initial;
+package io.temporal.demo4.queryworklow.solution;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowOptions;
-import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflow;
-import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.model.TransferRequest;
+import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import java.util.Optional;
 
-public class StartRequest {
-
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+public class QueryWorkflow {
 
   public static void main(String[] args) {
 
@@ -37,16 +33,21 @@ public class StartRequest {
 
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    // Create the workflow client stub. It is used to start our workflow execution.
-    final WorkflowOptions build =
-        WorkflowOptions.newBuilder()
-            .setWorkflowId(MY_BUSINESS_ID)
-            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
-            .build();
+    final MoneyTransferWorkflow workflowStub =
+        client.newWorkflowStub(
+            MoneyTransferWorkflow.class, StartRequest.MY_BUSINESS_ID, Optional.empty());
 
-    final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
+    while (true) {
+      System.out.println("queryStatus result: " + workflowStub.queryStatus());
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
 
-    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 2000));
+    // newUntypedWorkflowStub
+    // TODO
+
   }
 }

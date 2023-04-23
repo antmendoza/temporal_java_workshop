@@ -17,36 +17,33 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo3.signalworkflow.initial;
+package io.temporal.demo4.queryworklow.solution;
+
+import static io.temporal.demo4.queryworklow.solution.StartRequest.MY_BUSINESS_ID;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowOptions;
-import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflow;
-import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.model.TransferRequest;
+import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflow;
+import io.temporal.demo4.queryworklow.solution.workflow.TRANSFER_APPROVED;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import java.util.Optional;
 
-public class StartRequest {
-
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+public class SignalWorkflow {
 
   public static void main(String[] args) {
+    signalWorkflow(TRANSFER_APPROVED.YES);
+  }
 
+  public static void signalWorkflow(TRANSFER_APPROVED yes) {
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    // Create the workflow client stub. It is used to start our workflow execution.
-    final WorkflowOptions build =
-        WorkflowOptions.newBuilder()
-            .setWorkflowId(MY_BUSINESS_ID)
-            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
-            .build();
+    final MoneyTransferWorkflow workflowStub =
+        client.newWorkflowStub(MoneyTransferWorkflow.class, MY_BUSINESS_ID, Optional.empty());
+    workflowStub.approveTransfer(yes);
 
-    final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
-
-    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 2000));
+    // newUntypedWorkflowStub
+    // TODO
   }
 }

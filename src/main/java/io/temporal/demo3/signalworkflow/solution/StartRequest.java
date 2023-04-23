@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo3.signalworkflow.initial;
+package io.temporal.demo3.signalworkflow.solution;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
