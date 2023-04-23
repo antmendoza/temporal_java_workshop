@@ -23,7 +23,7 @@ public class Main {
     // query workflow
     CompletableFuture.runAsync(
         () -> {
-         //query workflow
+          // query workflow
         });
     waitMillis(5000);
 

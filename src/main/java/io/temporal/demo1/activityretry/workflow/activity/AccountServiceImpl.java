@@ -46,16 +46,21 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public void deposit(DepositRequest depositRequest) {
     log.info("Init deposit : " + depositRequest);
-    simulateDownStreamServiceIsDownAndSuccess(4);
+
+    simulateServiceIsDownAndSuccessAfterNumIteractions(4);
+
     this.bankingClient.deposit(depositRequest);
-    log.info("Init deposit : " + depositRequest);
+    log.info("End deposit : " + depositRequest);
   }
 
-  private void simulateDownStreamServiceIsDownAndSuccess(int numIterationsBeforeSuccess) {
+  private void simulateServiceIsDownAndSuccessAfterNumIteractions(int numIterationsBeforeSuccess) {
 
     int attend = Activity.getExecutionContext().getInfo().getAttempt();
     if (attend <= numIterationsBeforeSuccess) {
-      throw new RuntimeException("Error: Can not reach service...");
+      String message = "Error: Can not reach service...attend " + attend;
+      throw new RuntimeException(message);
+      // throw ApplicationFailure.newFailure(message, "ServiceUnreachable");
+      // throw ApplicationFailure.newNonRetryableFailure(message,"ServiceUnreachable" );
     }
   }
 }

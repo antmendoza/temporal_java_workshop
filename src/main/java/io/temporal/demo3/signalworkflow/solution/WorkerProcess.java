@@ -30,6 +30,8 @@ import io.temporal.worker.WorkerOptions;
 
 public class WorkerProcess {
 
+  static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
+
   public static void main(String[] args) {
 
     // Get a Workflow service stub.
@@ -51,7 +53,7 @@ public class WorkerProcess {
      * workflows and activities.
      */
     io.temporal.worker.Worker worker =
-        factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder().build());
+        factory.newWorker(WorkerProcess.TASK_QUEUE, WorkerOptions.newBuilder().build());
 
     worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
     worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));

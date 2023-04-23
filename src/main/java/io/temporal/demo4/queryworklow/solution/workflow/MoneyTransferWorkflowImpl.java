@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-  public static final String TASK_QUEUE = "MoneyTransfer";
   final AccountService accountService =
       Workflow.newActivityStub(
           AccountService.class,

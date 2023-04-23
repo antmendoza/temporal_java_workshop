@@ -19,10 +19,11 @@
 
 package io.temporal.demo1.activityretry;
 
+import static io.temporal.demo1.activityretry.WorkerProcess.TASK_QUEUE;
+
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.demo1.activityretry.workflow.MoneyTransferWorkflow;
-import io.temporal.demo1.activityretry.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
@@ -40,7 +41,7 @@ public class StartRequest {
     final WorkflowOptions options =
         WorkflowOptions.newBuilder()
             .setWorkflowId(MY_BUSINESS_ID)
-            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
+            .setTaskQueue(TASK_QUEUE)
             // .setWorkflowRunTimeout(Duration.ofDays(2))
             .build();
 

@@ -1,9 +1,13 @@
 # Query
 
 
+Exercise: Modify code, in io.temporal.demo4.queryworklow.initial, introduce a method that returns the authorization status
+
 ### [Query](https://docs.temporal.io/application-development/features?lang=java#queries)
 
 ### [Workflow implementation](https://docs.temporal.io/application-development/features?lang=java#handle-query)
+
+- Modify MoneyTransferWorkflow.java (to declare query method @QueryMethod) and MoneyTransferWorkflowImpl.java to implement it.
 
 ### [Client implementation](https://docs.temporal.io/application-development/features?lang=java#send-query)
 

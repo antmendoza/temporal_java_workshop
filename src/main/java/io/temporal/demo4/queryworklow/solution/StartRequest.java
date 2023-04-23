@@ -22,7 +22,6 @@ package io.temporal.demo4.queryworklow.solution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflow;
-import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
@@ -41,7 +40,7 @@ public class StartRequest {
     final WorkflowOptions build =
         WorkflowOptions.newBuilder()
             .setWorkflowId(MY_BUSINESS_ID)
-            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
+            .setTaskQueue(WorkerProcess.TASK_QUEUE)
             .build();
 
     final MoneyTransferWorkflow workflow =

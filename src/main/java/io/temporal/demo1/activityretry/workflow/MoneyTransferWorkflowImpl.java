@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
-  public static final String TASK_QUEUE = "MoneyTransfer";
   final AccountService accountService =
       Workflow.newActivityStub(
           AccountService.class,
@@ -39,7 +38,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
               .setStartToCloseTimeout(Duration.ofSeconds(3))
               .setRetryOptions(
                   RetryOptions.newBuilder()
-                      .setBackoffCoefficient(1)
+                      // .setBackoffCoefficient(1)
                       .setMaximumAttempts(5)
                       .setMaximumInterval(Duration.ofSeconds(5))
                       .build())
@@ -56,6 +55,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             transferRequest.fromAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
+
+    // Exception
     accountService.deposit(
         new DepositRequest(
             transferRequest.toAccountId(),
