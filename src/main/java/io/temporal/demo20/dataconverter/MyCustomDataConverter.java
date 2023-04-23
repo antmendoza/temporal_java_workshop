@@ -1,8 +1,9 @@
-package io.temporal.step150.moneytransferapp;
+package io.temporal.demo20.dataconverter;
 
 import io.temporal.common.converter.CodecDataConverter;
 import io.temporal.common.converter.DefaultDataConverter;
-import io.temporal.step150.moneytransferapp.httpserver.CryptCodec;
+import io.temporal.demo20.dataconverter.httpserver.CryptCodec;
+
 import java.util.Collections;
 
 public class MyCustomDataConverter extends CodecDataConverter {

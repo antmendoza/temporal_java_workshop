@@ -17,14 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step150.moneytransferapp.workflow;
+package io.temporal.demo20.dataconverter.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
-import io.temporal.step150.moneytransferapp.workflow.activity.AccountService;
+import io.temporal.demo20.dataconverter.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;

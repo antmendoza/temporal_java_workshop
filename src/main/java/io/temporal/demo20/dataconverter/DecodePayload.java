@@ -1,4 +1,4 @@
-package io.temporal.step150.moneytransferapp;
+package io.temporal.demo20.dataconverter;
 
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.GetWorkflowExecutionHistoryRequest;

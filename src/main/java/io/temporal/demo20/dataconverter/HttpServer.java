@@ -1,7 +1,8 @@
-package io.temporal.step150.moneytransferapp;
+package io.temporal.demo20.dataconverter;
 
-import io.temporal.step150.moneytransferapp.httpserver.CryptCodec;
-import io.temporal.step150.moneytransferapp.httpserver.RDEHttpServer;
+import io.temporal.demo20.dataconverter.httpserver.CryptCodec;
+import io.temporal.demo20.dataconverter.httpserver.RDEHttpServer;
+
 import java.io.IOException;
 import java.util.Collections;
 
