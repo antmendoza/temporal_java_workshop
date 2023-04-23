@@ -18,7 +18,7 @@ public class Main {
         () -> {
           StartRequest.main(args);
         });
-    waitMillis(1000);
+    waitMillis(2000);
 
     // query workflow
     CompletableFuture.runAsync(
@@ -32,7 +32,7 @@ public class Main {
         () -> {
           SignalWorkflow.signalWorkflow(TRANSFER_APPROVED.YES);
         });
-    waitMillis(2000);
+    waitMillis(4000);
 
     System.exit(0);
   }

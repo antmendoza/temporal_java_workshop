@@ -47,16 +47,13 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     log.info("Init transfer: " + transferRequest);
 
-    boolean needApproval = false;
-
     if (transferRequest.amount() > 1000) {
 
-      needApproval = true;
       log.info("request need approval: " + transferRequest);
 
       Workflow.await(() -> transferApproved != null);
-      // comment the line above and uncomment the next block. Stop worker, start workflow, start
-      // worker and wait 10
+      // comment the line above and uncomment next block. Stop worker, start workflow, start
+      // worker and wait 10 seconds
       // seconds without sending any signal to workflow execution
 
       /*  Duration timeout = Duration.ofSeconds(2); // Can be days, years...
@@ -73,21 +70,20 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
       if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
         // notify customer...
         log.info("notify customer, transferApproved: " + transferRequest);
+        return;
       }
     }
 
-    if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
-      accountService.withdraw(
-          new WithdrawRequest(
-              transferRequest.fromAccountId(),
-              transferRequest.referenceId(),
-              transferRequest.amount()));
-      accountService.deposit(
-          new DepositRequest(
-              transferRequest.toAccountId(),
-              transferRequest.referenceId(),
-              transferRequest.amount()));
-    }
+    accountService.withdraw(
+        new WithdrawRequest(
+            transferRequest.fromAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
+    accountService.deposit(
+        new DepositRequest(
+            transferRequest.toAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
 
     log.info("End transfer: " + transferRequest);
   }

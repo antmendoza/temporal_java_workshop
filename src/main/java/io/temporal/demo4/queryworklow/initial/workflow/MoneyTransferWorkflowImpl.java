@@ -47,11 +47,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     log.info("Init transfer: " + transferRequest);
 
-    boolean needApproval = false;
-
     if (transferRequest.amount() > 1000) {
 
-      needApproval = true;
       log.info("request need approval: " + transferRequest);
 
       Workflow.await(() -> transferApproved != null);
@@ -61,21 +58,20 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
       if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
         // notify customer...
         log.info("notify customer, transferApproved: " + transferRequest);
+        return;
       }
     }
 
-    if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
-      accountService.withdraw(
-          new WithdrawRequest(
-              transferRequest.fromAccountId(),
-              transferRequest.referenceId(),
-              transferRequest.amount()));
-      accountService.deposit(
-          new DepositRequest(
-              transferRequest.toAccountId(),
-              transferRequest.referenceId(),
-              transferRequest.amount()));
-    }
+    accountService.withdraw(
+        new WithdrawRequest(
+            transferRequest.fromAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
+    accountService.deposit(
+        new DepositRequest(
+            transferRequest.toAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
 
     log.info("End transfer: " + transferRequest);
   }

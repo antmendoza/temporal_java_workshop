@@ -35,7 +35,7 @@ public class BankingClient {
 
   private static void randomSleep() {
     try {
-      long millis = (long) (Math.random() * 1500);
+      long millis = (long) (Math.random() * 1000);
       Thread.sleep(millis);
     } catch (InterruptedException e) {
       throw new RuntimeException(e);

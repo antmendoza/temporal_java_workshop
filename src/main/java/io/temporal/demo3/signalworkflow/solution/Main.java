@@ -22,7 +22,7 @@ public class Main {
     // signal workflow
     CompletableFuture.runAsync(
         () -> {
-          SignalWorkflow.signalWorkflow(TRANSFER_APPROVED.YES);
+          SignalWorkflow.signalWorkflow(TRANSFER_APPROVED.NO);
         });
     waitMillis(2000);
 
