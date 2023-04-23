@@ -1,6 +1,5 @@
-package io.temporal.demo4.queryworklow.initial;
+package io.temporal.demo10.childworkflow.solution.parallel;
 
-import io.temporal.demo4.queryworklow.initial.workflow.TRANSFER_APPROVED;
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
@@ -16,24 +15,17 @@ public class Main {
     // start workflow
     CompletableFuture.runAsync(
         () -> {
-          StartRequest.main(args);
+          int numRequest = 10;
+          StartRequest.startTransfer(numRequest);
         });
-    waitMillis(2000);
 
-    // query workflow
+    // start workflow
     CompletableFuture.runAsync(
         () -> {
-          // query workflow
+          ListCompletedWorkflows.main(args);
         });
+
     waitMillis(5000);
-
-    // signal workflow
-    CompletableFuture.runAsync(
-        () -> {
-          SignalWorkflow.signalWorkflow(TRANSFER_APPROVED.YES);
-        });
-    waitMillis(4000);
-
     System.exit(0);
   }
 

@@ -1,6 +1,5 @@
 package io.temporal.demo3.signalworkflow.initial;
 
-
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
@@ -22,7 +21,7 @@ public class Main {
     // signal workflow
     CompletableFuture.runAsync(
         () -> {
-          //signal workflow;
+          // signal workflow;
         });
     waitMillis(2000);
 
