@@ -7,6 +7,8 @@ public class TransferRequests {
 
   private List<TransferRequest> transferRequests;
 
+  public TransferRequests() {
+  }
   public TransferRequests(List<TransferRequest> transferRequests) {
     this.transferRequests = transferRequests;
   }
