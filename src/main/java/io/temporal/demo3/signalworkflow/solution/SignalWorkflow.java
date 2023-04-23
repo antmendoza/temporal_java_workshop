@@ -20,10 +20,13 @@
 package io.temporal.demo3.signalworkflow.solution;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowOptions;
 import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.demo3.signalworkflow.solution.workflow.TRANSFER_APPROVED;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import java.util.Optional;
+
+import static io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflowImpl.TASK_QUEUE;
 
 public class SignalWorkflow {
 
