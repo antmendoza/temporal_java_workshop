@@ -17,14 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step20.moneytransferapp;
+package io.temporal.demo3.signalworkflow.initial;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.demo3.signalworkflow.z_implemented.workflow.MoneyTransferWorkflow;
+import io.temporal.demo3.signalworkflow.z_implemented.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step20.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step20.moneytransferapp.workflow.MoneyTransferWorkflowImpl;
 
 public class StartRequest {
 

@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step20.moneytransferapp.workflow;
+package io.temporal.demo3.signalworkflow.z_implemented.workflow;
 
 import io.temporal.model.TransferRequest;
 import io.temporal.workflow.SignalMethod;

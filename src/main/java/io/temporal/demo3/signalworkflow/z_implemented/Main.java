@@ -1,6 +1,6 @@
-package io.temporal.step20.moneytransferapp;
+package io.temporal.demo3.signalworkflow.z_implemented;
 
-import io.temporal.step20.moneytransferapp.workflow.TRANSFER_APPROVED;
+import io.temporal.demo3.signalworkflow.z_implemented.workflow.TRANSFER_APPROVED;
 import java.util.concurrent.CompletableFuture;
 
 public class Main {
@@ -17,7 +17,7 @@ public class Main {
         () -> {
           StartRequest.main(args);
         });
-    waitMillis(2000);
+    waitMillis(3000);
 
     // signal workflow
     CompletableFuture.runAsync(

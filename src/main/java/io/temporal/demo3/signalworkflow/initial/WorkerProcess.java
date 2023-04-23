@@ -17,14 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo1.activityretry;
+package io.temporal.demo3.signalworkflow.initial;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.demo1.activityretry.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.demo1.activityretry.workflow.activity.AccountServiceImpl;
+import io.temporal.demo3.signalworkflow.initial.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.demo3.signalworkflow.initial.workflow.activity.AccountServiceImpl;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.services.BankingClient;
-import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
@@ -48,10 +47,10 @@ public class WorkerProcess {
         WorkerFactory.newInstance(client, WorkerFactoryOptions.newBuilder().build());
 
     /*
-     * Define the workflow worker.
-     * Workflow workers listen to a defined task queue and process workflows and activities.
+     * Define the workflow worker. Workflow workers listen to a defined task queue and process
+     * workflows and activities.
      */
-    Worker worker =
+    io.temporal.worker.Worker worker =
         factory.newWorker(MoneyTransferWorkflowImpl.TASK_QUEUE, WorkerOptions.newBuilder().build());
 
     worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);

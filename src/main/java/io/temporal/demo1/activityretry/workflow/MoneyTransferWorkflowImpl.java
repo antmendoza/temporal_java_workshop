@@ -21,10 +21,10 @@ package io.temporal.demo1.activityretry.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.demo1.activityretry.workflow.activity.AccountService;
 import io.temporal.model.TransferRequest;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
-import io.temporal.demo1.activityretry.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;

@@ -17,12 +17,12 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step20.moneytransferapp;
+package io.temporal.demo3.signalworkflow.z_implemented;
 
 import io.temporal.client.WorkflowClient;
+import io.temporal.demo3.signalworkflow.z_implemented.workflow.MoneyTransferWorkflow;
+import io.temporal.demo3.signalworkflow.z_implemented.workflow.TRANSFER_APPROVED;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import io.temporal.step20.moneytransferapp.workflow.MoneyTransferWorkflow;
-import io.temporal.step20.moneytransferapp.workflow.TRANSFER_APPROVED;
 import java.util.Optional;
 
 public class SignalWorkflow {
@@ -40,6 +40,7 @@ public class SignalWorkflow {
     final MoneyTransferWorkflow workflowStub =
         client.newWorkflowStub(
             MoneyTransferWorkflow.class, StartRequest.MY_BUSINESS_ID, Optional.empty());
+
     workflowStub.approveTransfer(yes);
 
     // newUntypedWorkflowStub

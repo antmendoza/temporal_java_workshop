@@ -17,18 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo1.activityretry.workflow.activity;
+package io.temporal.demo3.signalworkflow.initial.workflow.activity;
 
-import io.temporal.activity.Activity;
 import io.temporal.services.BankingClient;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
-import io.temporal.workflow.Workflow;
-import org.slf4j.Logger;
 
 public class AccountServiceImpl implements AccountService {
-
-  private final Logger log = Workflow.getLogger(AccountServiceImpl.class.getSimpleName());
 
   private final BankingClient bankingClient;
 
@@ -38,24 +33,11 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public void withdraw(WithdrawRequest withdrawRequest) {
-    log.info("Init withdraw : " + withdrawRequest);
     this.bankingClient.withdraw(withdrawRequest);
-    log.info("End withdraw : " + withdrawRequest);
   }
 
   @Override
   public void deposit(DepositRequest depositRequest) {
-    log.info("Init deposit : " + depositRequest);
-    simulateDownStreamServiceIsDownAndSuccess(4);
     this.bankingClient.deposit(depositRequest);
-    log.info("Init deposit : " + depositRequest);
-  }
-
-  private void simulateDownStreamServiceIsDownAndSuccess(int numIterationsBeforeSuccess) {
-
-    int attend = Activity.getExecutionContext().getInfo().getAttempt();
-    if (attend <= numIterationsBeforeSuccess) {
-      throw new RuntimeException("Error: Can not reach service...");
-    }
   }
 }

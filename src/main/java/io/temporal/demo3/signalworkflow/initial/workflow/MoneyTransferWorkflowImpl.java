@@ -17,11 +17,11 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo2.workflowtaskfretry.workflow;
+package io.temporal.demo3.signalworkflow.initial.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
-import io.temporal.demo2.workflowtaskfretry.workflow.activity.AccountService;
+import io.temporal.demo1.activityretry.workflow.activity.AccountService;
 import io.temporal.model.TransferRequest;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
@@ -37,33 +37,30 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
           AccountService.class,
           ActivityOptions.newBuilder()
               .setStartToCloseTimeout(Duration.ofSeconds(3))
-              .setRetryOptions(RetryOptions.newBuilder().build())
+              .setRetryOptions(
+                  RetryOptions.newBuilder()
+                      .setBackoffCoefficient(1)
+                      .setMaximumAttempts(5)
+                      .setMaximumInterval(Duration.ofSeconds(5))
+                      .build())
               .build());
+
   private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
   @Override
   public void transfer(TransferRequest transferRequest) {
     log.info("Init transfer: " + transferRequest);
 
-    double amount = transferRequest.amount();
     accountService.withdraw(
         new WithdrawRequest(
-            transferRequest.fromAccountId(), transferRequest.referenceId(), amount));
-
-    double depositAmount = amount;
-    if (amount > 20) {
-      // The purpose is to demostrate how, in presence of a runtime error,
-      // after fixing the code the workflow execution will continue from where the execution was
-      // stopped
-
-      // calculate fee
-      // TODO fix the code and restart WorkerProcess
-      // depositAmount = amount - amount * 0.1;
-      depositAmount = amount - (int) amount / 0;
-    }
+            transferRequest.fromAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
     accountService.deposit(
         new DepositRequest(
-            transferRequest.toAccountId(), transferRequest.referenceId(), depositAmount));
+            transferRequest.toAccountId(),
+            transferRequest.referenceId(),
+            transferRequest.amount()));
 
     log.info("End transfer: " + transferRequest);
   }

@@ -17,14 +17,14 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.step20.moneytransferapp.workflow;
+package io.temporal.demo3.signalworkflow.z_implemented.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.demo3.signalworkflow.z_implemented.workflow.activity.AccountService;
 import io.temporal.model.TransferRequest;
 import io.temporal.services.DepositRequest;
 import io.temporal.services.WithdrawRequest;
-import io.temporal.step20.moneytransferapp.workflow.activity.AccountService;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -54,17 +54,26 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
       needApproval = true;
       log.info("request need approval: " + transferRequest);
 
-      // comment and uncomment the next block. Stop worker, start workflow, start worker and wait 10
-      // seconds
-      Workflow.await(() -> transferApproved != null);
-      /*
-                  boolean authorizationReceived = Workflow.await(Duration.ofSeconds(10),  () -> transferApproved != null);
-                  if(!authorizationReceived){
-                     log.info("authorization not received: ");
-                      return;
-                  }
-      */
+       Workflow.await(() -> transferApproved != null);
+      // comment the line above and uncomment the next block. Stop worker, start workflow, start
+      // worker and wait 10
+      // seconds without sending any signal to workflow execution
+
+    /*  Duration timeout = Duration.ofSeconds(2); // Can be days or years...
+      boolean authorizationReceived = Workflow.await(timeout, () -> transferApproved != null);
+      if (!authorizationReceived) {
+        log.info("authorization not received within " + timeout);
+        return;
+      }*/
+
+      ///
+
       log.info("transferApproved: " + transferApproved);
+
+      if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
+        // notify customer...
+        log.info("notify customer, transferApproved: " + transferRequest);
+      }
     }
 
     if (!needApproval || transferApproved.equals(TRANSFER_APPROVED.YES)) {
@@ -78,11 +87,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
               transferRequest.toAccountId(),
               transferRequest.referenceId(),
               transferRequest.amount()));
-    }
-
-    if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
-      // notify customer...
-      log.info("notify customer, transferApproved: " + transferRequest);
     }
 
     log.info("End transfer: " + transferRequest);
