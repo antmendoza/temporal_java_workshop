@@ -1,0 +1,34 @@
+package io.temporal.demo_ticarum;
+
+import io.temporal.demo0.firstworkflow.solution1.StartRequest;
+import io.temporal.demo0.firstworkflow.solution1.WorkerProcess;
+import java.util.concurrent.CompletableFuture;
+
+public class Main {
+
+  public static void main(String[] args) {
+
+    // worker
+    CompletableFuture.runAsync(
+        () -> {
+          WorkerProcess.main(args);
+        });
+
+    // start workflow
+    CompletableFuture.runAsync(
+        () -> {
+          StartRequest.main(args);
+        });
+    waitMillis(2000);
+
+    System.exit(0);
+  }
+
+  private static void waitMillis(int millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+}
