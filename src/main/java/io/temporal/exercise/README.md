@@ -21,7 +21,9 @@ cancel we send a notification to the customer
 - retrieve the list of items available in the catalog
 - add/remote an item to the shopping car
 - retrieve the list of items added to the car
-- when the "user" chick "finish", sent and email with the list of purchased items
+- when the "user" click "finish" 
+  - sent and email to the user with the list of purchased items
+  - 
 
 ## food delivery
 
