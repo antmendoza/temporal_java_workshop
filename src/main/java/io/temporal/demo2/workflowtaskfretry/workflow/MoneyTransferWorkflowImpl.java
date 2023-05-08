@@ -22,8 +22,6 @@ package io.temporal.demo2.workflowtaskfretry.workflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.service.AccountService;
-import io.temporal.service.DepositRequest;
-import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -42,7 +40,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
     double amount = transferRequest.amount();
     accountService.withdraw(
-        new WithdrawRequest(
+        new AccountService.WithdrawRequest(
             transferRequest.fromAccountId(), transferRequest.referenceId(), amount));
 
     double depositAmount = amount;
@@ -57,7 +55,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
       depositAmount = amount - (int) amount / 0;
     }
     accountService.deposit(
-        new DepositRequest(
+        new AccountService.DepositRequest(
             transferRequest.toAccountId(), transferRequest.referenceId(), depositAmount));
 
     log.info("End transfer: " + transferRequest);

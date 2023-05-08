@@ -17,39 +17,38 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo20.dataconverter;
+package io.temporal.demo1.activityretry;
 
-import static io.temporal.demo20.dataconverter.WorkerProcess.TASK_QUEUE;
+import static io.temporal.demo1.activityretry.WorkerProcess.TASK_QUEUE;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.demo20.dataconverter.workflow.MoneyTransferWorkflow;
+import io.temporal.demo1.activityretry.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
-public class StartRequest {
+public class Starter {
 
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
 
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-    final WorkflowClient client =
-        WorkflowClient.newInstance(
-            service,
-            WorkflowClientOptions.newBuilder()
-                .setDataConverter(new MyCustomDataConverter())
-                .build());
+    final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    // Create the workflow client stub. It is used to start our workflow execution.
-    final WorkflowOptions build =
-        WorkflowOptions.newBuilder().setWorkflowId(MY_BUSINESS_ID).setTaskQueue(TASK_QUEUE).build();
+    final WorkflowOptions options =
+        WorkflowOptions.newBuilder()
+            .setWorkflowId(MY_BUSINESS_ID)
+            .setTaskQueue(TASK_QUEUE)
+            // .setWorkflowRunTimeout(Duration.ofDays(2))
+            .build();
 
+    // Create the workflow client stub.
+    // It is used to start our workflow execution.
     final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
+        client.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
     workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 200));
   }

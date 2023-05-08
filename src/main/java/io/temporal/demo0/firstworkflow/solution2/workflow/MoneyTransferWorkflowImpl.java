@@ -22,8 +22,6 @@ package io.temporal.demo0.firstworkflow.solution2.workflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.demo0.firstworkflow.solution2.workflow.activity.AccountService;
 import io.temporal.model.TransferRequest;
-import io.temporal.service.DepositRequest;
-import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -45,14 +43,14 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     log.info("Init transfer: " + transferRequest);
 
     accountService.withdraw(
-        new WithdrawRequest(
+        new io.temporal.service.AccountService.WithdrawRequest(
             transferRequest.fromAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
 
     // Exception
     accountService.deposit(
-        new DepositRequest(
+        new io.temporal.service.AccountService.DepositRequest(
             transferRequest.toAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));

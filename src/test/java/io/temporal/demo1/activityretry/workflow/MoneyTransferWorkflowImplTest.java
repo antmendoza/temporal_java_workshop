@@ -31,8 +31,6 @@ import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.service.AccountService;
 import io.temporal.service.AccountServiceImplRetry;
-import io.temporal.service.DepositRequest;
-import io.temporal.service.WithdrawRequest;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;
 import org.junit.After;

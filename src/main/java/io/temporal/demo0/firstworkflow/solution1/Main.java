@@ -15,7 +15,7 @@ public class Main {
     // start workflow
     CompletableFuture.runAsync(
         () -> {
-          StartRequest.main(args);
+          Starter.main(args);
         });
     waitMillis(2000);
 

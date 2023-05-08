@@ -6,7 +6,7 @@ The workflow code throws runtime error, once we fix the code and redeploy the wo
 ### Make sure Temporal Server is running locally
 - https://docs.temporal.io/application-development/foundations#run-a-development-server
 
-### run StartRequest.java (send request/start workflow)
+### run Starterjava (send request/start workflow)
 ### run WorkerProcess.java (worker executes our code)
 
 note runtime exceptions in console, your worker keep retrying

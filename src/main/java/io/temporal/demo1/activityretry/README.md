@@ -21,7 +21,7 @@ forth attend.
 - https://docs.temporal.io/application-development/foundations#run-a-development-server
 
 
-### run StartRequest.java (send request/start workflow)
+### run Starter.java (send request/start workflow)
 ### run WorkerProcess.java (worker executes our code)
 
 The activity will fail four times, after forth attend will success. 

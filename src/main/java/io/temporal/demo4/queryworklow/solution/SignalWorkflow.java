@@ -19,7 +19,7 @@
 
 package io.temporal.demo4.queryworklow.solution;
 
-import static io.temporal.demo4.queryworklow.solution.StartRequest.MY_BUSINESS_ID;
+import static io.temporal.demo4.queryworklow.solution.Starter.MY_BUSINESS_ID;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflow;

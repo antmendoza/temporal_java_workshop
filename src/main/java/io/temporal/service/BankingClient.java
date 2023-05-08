@@ -21,13 +21,13 @@ package io.temporal.service;
 
 public class BankingClient {
 
-  public void withdraw(WithdrawRequest withdrawRequest) {
+  public void withdraw(AccountService.WithdrawRequest withdrawRequest) {
     System.out.println("Withdraw init: " + withdrawRequest);
     randomSleep();
     System.out.println("Withdraw end: " + withdrawRequest);
   }
 
-  public void deposit(DepositRequest depositRequest) {
+  public void deposit(AccountService.DepositRequest depositRequest) {
     System.out.println("Deposit init: " + depositRequest);
     randomSleep();
     System.out.println("Deposit end: " + depositRequest);

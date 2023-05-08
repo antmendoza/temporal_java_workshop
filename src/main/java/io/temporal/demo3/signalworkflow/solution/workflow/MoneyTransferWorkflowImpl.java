@@ -23,8 +23,6 @@ import io.temporal.activity.ActivityOptions;
 import io.temporal.demo3.signalworkflow.solution.workflow.activity.NotificationService;
 import io.temporal.model.TransferRequest;
 import io.temporal.service.AccountService;
-import io.temporal.service.DepositRequest;
-import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -76,12 +74,12 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     }
 
     accountService.withdraw(
-        new WithdrawRequest(
+        new AccountService.WithdrawRequest(
             transferRequest.fromAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
     accountService.deposit(
-        new DepositRequest(
+        new AccountService.DepositRequest(
             transferRequest.toAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));

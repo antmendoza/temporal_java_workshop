@@ -25,9 +25,9 @@ import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
-public class StartRequest {
+public class Starter {
 
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
 

@@ -17,17 +17,17 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo4.queryworklow.solution;
+package io.temporal.demo4.queryworklow.initial;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflow;
+import io.temporal.demo4.queryworklow.initial.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
-public class StartRequest {
+public class Starter {
 
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
 

@@ -17,53 +17,45 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo10.childworkflow.initial;
+package io.temporal.demo0.firstworkflow.solution1;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.demo10.childworkflow.initial.workflow.MoneyTransferWorkflow;
+import io.temporal.demo0.firstworkflow.solution1.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
-import io.temporal.model.TransferRequests;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class StartRequest {
+public class Starter {
 
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
-
-    int numRequest = 100;
-    startTransfer(numRequest);
-  }
-
-  public static void startTransfer(int numRequest) {
 
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    // Create the workflow client stub. It is used to start our workflow execution.
-    final WorkflowOptions build =
+    final WorkflowOptions options =
         WorkflowOptions.newBuilder()
             .setWorkflowId(MY_BUSINESS_ID)
             .setTaskQueue(WorkerProcess.TASK_QUEUE)
             .build();
 
+    // Create the workflow client stub.
+    // It is used to start our workflow execution.
     final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
+        client.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
-    final List request =
-        IntStream.range(0, numRequest)
-            .mapToObj(
-                i ->
-                    new TransferRequest(
-                        "fromAccount-" + i, "toAccount-" + i, "referenceId-" + i, 200 + i))
-            .collect(Collectors.toList());
+    TransferRequest transferRequest =
+        new TransferRequest("fromAccount", "toAccount", "referenceId", 200);
+    // Sync, blocking invocation
+    // workflow.transfer(transferRequest);
 
-    workflow.transfer(new TransferRequests(request));
+    // Async
+    WorkflowClient.start(workflow::transfer, transferRequest);
+    // block and wait execution to finish
+    String result = client.newUntypedWorkflowStub(MY_BUSINESS_ID).getResult(String.class);
+    System.out.println("Result " + result);
   }
 }

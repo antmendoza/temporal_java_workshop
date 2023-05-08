@@ -17,29 +17,19 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo10.childworkflow.solution.parallel;
+package io.temporal.demo4.queryworklow.solution;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.demo10.childworkflow.solution.parallel.workflow.MoneyTransferWorkflow;
+import io.temporal.demo4.queryworklow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
-import io.temporal.model.TransferRequests;
 import io.temporal.serviceclient.WorkflowServiceStubs;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-public class StartRequest {
+public class Starter {
 
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
-
-    int numRequest = 100;
-    startTransfer(numRequest);
-  }
-
-  public static void startTransfer(int numRequest) {
 
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
@@ -56,14 +46,6 @@ public class StartRequest {
     final MoneyTransferWorkflow workflow =
         client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-    final List request =
-        IntStream.range(0, numRequest)
-            .mapToObj(
-                i ->
-                    new TransferRequest(
-                        "fromAccount-" + i, "toAccount-" + i, "referenceId-" + i, 200 + i))
-            .collect(Collectors.toList());
-
-    workflow.transfer(new TransferRequests(request));
+    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 2000));
   }
 }

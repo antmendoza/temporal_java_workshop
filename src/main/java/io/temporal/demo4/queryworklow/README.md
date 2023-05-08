@@ -20,7 +20,7 @@ final WorkflowClient client = WorkflowClient.newInstance(service);
 final MoneyTransferWorkflow workflowStub =
     client.newWorkflowStub(
         MoneyTransferWorkflow.class, 
-        StartRequest.MY_BUSINESS_ID, 
+        Starter.MY_BUSINESS_ID, 
         Optional.empty());
 
 System.out.println("queryStatus result: " + workflowStub.queryStatus());

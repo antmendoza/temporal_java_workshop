@@ -16,7 +16,7 @@ public class Main {
     CompletableFuture.runAsync(
         () -> {
           int numRequest = 10;
-          StartRequest.startTransfer(numRequest);
+          Starter.startTransfer(numRequest);
         });
 
     // start workflow

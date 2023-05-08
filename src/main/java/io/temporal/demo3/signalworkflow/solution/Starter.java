@@ -17,17 +17,17 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo0.firstworkflow.solution1;
+package io.temporal.demo3.signalworkflow.solution;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.demo0.firstworkflow.solution1.workflow.MoneyTransferWorkflow;
+import io.temporal.demo3.signalworkflow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
-public class StartRequest {
+public class Starter {
 
-  static final String MY_BUSINESS_ID = StartRequest.class.getPackageName() + ":money-transfer";
+  static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
 
   public static void main(String[] args) {
 
@@ -36,26 +36,16 @@ public class StartRequest {
 
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    final WorkflowOptions options =
+    // Create the workflow client stub. It is used to start our workflow execution.
+    final WorkflowOptions build =
         WorkflowOptions.newBuilder()
             .setWorkflowId(MY_BUSINESS_ID)
             .setTaskQueue(WorkerProcess.TASK_QUEUE)
             .build();
 
-    // Create the workflow client stub.
-    // It is used to start our workflow execution.
     final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-    TransferRequest transferRequest =
-        new TransferRequest("fromAccount", "toAccount", "referenceId", 200);
-    // Sync, blocking invocation
-    // workflow.transfer(transferRequest);
-
-    // Async
-    WorkflowClient.start(workflow::transfer, transferRequest);
-    // block and wait execution to finish
-    String result = client.newUntypedWorkflowStub(MY_BUSINESS_ID).getResult(String.class);
-    System.out.println("Result " + result);
+    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 2000));
   }
 }

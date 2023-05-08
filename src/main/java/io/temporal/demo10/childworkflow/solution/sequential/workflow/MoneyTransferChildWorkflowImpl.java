@@ -22,8 +22,6 @@ package io.temporal.demo10.childworkflow.solution.sequential.workflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.service.AccountService;
-import io.temporal.service.DepositRequest;
-import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
@@ -44,12 +42,12 @@ public class MoneyTransferChildWorkflowImpl implements MoneyTransferChildWorkflo
     log.info("init -> " + transferRequest);
 
     accountService.withdraw(
-        new WithdrawRequest(
+        new AccountService.WithdrawRequest(
             transferRequest.fromAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
     accountService.deposit(
-        new DepositRequest(
+        new AccountService.DepositRequest(
             transferRequest.toAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
