@@ -17,7 +17,7 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo4.queryworklow.solution.workflow;
+package io.temporal.demo6.childworkflow.solution.sequential.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.model.TransferRequest;
@@ -28,41 +28,20 @@ import io.temporal.workflow.Workflow;
 import java.time.Duration;
 import org.slf4j.Logger;
 
-public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
+public class MoneyTransferChildWorkflowImpl implements MoneyTransferChildWorkflow {
+
+  private final Logger log =
+      Workflow.getLogger(MoneyTransferChildWorkflowImpl.class.getSimpleName());
 
   private final AccountService accountService =
       Workflow.newActivityStub(
           AccountService.class,
           ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
-  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-  private TRANSFER_APPROVED transferApproved;
-  private TRANSFER_STATUS transferStatus = null;
 
   @Override
   public void transfer(TransferRequest transferRequest) {
 
-    transferStatus = TRANSFER_STATUS.INITIATED;
-
-    log.info("Init transfer: " + transferRequest);
-
-    if (transferRequest.amount() > 1000) {
-      transferStatus = TRANSFER_STATUS.WAITING_APPROVAL;
-
-      log.info("request need approval: " + transferRequest);
-
-      Workflow.await(() -> transferApproved != null);
-
-      log.info("transferApproved: " + transferApproved);
-
-      if (TRANSFER_APPROVED.NO.equals(transferApproved)) {
-        // notify customer...
-        log.info("notify customer, transferApproved: " + transferRequest);
-        transferStatus = TRANSFER_STATUS.DENIED;
-        return;
-      }
-
-      transferStatus = TRANSFER_STATUS.APPROVED;
-    }
+    log.info("init -> " + transferRequest);
 
     accountService.withdraw(
         new WithdrawRequest(
@@ -75,18 +54,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             transferRequest.referenceId(),
             transferRequest.amount()));
 
-    transferStatus = TRANSFER_STATUS.COMPLETED;
-
-    log.info("End transfer: " + transferRequest);
-  }
-
-  @Override
-  public void approveTransfer(TRANSFER_APPROVED transferApproved) {
-    this.transferApproved = transferApproved;
-  }
-
-  @Override
-  public TRANSFER_STATUS queryStatus() {
-    return transferStatus;
+    log.info("end -> " + transferRequest);
   }
 }

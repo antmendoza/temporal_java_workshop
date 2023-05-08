@@ -20,6 +20,8 @@
 package io.temporal.demo0.firstworkflow.solution2.workflow.activity;
 
 import io.temporal.service.BankingClient;
+import io.temporal.service.DepositRequest;
+import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
@@ -34,14 +36,14 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public void withdraw(io.temporal.service.AccountService.WithdrawRequest withdrawRequest) {
+  public void withdraw(WithdrawRequest withdrawRequest) {
     log.info("Init withdraw : " + withdrawRequest);
     this.bankingClient.withdraw(withdrawRequest);
     log.info("End withdraw : " + withdrawRequest);
   }
 
   @Override
-  public void deposit(io.temporal.service.AccountService.DepositRequest depositRequest) {
+  public void deposit(DepositRequest depositRequest) {
     log.info("Init deposit : " + depositRequest);
     this.bankingClient.deposit(depositRequest);
     log.info("End deposit : " + depositRequest);

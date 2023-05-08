@@ -17,15 +17,17 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo1.activityretry;
-
-import static io.temporal.demo1.activityretry.WorkerProcess.TASK_QUEUE;
+package io.temporal.demo6.childworkflow.solution.parallel;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.demo1.activityretry.workflow.MoneyTransferWorkflow;
+import io.temporal.demo6.childworkflow.solution.parallel.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
+import io.temporal.model.TransferRequests;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Starter {
 
@@ -33,23 +35,35 @@ public class Starter {
 
   public static void main(String[] args) {
 
+    int numRequest = 100;
+    startTransfer(numRequest);
+  }
+
+  public static void startTransfer(int numRequest) {
+
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
     final WorkflowClient client = WorkflowClient.newInstance(service);
 
-    final WorkflowOptions options =
+    // Create the workflow client stub. It is used to start our workflow execution.
+    final WorkflowOptions build =
         WorkflowOptions.newBuilder()
             .setWorkflowId(MY_BUSINESS_ID)
-            .setTaskQueue(TASK_QUEUE) // mandatory
-            // .setWorkflowRunTimeout(Duration.ofDays(2))
+            .setTaskQueue(WorkerProcess.TASK_QUEUE)
             .build();
 
-    // Create the workflow client stub.
-    // It is used to start our workflow execution.
     final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+        client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-    workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 200));
+    final List request =
+        IntStream.range(0, numRequest)
+            .mapToObj(
+                i ->
+                    new TransferRequest(
+                        "fromAccount-" + i, "toAccount-" + i, "referenceId-" + i, 200 + i))
+            .collect(Collectors.toList());
+
+    workflow.transfer(new TransferRequests(request));
   }
 }

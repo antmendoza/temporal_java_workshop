@@ -21,13 +21,15 @@ package io.temporal.demo0.firstworkflow.solution2.workflow.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
+import io.temporal.service.DepositRequest;
+import io.temporal.service.WithdrawRequest;
 
 @ActivityInterface
 public interface AccountService {
 
   @ActivityMethod
-  void deposit(io.temporal.service.AccountService.DepositRequest depositRequest);
+  void deposit(DepositRequest depositRequest);
 
   @ActivityMethod
-  void withdraw(io.temporal.service.AccountService.WithdrawRequest withdrawRequest);
+  void withdraw(WithdrawRequest withdrawRequest);
 }

@@ -17,40 +17,54 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.demo20.dataconverter.workflow;
+package io.temporal.demo6.childworkflow.initial.workflow;
 
 import io.temporal.activity.ActivityOptions;
-import io.temporal.model.TransferRequest;
+import io.temporal.model.TransferRequests;
 import io.temporal.service.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
   private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-
   private final AccountService accountService =
       Workflow.newActivityStub(
           AccountService.class,
           ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
 
   @Override
-  public void transfer(TransferRequest transferRequest) {
+  public void transfer(TransferRequests transferRequests) {
+    log.info("Init transfer size: " + transferRequests.transferRequests().size());
 
-    log.info("Init transfer: " + transferRequest);
-    accountService.withdraw(
-        new WithdrawRequest(
-            transferRequest.fromAccountId(),
-            transferRequest.referenceId(),
-            transferRequest.amount()));
-    accountService.deposit(
-        new DepositRequest(
-            transferRequest.toAccountId(),
-            transferRequest.referenceId(),
-            transferRequest.amount()));
-    log.info("End transfer: " + transferRequest);
+    final List<Promise<Void>> promises = new ArrayList<>();
+
+    transferRequests
+        .transferRequests()
+        .forEach(
+            transferRequest -> {
+              log.info("Init transfer: " + transferRequest);
+
+              accountService.withdraw(
+                  new WithdrawRequest(
+                      transferRequest.fromAccountId(),
+                      transferRequest.referenceId(),
+                      transferRequest.amount()));
+              accountService.deposit(
+                  new DepositRequest(
+                      transferRequest.toAccountId(),
+                      transferRequest.referenceId(),
+                      transferRequest.amount()));
+
+              log.info("End transfer: " + transferRequest);
+            });
+
+    log.info("End transfer size: " + transferRequests.transferRequests().size());
   }
 }
