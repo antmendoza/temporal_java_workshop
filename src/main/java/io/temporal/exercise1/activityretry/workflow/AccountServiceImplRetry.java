@@ -17,9 +17,13 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.service;
+package io.temporal.exercise1.activityretry.workflow;
 
 import io.temporal.activity.Activity;
+import io.temporal.service.AccountService;
+import io.temporal.service.BankingClient;
+import io.temporal.service.DepositRequest;
+import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
