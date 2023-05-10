@@ -20,8 +20,8 @@
 package io.temporal.exercise1.activityretry;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.exercise1.activityretry.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.exercise1.activityretry.workflow.AccountServiceImplRetry;
+import io.temporal.exercise1.activityretry.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;
