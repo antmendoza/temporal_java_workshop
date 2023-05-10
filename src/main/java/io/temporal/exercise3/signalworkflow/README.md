@@ -1,6 +1,8 @@
 # Signal
 
-Exercise: Modify the code in `io.temporal.exercise3.signalworkflow.initial` to wait authorization if the amount > 1000.
+Exercise: Modify the code in `io.temporal.exercise3.signalworkflow.initial` to require approval for all operation which 
+amount is > 1000:
+- wait for the transfer to be authorized if amount > 1000.
 - send a notification (new activity) to the client when the operation is completed.
 - if the operation is not authorized send a notification (new activity) to the client.
 

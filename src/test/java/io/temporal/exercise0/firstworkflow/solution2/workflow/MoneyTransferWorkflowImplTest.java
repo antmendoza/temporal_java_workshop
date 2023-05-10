@@ -19,6 +19,10 @@
 
 package io.temporal.exercise0.firstworkflow.solution2.workflow;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import io.temporal.DescribeWorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
@@ -77,7 +81,7 @@ public class MoneyTransferWorkflowImplTest {
         new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
 
     // Start workflow
-    workflow.transfer(transferRequest);
+    String result = workflow.transfer(transferRequest);
 
     DescribeWorkflowExecutionResponse describeResponse =
         new DescribeWorkflowExecution(myWorkflowId, testWorkflowRule).get();
@@ -85,6 +89,11 @@ public class MoneyTransferWorkflowImplTest {
     Assert.assertEquals(
         describeResponse.getWorkflowExecutionInfo().getStatus(),
         WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+
+    Assert.assertEquals(result, "done");
+
+    verify(accountService, times(1)).deposit(any());
+    verify(accountService, times(1)).withdraw(any());
 
     /////////////
 

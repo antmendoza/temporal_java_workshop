@@ -1,7 +1,8 @@
 # Query
 
 
-Exercise: Modify the code in `io.temporal.exercise4.queryworklow.initial` to retrieve the transfer status:
+Exercise: Modify the code in `io.temporal.exercise4.queryworklow.initial` in a way that a client can retrieve the transfer status 
+(create a method that returns the status of the transaction):
 - transfer status can be any of `INITIATED, WAITING_APPROVAL, APPROVED, COMPLETED, DENIED`.
 
 ### [Query](https://docs.temporal.io/application-development/features?lang=java#queries)

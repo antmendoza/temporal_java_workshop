@@ -203,7 +203,6 @@ public class AccountServiceImpl implements AccountService {
                     transferRequest.referenceId(),
                     transferRequest.amount()));
 
-    // Exception
     accountService.deposit(
             new DepositRequest(
                     transferRequest.toAccountId(),
