@@ -17,19 +17,21 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.service;
+package io.temporal.exercise0.firstworkflow.solution2.workflow.activity;
 
-import io.temporal.activity.Activity;
+import io.temporal.service.BankingClient;
+import io.temporal.service.DepositRequest;
+import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
-public class AccountServiceImplRetry implements AccountService {
+public class AccountServiceImpl implements AccountService {
 
-  private final Logger log = Workflow.getLogger(AccountServiceImplRetry.class.getSimpleName());
+  private final Logger log = Workflow.getLogger(AccountServiceImpl.class.getSimpleName());
 
   private final BankingClient bankingClient;
 
-  public AccountServiceImplRetry(BankingClient bankingClient) {
+  public AccountServiceImpl(BankingClient bankingClient) {
     this.bankingClient = bankingClient;
   }
 
@@ -43,23 +45,7 @@ public class AccountServiceImplRetry implements AccountService {
   @Override
   public void deposit(DepositRequest depositRequest) {
     log.info("Init deposit : " + depositRequest);
-
-    simulateServiceIsDownAndSuccessAfterNumAttempts(4);
-
     this.bankingClient.deposit(depositRequest);
     log.info("End deposit : " + depositRequest);
-  }
-
-  private void simulateServiceIsDownAndSuccessAfterNumAttempts(int numAttemptsBeforeSuccess) {
-
-    int attend = Activity.getExecutionContext().getInfo().getAttempt();
-    log.info("Attend number : " + attend);
-
-    if (attend <= numAttemptsBeforeSuccess) {
-      String message = "Error: Can not reach service...Number of attend: " + attend;
-      throw new RuntimeException(message);
-      // throw ApplicationFailure.newFailure(message, "ServiceUnreachable");
-      // throw ApplicationFailure.newNonRetryableFailure(message,"ServiceUnreachable" );
-    }
   }
 }
