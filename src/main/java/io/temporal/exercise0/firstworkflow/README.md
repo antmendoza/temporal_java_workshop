@@ -5,13 +5,15 @@ This example guide you, step by step, on how to:
 - send a request to the server to start it,
 - and implement a worker in charge to execute your code. 
 
-## Workflow without activity invocation (final implementation in package solution1)
+
+
+## Exercise 1: Workflow without activity invocation (final implementation in package solution1)
 
 ### Workflow and implementation
 
 Steps to create a Temporal application with Java:
 
-- [create a workflow interfaz](https://docs.temporal.io/application-development/foundations?lang=java#develop-workflows)
+- [create a workflow interface](https://docs.temporal.io/application-development/foundations?lang=java#develop-workflows)
 
 ```
 /** Workflow interface has to have at least one method annotated with @WorkflowMethod. */
@@ -43,90 +45,102 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 ### Make sure Temporal Server is running locally
 - https://docs.temporal.io/application-development/foundations#run-a-development-server
 
+### Implement the worker
 
 
-### Implement workflow client, and instantiate workflow execution
-
-- [start workflow execution](https://docs.temporal.io/application-development/foundations?lang=java#start-workflow-execution)
-
+- [Run dev worker](https://docs.temporal.io/application-development/foundations?lang=java#run-a-dev-worker)
 ```
+
+public class WorkerProcess {
+
+  static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
+
   public static void main(String[] args) {
 
     // Get a Workflow service stub.
     final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-    final WorkflowClient client = WorkflowClient.newInstance(service);
+    /*
+     * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
+     */
+    WorkflowClient client = WorkflowClient.newInstance(service);
 
-    final WorkflowOptions options =
-        WorkflowOptions.newBuilder()
-            .setWorkflowId(MY_BUSINESS_ID)
-            .setTaskQueue(MoneyTransferWorkflowImpl.TASK_QUEUE)
-            .build();
+    /*
+     * Define the workflow factory. It is used to create workflow workers for a specific task queue.
+     */
+    WorkerFactory factory =
+        WorkerFactory.newInstance(client, WorkerFactoryOptions.newBuilder().build());
 
-    // Create the workflow client stub.
-    // It is used to start our workflow execution.
-    final MoneyTransferWorkflow workflow =
-        client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+    /*
+     * Define the workflow worker.
+     * Workflow workers listen to a defined task queue and process workflows and activities.
+     */
+    Worker worker = factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
 
-    //Sync, blocking invocation
-    // workflow.transfer(transferRequest);
+    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
 
-
-    //Async
-    WorkflowClient.start(workflow::transfer,transferRequest);
-    //block and wait execution to finish
-    String result =  client.newUntypedWorkflowStub(MY_BUSINESS_ID).getResult(String.class);
-    System.out.println("Result " + result);
-
-  
+    factory.start();
   }
+}
 
 ```
 
-- navigate to the UI (http://localhost:8233 or http://localhost:8080) and note workflow is not making progress, 
-there are no workers pulling workflow/activity tasks.
+### Implement workflow client, and instantiate workflow execution (run the main method of this class)
 
+- [start workflow execution](https://docs.temporal.io/application-development/foundations?lang=java#start-workflow-execution)
 
-### Implement and start the worker
-
-
-- [Run dev worker](https://docs.temporal.io/application-development/foundations?lang=java#run-a-dev-worker)
 ```
-      static final String TASK_QUEUE = WorkerProcess.class.getPackageName()+":"+"MoneyTransfer";
+public class Starter {
+
+    static final String MY_BUSINESS_ID = io.temporal.exercise0.firstworkflow.solution1.Starter.class.getPackageName() + ":money-transfer";
 
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
 
-        /*
-         * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
-         */
-        WorkflowClient client = WorkflowClient.newInstance(service);
+        final WorkflowClient client = WorkflowClient.newInstance(service);
 
-        /*
-         * Define the workflow factory. It is used to create workflow workers for a specific task queue.
-         */
-        WorkerFactory factory =
-                WorkerFactory.newInstance(client, WorkerFactoryOptions.newBuilder().build());
+        final WorkflowOptions options =
+                WorkflowOptions.newBuilder()
+                        .setWorkflowId(MY_BUSINESS_ID)
+                        .setTaskQueue(WorkerProcess.TASK_QUEUE)
+                        .build();
 
-        /*
-         * Define the workflow worker.
-         * Workflow workers listen to a defined task queue and process workflows and activities.
-         */
-        Worker worker =
-                factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
+        // Create the workflow client stub.
+        // It is used to start our workflow execution.
+        final MoneyTransferWorkflow workflow =
+                client.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
-        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+        TransferRequest transferRequest =
+                new TransferRequest("fromAccount", "toAccount", "referenceId", 200);
+        // Sync, blocking invocation
+        // workflow.transfer(transferRequest);
 
-        factory.start();
+        // Async
+        WorkflowClient.start(workflow::transfer, transferRequest);
+        // block and wait execution to finish
+        String result = client.newUntypedWorkflowStub(MY_BUSINESS_ID).getResult(String.class);
+        System.out.println("Result " + result);
     }
+}
+
 ```
 
-Once you start the worker, it will pull tasks from the server and execute your workflow code.
+- navigate to the UI (http://localhost:8233 or http://localhost:8080) and note workflow is not making progress, 
+there are no workers polling workflow/activity tasks.
 
 
-## Add activity invocation (final implementation in package solution2)
+
+### Start the worker (run WorkerProcess main method)
+
+Once you start the worker, it will poll tasks from the server and execute your workflow code.
+
+
+> You will find the full implementation in `io.temporal.exercise0.firstworkflow.solution1`
+
+
+## Exercise 2: Add activity invocation (final implementation in package solution2)
 
 ### Create activity interfaz and implementation
 
@@ -224,7 +238,7 @@ public class AccountServiceImpl implements AccountService {
 ### Start new workflow execution
 
 
-Your worker will pull and execute workflow and activity tasks:
+Your worker will poll and execute workflow and activity tasks:
 
 ```
 21:30:43.007 {io.temporal.exercise0.firstworkflow.solution2:money-transfer} INFO  AccountServiceImpl - Init withdraw : WithdrawRequest[accountId=fromAccount, referenceId=referenceId, amount=200.0] 
