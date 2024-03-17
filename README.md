@@ -1,4 +1,65 @@
-# Readme
+# Introduction 
+
+Temporal is a durable execution system ....
+
+//TODO Diagrams and stuff... 
+
+## Modules: 
+
+### My first workflow
+
+Two main building blocks, workflows and activities: 
+
+- firstworkflow
+
+### What the f** is a durable execution?
+
+.. Temporal will ensure your workflow is executed `at least once`, and will recover ...
+
+#### workflowtaskfretry
+
+
+#### activityretry
+
+### Communicating with your workflow execution?
+
+#### Signals
+(Mention signal with start)
+
+#### Queries
+
+#### Update
+
+
+### Entity / Actor workflow
+
+- //TODO link post from our blog
+Introduction to Entity workflow... 
+- the can create 
+
+  
+
+### Putting all together 
+
+
+
+
+
+### Introduction to Temporal
+
+
+This is a Temporal workshop to introduce the main Temporal primitives: 
+- Workflow
+- Activity
+- Signal
+- Query
+- Update
+- ChildWorkflows
+- Timers 
+
+
+
+
 
 ## env setup 
 [env-setup.md](./env-setup.md)
