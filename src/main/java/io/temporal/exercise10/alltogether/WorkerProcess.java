@@ -17,11 +17,12 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.exercise10.alltogether.initial;
+package io.temporal.exercise10.alltogether;
 
 import io.temporal.client.WorkflowClient;
-import io.temporal.exercise10.alltogether.initial.workflow.MoneyTransferWorkflowImpl;
-import io.temporal.service.AccountServiceImpl;
+import io.temporal.exercise10.alltogether.solution.workflow.AccountWorkflowImpl;
+import io.temporal.exercise10.alltogether.solution.workflow.child.MoneyTransferWorkflowImpl;
+import io.temporal.exercise10.alltogether.solution.workflow.child.activity.AccountServiceImpl;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.WorkerFactory;
@@ -30,7 +31,7 @@ import io.temporal.worker.WorkerOptions;
 
 public class WorkerProcess {
 
-  static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
+  public static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
 
   public static void main(String[] args) {
 
@@ -55,7 +56,8 @@ public class WorkerProcess {
     io.temporal.worker.Worker worker =
         factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
 
-    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+    worker.registerWorkflowImplementationTypes(
+            AccountWorkflowImpl.class, MoneyTransferWorkflowImpl.class);
     worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
 
     factory.start();

@@ -5,14 +5,6 @@
   <modelVersion>4.0.0</modelVersion>
 
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-
-
   <groupId>io.temporal</groupId>
   <artifactId>temporal_java_workshop</artifactId>
     <version>1.0.0-SNAPSHOT</version>
@@ -79,6 +71,7 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -93,6 +86,7 @@
             <version>2.11.0</version>
         </dependency>
 
+
     </dependencies>
 
     <build>
@@ -101,8 +95,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>16</source>
+                    <target>16</target>
                 </configuration>
             </plugin>
             <plugin>

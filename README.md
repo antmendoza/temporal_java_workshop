@@ -3,6 +3,8 @@
 Temporal is a durable execution system ....
 
 //TODO Diagrams and stuff... 
+//TODO start with update workflow 
+
 
 ## Modules: 
 

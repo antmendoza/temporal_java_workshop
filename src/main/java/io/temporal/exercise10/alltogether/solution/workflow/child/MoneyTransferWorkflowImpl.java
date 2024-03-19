@@ -17,43 +17,46 @@
  *  permissions and limitations under the License.
  */
 
-package io.temporal.exercise10.alltogether.solution.sequential.workflow;
+package io.temporal.exercise10.alltogether.solution.workflow.child;
 
 import io.temporal.activity.ActivityOptions;
+import io.temporal.exercise10.alltogether.solution.workflow.child.activity.AccountService;
 import io.temporal.model.TransferRequest;
-import io.temporal.service.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
-import java.time.Duration;
 import org.slf4j.Logger;
 
-public class MoneyTransferChildWorkflowImpl implements MoneyTransferChildWorkflow {
+import java.time.Duration;
 
-  private final Logger log =
-      Workflow.getLogger(MoneyTransferChildWorkflowImpl.class.getSimpleName());
+public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
   private final AccountService accountService =
       Workflow.newActivityStub(
           AccountService.class,
           ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
 
-  @Override
-  public void transfer(TransferRequest transferRequest) {
+  private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 
-    log.info("init -> " + transferRequest);
+  @Override
+  public String transfer(TransferRequest transferRequest) {
+    log.info("Init transfer: " + transferRequest);
 
     accountService.withdraw(
         new WithdrawRequest(
             transferRequest.fromAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
+
+    // Exception
     accountService.deposit(
         new DepositRequest(
             transferRequest.toAccountId(),
             transferRequest.referenceId(),
             transferRequest.amount()));
 
-    log.info("end -> " + transferRequest);
+    log.info("End transfer: " + transferRequest);
+
+    return "done";
   }
 }
