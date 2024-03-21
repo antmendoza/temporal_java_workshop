@@ -67,6 +67,13 @@ public class HttpServer {
         return false;
     }
 
+    private static JsonObject getJsonObject(final HttpExchange t) {
+        final JsonElement element = parseReader(
+                new InputStreamReader(t.getRequestBody()));
+        final JsonObject customerAsJson = element.getAsJsonObject();
+        return customerAsJson;
+    }
+
     static class AccountHandler implements HttpHandler {
         private final WorkflowClient workflowClient;
 
@@ -84,15 +91,12 @@ public class HttpServer {
             System.out.println("path => " + path);
 
 
-
             final String currentMethod = t.getRequestMethod();
             if (checkRequestMethod(t, currentMethod, List.of("PUT"))) return;
 
             final JsonObject customerAsJson = getJsonObject(t);
 
             final String customerId = customerAsJson.get("customer-id").getAsString();
-            final String customerName = customerAsJson.get("customer-name").getAsString();
-            final String customerSurname = customerAsJson.get("customer-surname").getAsString();
 
 
             final String taskQueue = TASK_QUEUE;
@@ -106,8 +110,6 @@ public class HttpServer {
                 if (path.endsWith("accounts")) {
                     final String accountId = customerAsJson.get("account-id").getAsString();
                     final double amount = customerAsJson.get("amount").getAsDouble();
-                    final Customer customer = new Customer(customerId, customerName,
-                            customerSurname);
 
 
                     final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
@@ -120,7 +122,7 @@ public class HttpServer {
                     try {
 
                         WorkflowExecution workflow = WorkflowClient.start(accountWorkflow::open,
-                                new Account(accountId, customer, amount));
+                                new Account(accountId, customerId, amount));
 
 
                         response = ow.writeValueAsString(new StartWorkflowResponse(workflowId, workflow.getRunId()));
@@ -146,15 +148,11 @@ public class HttpServer {
                     final String accountId = path.substring("/accounts/".length());
 
 
-                    final Customer customer = new Customer(customerId, customerName,
-                            customerSurname);
-
-
                     // Start the workflow execution
                     AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
                             AccountWorkflow.workflowIdFromAccountId(accountId));// business id
 
-                    UpdateCustomerResponse result = accountWorkflow.updateCustomer(customer);
+                    UpdateCustomerResponse result = accountWorkflow.updateCustomer(customerId);
                     response = ow.writeValueAsString(result);
                 }
 
@@ -170,13 +168,6 @@ public class HttpServer {
             os.write(response.getBytes());
             os.close();
         }
-    }
-
-    private static JsonObject getJsonObject(final HttpExchange t) {
-        final JsonElement element = parseReader(
-                new InputStreamReader(t.getRequestBody()));
-        final JsonObject customerAsJson = element.getAsJsonObject();
-        return customerAsJson;
     }
 
     static class MoneyTransferHandler implements HttpHandler {
@@ -199,7 +190,6 @@ public class HttpServer {
 
             final String currentMethod = t.getRequestMethod();
             if (checkRequestMethod(t, currentMethod, List.of("PUT"))) return;
-
 
 
             final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);

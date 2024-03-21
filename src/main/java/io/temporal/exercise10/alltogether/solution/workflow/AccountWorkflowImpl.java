@@ -1,7 +1,13 @@
 package io.temporal.exercise10.alltogether.solution.workflow;
 
+import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.api.enums.v1.ParentClosePolicy;
+import io.temporal.exercise10.alltogether.solution.workflow.child.AccountCleanUpWorkflow;
 import io.temporal.exercise10.alltogether.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
+import io.temporal.workflow.Async;
+import io.temporal.workflow.ChildWorkflowOptions;
+import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
@@ -16,30 +22,63 @@ public class AccountWorkflowImpl implements
 
     private Account account;
     private boolean closeAccount = false;
-    private List<Transfer> requests = new ArrayList<>();
+    private final List<Transfer> requests = new ArrayList<>();
 
     @Override
     public void open(final Account account) {
         this.account = account;
 
-        while(!closeAccount){
+        while (!closeAccount) {
 
             Workflow.await(() -> !requests.isEmpty() || closeAccount);
 
-            if(!requests.isEmpty()){
+            if (!requests.isEmpty()) {
                 final Transfer transfer = requests.remove(0);
                 final String targetCustomer = transfer.targetCustomer();
 
-                final MoneyTransferWorkflow child =Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class);
+                final MoneyTransferWorkflow child = Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class);
+
+                try{
 
                 final String reference = child.transfer(new TransferRequest(
                         this.account.accountId(),
                         targetCustomer,
                         transfer.requestId(),
                         transfer.amount()));
-                System.out.println("reference " + reference);
+
+                this.account = this.account.subtract(transfer.amount());
+
+                }catch (Exception e){
+                    //TODO log not enough money
+                    //TODO send notification to customer
+                }
+
+
+
+
+
             }
         }
+
+
+        final AccountCleanUpWorkflow accountCleanUpWorkflow = Workflow.newChildWorkflowStub(AccountCleanUpWorkflow.class,
+                ChildWorkflowOptions
+                        .newBuilder()
+                        .setWorkflowId(AccountCleanUpWorkflow.workflowIdFromAccountId(account.accountId()))
+                        .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
+                        .build());
+
+
+        Async.procedure(accountCleanUpWorkflow::run, this.account);
+        Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(accountCleanUpWorkflow);
+
+        // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
+        childExecution.get();
+
+
+        //By exiting here we are closing the current workflow
+        //AccountCleanUpWorkflow will continue running due to PARENT_CLOSE_POLICY_ABANDON
+        // More info for PARENT_CLOSE_POLICY https://docs.temporal.io/workflows#parent-close-policy
 
     }
 
@@ -49,33 +88,32 @@ public class AccountWorkflowImpl implements
     }
 
 
-
-
     @Override
-    public void validateUpdateCustomer(final Customer newValue) {
-        if (!Objects.equals(this.account.customer().customerId(), newValue.customerId())) {
-            throw new RuntimeException("Customer id do not match : " + this.account.customer().customerId() + "!=" + newValue.customerId());
+    public void validateUpdateCustomer(final String newCustomerIdValue) {
+        if (!Objects.equals(this.account.customerId(), newCustomerIdValue)) {
+            throw new RuntimeException("Customer id do not match : " + this.account.customerId() + "!=" + newCustomerIdValue);
         }
     }
 
 
     @Override
-    public UpdateCustomerResponse updateCustomer(final Customer customer) {
+    public UpdateCustomerResponse updateCustomer(final String newCustomerIdValue) {
 
-        log.debug("updating customer: " + customer);
+        log.debug("updating customer: " + newCustomerIdValue);
 
         final UpdateCustomerResponse updateCustomerResponse =
-                new UpdateCustomerResponse(this.account.customer(), customer);
-        this.account = new Account(this.account.accountId(), customer, this.account.amount());
+                new UpdateCustomerResponse(this.account.customerId(), newCustomerIdValue);
+        this.account = new Account(this.account.accountId(), newCustomerIdValue, this.account.amount());
         return updateCustomerResponse;
     }
 
     @Override
-    public void closeAccount() {
+    public String closeAccount() {
 
-        log.debug("Close account" );
+        log.debug("Close account");
 
         this.closeAccount = true;
+        return "RequestId[" + Math.random() + "]";
     }
 
 

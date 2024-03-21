@@ -24,11 +24,17 @@ public class TestUtilWorkflowInboundCallsInterceptor extends WorkflowInboundCall
   @Override
   public WorkflowOutput execute(WorkflowInput input) {
 
-    WorkflowInfo info = Workflow.getInfo();
-    String workflowType = info.getWorkflowType();
+    final WorkflowInfo workflowInfo = Workflow.getInfo();
+    final String workflowType = workflowInfo.getWorkflowType();
+    final String workflowId = workflowInfo.getWorkflowId();
     testUtilInterceptorTracker.recordNewWorkflowInvocation(
         new TestUtilInterceptorTracker.NewWorkflowInvocation(workflowType, input));
-    return super.execute(input);
+    final WorkflowOutput output = super.execute(input);
+
+    testUtilInterceptorTracker.recordWorkflowClosed(
+            new TestUtilInterceptorTracker.NewWorkflowClosed(workflowInfo, output));
+
+    return output;
   }
 
   @Override

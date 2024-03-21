@@ -37,13 +37,9 @@ Two main building blocks, workflows and activities:
 
 - //TODO link post from our blog
 Introduction to Entity workflow... 
-- the can create 
-
-  
+- the can create
 
 ### Putting all together 
-
-
 
 
 

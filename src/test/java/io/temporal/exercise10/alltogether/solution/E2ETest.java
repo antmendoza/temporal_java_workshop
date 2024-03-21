@@ -103,10 +103,6 @@ public class E2ETest {
                                         .setWorkerInterceptors(
                                                 new TestUtilWorkerInterceptor(testUtilInterceptorTracker))
                                         .build())
-
-                        //.setWorkflowTypes(
-                        //        AccountWorkflow.class, MoneyTransferWorkflow.class)
-
                         .setDoNotStart(true);
 
 

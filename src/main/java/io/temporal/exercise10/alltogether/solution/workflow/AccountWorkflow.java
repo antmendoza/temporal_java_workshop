@@ -14,17 +14,17 @@ public interface AccountWorkflow {
     void requestTransfer(Transfer transferRequest);
 
     @UpdateValidatorMethod(updateName = "updateCustomer")
-    void validateUpdateCustomer(Customer customer);
+    void validateUpdateCustomer(String  newCustomerIdValue);
 
     @UpdateMethod
-    UpdateCustomerResponse updateCustomer(Customer customer);
+    UpdateCustomerResponse updateCustomer(String newCustomerIdValue);
 
+    @UpdateMethod
+    String closeAccount();
 
     static String workflowIdFromAccountId(String value){
         return "account["+value+"]";
     }
 
-    @SignalMethod
-    void closeAccount();
 }
 
