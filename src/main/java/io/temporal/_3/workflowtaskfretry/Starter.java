@@ -1,8 +1,8 @@
 package io.temporal._3.workflowtaskfretry;
 
+import io.temporal._3.workflowtaskfretry.workflow.MoneyTransferWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal._3.workflowtaskfretry.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 

@@ -20,6 +20,13 @@ public class TestUtilInterceptorTracker {
 
     private final List<NewWorkflowClosed> closedWorkflows = new ArrayList<>();
 
+    public static void waitUntilTrue(Awaitable r) {
+        waitUntilTrue(r, 1000);
+    }
+
+    public static void waitUntilTrue(Awaitable r, int timeout) {
+        r.returnWhenTrue(timeout);
+    }
 
     public void recordContinueAsNewInvocation(
             WorkflowOutboundCallsInterceptor.ContinueAsNewInput input) {
@@ -40,7 +47,6 @@ public class TestUtilInterceptorTracker {
                         () -> newSignalInvocation.size() == times));
     }
 
-
     public void waitUntilWorkflowIsClosed(String workflowId) {
         waitUntilTrue(
                 new Awaitable(
@@ -51,20 +57,9 @@ public class TestUtilInterceptorTracker {
 
     }
 
-
-
     public void recordNewSignalInvocation(final TestUtilInterceptorTracker.NewSignalInvocation newSignalInvocation) {
         this.newSignalInvocation.add(newSignalInvocation);
 
-    }
-
-    public static void waitUntilTrue(Awaitable r) {
-        waitUntilTrue(r,1000);
-    }
-
-
-    public static void waitUntilTrue(Awaitable r, int timeout) {
-        r.returnWhenTrue(timeout);
     }
 
     public void recordWorkflowClosed(final NewWorkflowClosed newWorkflowClosed) {
@@ -144,7 +139,7 @@ public class TestUtilInterceptorTracker {
                 }
             }
 
-            throw new RuntimeException("Condition not satisfied after " +  timeoutMs + " ms");
+            throw new RuntimeException("Condition not satisfied after " + timeoutMs + " ms");
 
         }
 

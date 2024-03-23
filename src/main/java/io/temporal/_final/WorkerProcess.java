@@ -1,9 +1,9 @@
 package io.temporal._final;
 
-import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
-import io.temporal.client.WorkflowClient;
 import io.temporal._final.solution.workflow.AccountWorkflowImpl;
 import io.temporal._final.solution.workflow.activity.AccountServiceImpl;
+import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
+import io.temporal.client.WorkflowClient;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.WorkerFactory;

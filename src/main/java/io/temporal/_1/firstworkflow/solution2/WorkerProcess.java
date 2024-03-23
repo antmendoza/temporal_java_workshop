@@ -1,8 +1,8 @@
 package io.temporal._1.firstworkflow.solution2;
 
-import io.temporal.client.WorkflowClient;
 import io.temporal._1.firstworkflow.solution2.workflow.MoneyTransferWorkflowImpl;
 import io.temporal._1.firstworkflow.solution2.workflow.activity.AccountServiceImpl;
+import io.temporal.client.WorkflowClient;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.worker.Worker;

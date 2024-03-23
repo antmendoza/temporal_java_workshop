@@ -17,16 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class HttpController {
 
 
-    private final WorkflowClient workflowClient;
-
     final String taskQueue = WorkerProcess.TASK_QUEUE;
+    private final WorkflowClient workflowClient;
 
     public HttpController() {
 
-
-        // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-
         workflowClient = WorkflowClient.newInstance(service);
 
     }
@@ -37,14 +33,14 @@ public class HttpController {
 
         final String workflowId = AccountWorkflow.workflowIdFromAccountId(account.accountId());
 
-        AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
+        final AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
                 WorkflowOptions.newBuilder()
                         .setWorkflowId(workflowId)
                         .setTaskQueue(taskQueue)
                         .build());
 
 
-        WorkflowExecution workflow = WorkflowClient.start(accountWorkflow::open,
+        final WorkflowExecution workflow = WorkflowClient.start(accountWorkflow::open,
                 account);
 
         return new StartWorkflowResponse(workflowId, workflow.getRunId());
@@ -55,9 +51,6 @@ public class HttpController {
     public String index() {
         return "Greetings from Spring Boot!";
     }
-
-
-
 
 
 }

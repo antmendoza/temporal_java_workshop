@@ -1,8 +1,8 @@
 package io.temporal._5.queryworklow.solution;
 
+import io.temporal._5.queryworklow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal._5.queryworklow.solution.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 

@@ -1,7 +1,7 @@
 package io.temporal._final.solution.workflow.child;
 
-import io.temporal.activity.ActivityOptions;
 import io.temporal._final.solution.workflow.activity.NotificationService;
+import io.temporal.activity.ActivityOptions;
 import io.temporal.model.Account;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;

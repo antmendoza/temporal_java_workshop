@@ -1,8 +1,8 @@
 package io.temporal._1.firstworkflow.solution1;
 
+import io.temporal._1.firstworkflow.solution1.workflow.MoneyTransferWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal._1.firstworkflow.solution1.workflow.MoneyTransferWorkflow;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 

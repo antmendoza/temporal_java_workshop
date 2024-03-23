@@ -3,18 +3,18 @@ package io.temporal._final.solution.workflow;
 import io.temporal.TestEnvironment;
 import io.temporal.TestUtilInterceptorTracker;
 import io.temporal.TestUtilWorkerInterceptor;
+import io.temporal._final.solution.workflow.activity.AccountService;
+import io.temporal._final.solution.workflow.activity.AccountServiceImpl;
+import io.temporal._final.solution.workflow.activity.NotificationService;
+import io.temporal._final.solution.workflow.activity.NotificationServiceImpl;
+import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflow;
+import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
+import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflow;
-import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
-import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
-import io.temporal._final.solution.workflow.activity.AccountService;
-import io.temporal._final.solution.workflow.activity.AccountServiceImpl;
-import io.temporal._final.solution.workflow.activity.NotificationService;
-import io.temporal._final.solution.workflow.activity.NotificationServiceImpl;
 import io.temporal.model.Account;
 import io.temporal.model.Transfer;
 import io.temporal.testing.TestWorkflowRule;
@@ -30,14 +30,10 @@ import java.time.Duration;
 
 public class AccountWorkflowImplTest {
 
-    private static TestUtilInterceptorTracker testUtilInterceptorTracker =
-            new TestUtilInterceptorTracker();
-
     // Namespace is dynamically set
     private static final String namespace = "test-namespace";
-
-
-
+    private static TestUtilInterceptorTracker testUtilInterceptorTracker =
+            new TestUtilInterceptorTracker();
     @Rule
     public TestWorkflowRule testWorkflowRule =
             TestWorkflowRule.newBuilder()
@@ -58,7 +54,7 @@ public class AccountWorkflowImplTest {
     }
 
     @Test
-    public void testE2E(){
+    public void testE2E() {
 
         final AccountService accountService = Mockito.mock(AccountServiceImpl.class);
         final NotificationService notificationService = Mockito.mock(NotificationServiceImpl.class);
@@ -103,7 +99,7 @@ public class AccountWorkflowImplTest {
                 () -> testWorkflowRule.getWorkflowClient().getWorkflowServiceStubs()
                         .blockingStub().listClosedWorkflowExecutions(ListClosedWorkflowExecutionsRequest.newBuilder()
                                 .setNamespace(namespace)
-                                .build()).getExecutionsCount()  == 3)
+                                .build()).getExecutionsCount() == 3)
         );
 
         //close account
@@ -111,7 +107,7 @@ public class AccountWorkflowImplTest {
 
         //Verify amount in the account after closing it
         final double accountAmount = closeAccountResponse.account().amount();
-        Assert.assertEquals( 20, accountAmount, 0.2);
+        Assert.assertEquals(20, accountAmount, 0.2);
 
         testUtilInterceptorTracker.waitUntilWorkflowIsClosed(workflowId);
 

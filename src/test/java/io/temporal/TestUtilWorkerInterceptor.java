@@ -5,14 +5,14 @@ import io.temporal.common.interceptors.WorkflowInboundCallsInterceptor;
 
 public class TestUtilWorkerInterceptor extends WorkerInterceptorBase {
 
-  private final TestUtilInterceptorTracker testUtilInterceptorTracker;
+    private final TestUtilInterceptorTracker testUtilInterceptorTracker;
 
-  public TestUtilWorkerInterceptor(TestUtilInterceptorTracker testUtilInterceptorTracker) {
-    this.testUtilInterceptorTracker = testUtilInterceptorTracker;
-  }
+    public TestUtilWorkerInterceptor(TestUtilInterceptorTracker testUtilInterceptorTracker) {
+        this.testUtilInterceptorTracker = testUtilInterceptorTracker;
+    }
 
-  @Override
-  public WorkflowInboundCallsInterceptor interceptWorkflow(WorkflowInboundCallsInterceptor next) {
-    return new TestUtilWorkflowInboundCallsInterceptor(next, testUtilInterceptorTracker);
-  }
+    @Override
+    public WorkflowInboundCallsInterceptor interceptWorkflow(WorkflowInboundCallsInterceptor next) {
+        return new TestUtilWorkflowInboundCallsInterceptor(next, testUtilInterceptorTracker);
+    }
 }

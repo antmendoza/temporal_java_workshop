@@ -1,7 +1,7 @@
 package io.temporal._5.queryworklow.solution;
 
-import io.temporal.client.WorkflowClient;
 import io.temporal._5.queryworklow.solution.workflow.MoneyTransferWorkflow;
+import io.temporal.client.WorkflowClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 
 import java.util.Optional;

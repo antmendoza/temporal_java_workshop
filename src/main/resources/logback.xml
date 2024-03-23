@@ -30,6 +30,6 @@
     </appender>
     <!--logger name="io.grpc.netty" level="INFO"/-->
     <root level="INFO">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

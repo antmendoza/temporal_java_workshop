@@ -1,7 +1,7 @@
 package io.temporal._4.signalworkflow.initial;
 
-import io.temporal.client.WorkflowClient;
 import io.temporal._4.signalworkflow.initial.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.client.WorkflowClient;
 import io.temporal.service.AccountServiceImpl;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;

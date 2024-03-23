@@ -50,7 +50,7 @@ public class AccountWorkflowImpl implements
                 var childRequestResponse = child.transfer(transferRequest);
 
 
-                if(childRequestResponse.isApproved()){
+                if (childRequestResponse.isApproved()) {
                     this.account = this.account.subtract(transfer.amount());
                     this.operations.add(new Operation(childRequestResponse));
                 }

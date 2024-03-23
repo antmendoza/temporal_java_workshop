@@ -1,9 +1,5 @@
 package io.temporal._1.firstworkflow.solution2.workflow;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import io.temporal.DescribeWorkflowExecution;
 import io.temporal._1.firstworkflow.solution2.workflow.activity.AccountService;
 import io.temporal._1.firstworkflow.solution2.workflow.activity.AccountServiceImpl;
@@ -20,63 +16,67 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 public class MoneyTransferWorkflowImplTest {
 
-  private final String myWorkflowId = "myWorkflow";
+    private final String myWorkflowId = "myWorkflow";
 
-  @Rule
-  public TestWorkflowRule testWorkflowRule =
-      TestWorkflowRule.newBuilder().setDoNotStart(true).build();
+    @Rule
+    public TestWorkflowRule testWorkflowRule =
+            TestWorkflowRule.newBuilder().setDoNotStart(true).build();
 
-  @After
-  public void shutdown() {
-    testWorkflowRule.getTestEnvironment().shutdown();
-  }
+    @After
+    public void shutdown() {
+        testWorkflowRule.getTestEnvironment().shutdown();
+    }
 
-  @Test
-  public void testTransfer() {
+    @Test
+    public void testTransfer() {
 
-    AccountService accountService = Mockito.mock(AccountServiceImpl.class);
+        AccountService accountService = Mockito.mock(AccountServiceImpl.class);
 
-    Worker worker = testWorkflowRule.getWorker();
-    worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
-    worker.registerActivitiesImplementations(accountService);
+        Worker worker = testWorkflowRule.getWorker();
+        worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+        worker.registerActivitiesImplementations(accountService);
 
-    // Start server
-    testWorkflowRule.getTestEnvironment().start();
+        // Start server
+        testWorkflowRule.getTestEnvironment().start();
 
-    final WorkflowOptions options =
-        WorkflowOptions.newBuilder()
-            .setWorkflowId(myWorkflowId)
-            .setTaskQueue(testWorkflowRule.getTaskQueue())
-            .build();
+        final WorkflowOptions options =
+                WorkflowOptions.newBuilder()
+                        .setWorkflowId(myWorkflowId)
+                        .setTaskQueue(testWorkflowRule.getTaskQueue())
+                        .build();
 
-    final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
+        final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
 
-    ///////////
+        ///////////
 
-    final MoneyTransferWorkflow workflow =
-        workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, options);
+        final MoneyTransferWorkflow workflow =
+                workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
-    TransferRequest transferRequest =
-        new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
+        TransferRequest transferRequest =
+                new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
 
-    // Start workflow
-    String result = workflow.transfer(transferRequest);
+        // Start workflow
+        String result = workflow.transfer(transferRequest);
 
-    DescribeWorkflowExecutionResponse describeResponse =
-        new DescribeWorkflowExecution(myWorkflowId, testWorkflowRule).get();
+        DescribeWorkflowExecutionResponse describeResponse =
+                new DescribeWorkflowExecution(myWorkflowId, testWorkflowRule).get();
 
-    Assert.assertEquals(
-        describeResponse.getWorkflowExecutionInfo().getStatus(),
-        WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
+        Assert.assertEquals(
+                describeResponse.getWorkflowExecutionInfo().getStatus(),
+                WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_COMPLETED);
 
-    Assert.assertEquals(result, "done");
+        Assert.assertEquals(result, "done");
 
-    verify(accountService, times(1)).deposit(any());
-    verify(accountService, times(1)).withdraw(any());
+        verify(accountService, times(1)).deposit(any());
+        verify(accountService, times(1)).withdraw(any());
 
-    /////////////
+        /////////////
 
-  }
+    }
 }
