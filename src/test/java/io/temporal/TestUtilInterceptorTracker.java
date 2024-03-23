@@ -58,12 +58,12 @@ public class TestUtilInterceptorTracker {
 
     }
 
-    private void waitUntilTrue(Awaitable r) {
+    public static void waitUntilTrue(Awaitable r) {
         waitUntilTrue(r,1000);
     }
 
 
-    private void waitUntilTrue(Awaitable r, int timeout) {
+    public static void waitUntilTrue(Awaitable r, int timeout) {
         r.returnWhenTrue(timeout);
     }
 
@@ -117,7 +117,7 @@ public class TestUtilInterceptorTracker {
 
         private final Condition condition;
 
-        private Awaitable(Condition condition) {
+        public Awaitable(Condition condition) {
             this.condition = condition;
         }
 
@@ -148,7 +148,7 @@ public class TestUtilInterceptorTracker {
 
         }
 
-        interface Condition {
+        public interface Condition {
             boolean check();
         }
     }
