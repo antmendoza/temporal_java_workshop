@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.solution;
+package io.temporal._final.solution;
 
 import io.temporal.TestEnvironment;
 import io.temporal.TestUtilInterceptorTracker;
@@ -6,9 +6,9 @@ import io.temporal.TestUtilWorkerInterceptor;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
-import io.temporal._final.alltogether.solution.workflow.AccountWorkflow;
-import io.temporal._final.alltogether.solution.workflow.AccountWorkflowImpl;
-import io.temporal._final.alltogether.solution.workflow.child.MoneyTransferWorkflowImpl;
+import io.temporal._final.solution.workflow.AccountWorkflow;
+import io.temporal._final.solution.workflow.AccountWorkflowImpl;
+import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactoryOptions;
@@ -23,7 +23,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static io.temporal._final.alltogether.WorkerProcess.TASK_QUEUE;
+import static io.temporal._final.WorkerProcess.TASK_QUEUE;
 
 public class E2ETest {
 

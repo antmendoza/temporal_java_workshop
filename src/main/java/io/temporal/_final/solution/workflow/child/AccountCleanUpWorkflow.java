@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.solution.workflow.child;
+package io.temporal._final.solution.workflow.child;
 
 import io.temporal.model.Account;
 import io.temporal.workflow.WorkflowInterface;

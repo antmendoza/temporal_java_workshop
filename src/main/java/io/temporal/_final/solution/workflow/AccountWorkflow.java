@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.solution.workflow;
+package io.temporal._final.solution.workflow;
 
 import io.temporal.model.*;
 import io.temporal.workflow.*;

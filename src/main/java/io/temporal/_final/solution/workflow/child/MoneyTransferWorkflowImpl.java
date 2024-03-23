@@ -1,7 +1,7 @@
-package io.temporal._final.alltogether.solution.workflow.child;
+package io.temporal._final.solution.workflow.child;
 
 import io.temporal.activity.ActivityOptions;
-import io.temporal._final.alltogether.solution.workflow.activity.NotificationService;
+import io.temporal._final.solution.workflow.activity.NotificationService;
 import io.temporal.model.TransferRequest;
 import io.temporal.service.AccountService;
 import io.temporal.service.DepositRequest;

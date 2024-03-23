@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.solution.workflow.child;
+package io.temporal._final.solution.workflow.child;
 
 import io.temporal.model.TransferRequest;
 import io.temporal.workflow.SignalMethod;

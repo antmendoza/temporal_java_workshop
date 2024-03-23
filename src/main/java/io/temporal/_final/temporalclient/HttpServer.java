@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.temporalclient;
+package io.temporal._final.temporalclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -6,8 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import io.temporal._final.alltogether.WorkerProcess;
-import io.temporal._final.alltogether.solution.workflow.AccountWorkflow;
+import io.temporal._final.WorkerProcess;
+import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;

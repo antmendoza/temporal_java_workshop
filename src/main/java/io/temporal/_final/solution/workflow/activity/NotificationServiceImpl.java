@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.solution.workflow.activity;
+package io.temporal._final.solution.workflow.activity;
 
 import io.temporal.model.Account;
 import io.temporal.model.TransferRequest;

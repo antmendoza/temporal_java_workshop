@@ -1,4 +1,4 @@
-package io.temporal._final.alltogether.solution.workflow;
+package io.temporal._final.solution.workflow;
 
 import io.temporal.TestEnvironment;
 import io.temporal.TestUtilInterceptorTracker;
@@ -8,13 +8,13 @@ import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal._final.alltogether.solution.workflow.child.AccountCleanUpWorkflow;
-import io.temporal._final.alltogether.solution.workflow.child.AccountCleanUpWorkflowImpl;
-import io.temporal._final.alltogether.solution.workflow.child.MoneyTransferWorkflowImpl;
-import io.temporal._final.alltogether.solution.workflow.activity.AccountService;
-import io.temporal._final.alltogether.solution.workflow.activity.AccountServiceImpl;
-import io.temporal._final.alltogether.solution.workflow.activity.NotificationService;
-import io.temporal._final.alltogether.solution.workflow.activity.NotificationServiceImpl;
+import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflow;
+import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
+import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
+import io.temporal._final.solution.workflow.activity.AccountService;
+import io.temporal._final.solution.workflow.activity.AccountServiceImpl;
+import io.temporal._final.solution.workflow.activity.NotificationService;
+import io.temporal._final.solution.workflow.activity.NotificationServiceImpl;
 import io.temporal.model.Account;
 import io.temporal.model.Transfer;
 import io.temporal.testing.TestWorkflowRule;
