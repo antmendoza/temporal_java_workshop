@@ -2,14 +2,12 @@ package io.temporal._final.httpserver;
 
 import io.temporal._final.WorkerProcess;
 import io.temporal._final.solution.workflow.AccountWorkflow;
+import io.temporal._final.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.model.Account;
-import io.temporal.model.AccountSummaryResponse;
-import io.temporal.model.CloseAccountResponse;
-import io.temporal.model.TransferRequest;
+import io.temporal.model.*;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -166,8 +164,64 @@ public class AccountController {
     }
 
 
+    @GetMapping("/pending-approvals")
+    public String pendingApprovals(Model model) {
+
+        // We can query visibility API anytime as long as Temporal server is running
+        //
+        // Visibility API is eventually consistent, real word application should
+        // store data in external db for high throughput and real time data
+
+        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestState%3D%22ApprovalRequired%22
+        final String query = "WorkflowType=\"MoneyTransferWorkflow\" and ExecutionStatus=\"Running\" and " +
+                "TransferRequestState=\"ApprovalRequired\"";
+
+        final List<PendingApprovalInfoView> pendingApprovals = workflowClient.getWorkflowServiceStubs()
+                .blockingStub()
+                .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
+                        .setQuery(query)
+                        .setNamespace(namespace)
+                        .build()).getExecutionsList().stream().map(execution -> {
+
+
+                    final String workflowId = execution.getExecution().getWorkflowId();
+
+                    final TransferRequest transferRequest =
+                            workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, workflowId).getTransferRequest();
+
+                    return new PendingApprovalInfoView(workflowId, transferRequest);
+                }).toList();
+
+
+        model.addAttribute("pendingApprovals", pendingApprovals);
+
+        return "pending-approvals"; //view
+    }
+
+
+    @GetMapping("/pending-approvals/{requestId}/{state}")
+    public String submitApproval(@PathVariable String requestId,
+                                 @PathVariable String state,
+                                 Model model) {
+
+
+        //RequestId is workflowId,
+        String workflowId = requestId;
+        final MoneyTransferWorkflow moneyTransferWorkflow = workflowClient.newWorkflowStub(MoneyTransferWorkflow.class,
+                workflowId);
+
+        final TransferState transferState = (state.equals("approve") ? TransferState.Approved : TransferState.ApprovalDenied);
+
+        //Signal to approve / deny operation
+        moneyTransferWorkflow.approveTransfer(transferState);
+
+        return "redirect:/accounts"; //view
+
+    }
+
+
     private int getRandom(int max) {
-        return ((int) (Math.random() * max));
+        return 1 + ((int) (Math.random() * max));
     }
 
 

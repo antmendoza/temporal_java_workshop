@@ -1,10 +1,11 @@
 package io.temporal._final.solution.workflow.child;
 
-import io.temporal.activity.NotificationService;
 import io.temporal.activity.ActivityOptions;
+import io.temporal.activity.NotificationService;
+import io.temporal.common.SearchAttributeKey;
 import io.temporal.model.TransferRequest;
 import io.temporal.model.TransferResponse;
-import io.temporal.model.TransferStatus;
+import io.temporal.model.TransferState;
 import io.temporal.service.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
@@ -12,6 +13,7 @@ import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
 import java.time.Duration;
+
 
 public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
@@ -25,42 +27,55 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
                     NotificationService.class,
                     ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-    private TransferStatus transferStatus;
+    private final SearchAttributeKey<String> transferRequestState = SearchAttributeKey.forKeyword("TransferRequestState");
+    private TransferState transferState;
+    private boolean approveReceived = false;
+    private TransferRequest transferRequest;
 
     @Override
-    public TransferResponse transfer(TransferRequest transferRequest) {
+    public TransferResponse transfer(final TransferRequest transferRequest) {
+
+        this.transferRequest = transferRequest;
 
         log.info("Init transfer: " + transferRequest);
 
+        this.transferState = TransferState.ApprovalNotRequired;
+
         if (transferRequest.amount() > 100) {
+
+            transferState = TransferState.ApprovalRequired;
+
+            //Setting this SA will allow query workflows by `TransferRequestState="ApprovalRequired"`
+            Workflow.upsertTypedSearchAttributes(
+                    transferRequestState.valueSet(transferState.name())
+            );
 
             log.info("request need approval: " + transferRequest);
 
-
             // Wait until the signal is received or timeout reached
-            final Duration timeout = Duration.ofSeconds(10); // Can be days, years...
-            boolean authorizationReceivedWithinTimeOut = Workflow.await(timeout, () -> transferStatus != null);
+            final Duration timeout = Duration.ofSeconds(30); // Can be days, years...
+            boolean authorizationReceivedWithinTimeOut = Workflow.await(timeout, () -> approveReceived);
             if (!authorizationReceivedWithinTimeOut) {
-                transferStatus = TransferStatus.TimedOut;
+                transferState = TransferState.ApprovalTimedOut;
                 log.info("authorization not received within " + timeout);
-                return new TransferResponse(transferRequest, transferStatus);
+                return new TransferResponse(transferRequest, transferState);
             }
 
 
             // Or we can just wait forever
             // Workflow.await(() -> transferStatus != null);
-            log.info("transferApproved: " + transferStatus);
+            log.info("transferApproved: " + transferState);
 
-            if (TransferStatus.Denied.equals(transferStatus)) {
+            if (TransferState.ApprovalDenied.equals(transferState)) {
                 // notify customer...
                 notificationService.transferDenied(transferRequest);
                 log.info("notify customer, transferApproved: " + transferRequest);
-                return new TransferResponse(transferRequest, transferStatus);
+                return new TransferResponse(transferRequest, transferState);
 
             }
         }
 
-        this.transferStatus = TransferStatus.Approved;
+
         accountService.withdraw(
                 new WithdrawRequest(
                         transferRequest.fromAccountId(),
@@ -75,11 +90,20 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         notificationService.transferCompleted(transferRequest);
 
         log.info("End transfer: " + transferRequest);
-        return new TransferResponse(transferRequest, transferStatus);
+        return new TransferResponse(transferRequest, transferState);
     }
 
     @Override
-    public void approveTransfer(TransferStatus transferApproved) {
-        this.transferStatus = transferApproved;
+    public void approveTransfer(TransferState transferState) {
+        this.transferState = transferState;
+        this.approveReceived = true;
     }
+
+    @Override
+    public TransferRequest getTransferRequest() {
+        return this.transferRequest;
+    }
+
+
+
 }

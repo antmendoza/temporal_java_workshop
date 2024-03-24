@@ -9,7 +9,7 @@ import java.util.List;
 public interface AccountWorkflow {
 
     static String workflowIdFromAccountId(String accountId) {
-        return "account[" + accountId + "]";
+        return "accountId_" + accountId;
     }
 
     @WorkflowMethod
@@ -30,7 +30,6 @@ public interface AccountWorkflow {
 
     @QueryMethod
     Account getAccount();
-
 
 
 }

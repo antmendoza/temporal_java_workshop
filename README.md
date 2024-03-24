@@ -11,10 +11,15 @@ Temporal is a durable execution system ....
 
 ## Prerequisites
 
+To persist the state to a file on disk, use --db-filename add `--db-filename my_test.db`
+
 
 `temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true`
 - http://localhost:8233/
 
+
+Open other terminal an run the following command to create the search attribute
+`temporal operator search-attribute create --namespace default --type Keyword --name TransferRequestState`
 
 
 ## Modules:

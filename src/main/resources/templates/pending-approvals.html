@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>$ - Temporal bank- $</title>
+
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/5.3.3/css/bootstrap.min.css}"/>
+
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+    <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
+    <a class="navbar-brand" href="/accounts"> Accounts</a>
+    <a class="navbar-brand" href="/accounts-new"> New account</a>
+    <a class="navbar-brand" href="/pending-approvals"> Pending approvals</a>
+
+</nav>
+
+
+<div role="main" class="container">
+
+
+    <br/>
+    <br/>
+
+
+    <div id="tableContainer">
+
+
+        <br/>
+        <br/>
+        <br/>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Temporal-WorkflowId</th>
+                <th scope="col">Approval summary</th>
+                <th scope="col">#</th>
+                <th scope="col">#</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="pendingApproval: ${pendingApprovals}">
+                <td th:text="${pendingApproval.workflowId()}"/>
+                <td th:text="${pendingApproval.toString()}"/>
+                <td>
+                    <a th:href="@{'/pending-approvals/' + ${pendingApproval.workflowId()}+'/approve' }">Approve operation</a>
+                </td>
+                <td >
+                    <a th:href="@{'/pending-approvals/' + ${pendingApproval.workflowId()}+'/deny' }">Deny operation</a>
+                </td>
+
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+</div>
+
+<script type="text/javascript" th:src="@{webjars/bootstrap/5.3.3/js/bootstrap.min.js}"></script>
+
+</body>
+</html>

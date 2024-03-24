@@ -14,7 +14,7 @@ public interface AccountCleanUpWorkflow {
 
 
     static String workflowIdFromAccountId(String accountId) {
-        return "cleanup-account-[" + accountId + "]";
+        return "cleanup-accountId_" + accountId;
     }
 
 }
