@@ -9,6 +9,7 @@ import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
+import io.temporal.model.AccountSummaryResponse;
 import io.temporal.model.Transfer;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -53,7 +54,7 @@ public class AccountController {
         // Visibility API is eventually consistent, real word application should
         // store data in external db for high throughput and real time data
 
-        final List<AccountInfo> openAccounts = workflowClient.getWorkflowServiceStubs()
+        final List<AccountInfo> accounts = workflowClient.getWorkflowServiceStubs()
                 .blockingStub()
                 .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
                         .setQuery("WorkflowType=\"AccountWorkflow\"")
@@ -63,13 +64,14 @@ public class AccountController {
                     final String workflowId = execution.getExecution().getWorkflowId();
 
                     //This query is executed by the workers, we need a worker running to query workflow executions
-                    Account account = workflowClient.newWorkflowStub(AccountWorkflow.class, workflowId).getAccount();
-                    return new AccountInfo(workflowId, account);
+                    AccountSummaryResponse accountSummary = workflowClient.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
+
+                    return new AccountInfo(workflowId, accountSummary);
 
                 }).toList();
 
 
-        model.addAttribute("openAccounts", openAccounts);
+        model.addAttribute("accounts", accounts);
 
         return "accounts"; //view
     }

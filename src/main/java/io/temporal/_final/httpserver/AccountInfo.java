@@ -1,6 +1,4 @@
 package io.temporal._final.httpserver;
 
-import io.temporal.model.Account;
-
-public record AccountInfo(String workflowId,  Account account) {
+public record AccountInfo(String workflowId, io.temporal.model.AccountSummaryResponse accountSummary) {
 }

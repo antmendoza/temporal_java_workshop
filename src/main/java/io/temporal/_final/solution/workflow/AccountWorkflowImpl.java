@@ -17,7 +17,7 @@ import java.util.List;
 public class AccountWorkflowImpl implements
         AccountWorkflow {
     private final Logger log = Workflow.getLogger(AccountWorkflowImpl.class.getSimpleName());
-    private final List<TransferRequest> requests = new ArrayList<>();
+    private final List<TransferRequest> pendingRequest = new ArrayList<>();
     private Account account;
     private boolean closeAccount = false;
     private List<Operation> operations = new ArrayList<>();
@@ -30,11 +30,11 @@ public class AccountWorkflowImpl implements
 
         while (!closeAccount) {
 
-            Workflow.await(() -> !requests.isEmpty() || closeAccount);
+            Workflow.await(() -> !pendingRequest.isEmpty() || closeAccount);
 
-            if (!requests.isEmpty()) {
+            if (!pendingRequest.isEmpty()) {
 
-                final TransferRequest transferRequest = requests.remove(0);
+                final TransferRequest transferRequest = pendingRequest.remove(0);
 
 
                 final MoneyTransferWorkflow child =
@@ -79,7 +79,7 @@ public class AccountWorkflowImpl implements
 
     @Override
     public void requestTransfer(final TransferRequest transferRequest) {
-        this.requests.add(transferRequest);
+        this.pendingRequest.add(transferRequest);
     }
 
     @Override
@@ -104,6 +104,11 @@ public class AccountWorkflowImpl implements
     @Override
     public List<List<Operation>> getOperations() {
         return List.of(this.operations);
+    }
+
+    @Override
+    public AccountSummaryResponse getAccountSummary() {
+        return new AccountSummaryResponse(account,operations);
     }
 
     @Override

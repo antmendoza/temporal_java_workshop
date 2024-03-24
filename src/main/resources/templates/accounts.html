@@ -7,7 +7,7 @@
     <title>Spring Boot Thymeleaf Hello World Example</title>
 
     <link rel="stylesheet" th:href="@{webjars/bootstrap/5.3.3/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+
 
 </head>
 
@@ -25,40 +25,91 @@
 <div role="main" class="container">
 
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">Temporal-WorkflowId</th>
-            <th scope="col">AccountId</th>
-            <th scope="col">CustomerId</th>
-            <th scope="col">Amount</th>
-            <th scope="col">#</th>
-            <th scope="col">#</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        <tr th:each="accountInfo: ${openAccounts}">
-            <td th:text="${accountInfo.workflowId()}"/>
-            <td th:text="${accountInfo.account().accountId()}"/>
-            <td th:text="${accountInfo.account().customerId()}"/>
-            <td th:text="${accountInfo.account().amount()}"></td>
-            <td>
-                <a th:href="@{'/transfer-request/' + ${accountInfo.account().accountId()}}">Transfer</a>
-            </td>
-            <td>
-                <a href="">Close</a>
-            </td>
-        </tr>
-
-        </tbody>
-    </table>
+    <br/>
+    <br/>
 
 
-    <a role="button" href="/accounts-new"> New Account</a>
+    <div id="tableContainer">
+
+
+        <a role="button" href="/accounts-new"> New Account</a>
+        <br/>
+        <br/>
+        <br/>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Temporal-WorkflowId</th>
+                <th scope="col">AccountId</th>
+                <th scope="col">CustomerId</th>
+                <th scope="col">Amount</th>
+                <th scope="col">#</th>
+                <th scope="col">#</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="accountInfo: ${accounts}">
+                <td th:text="${accountInfo.workflowId()}"/>
+                <td th:text="${accountInfo.accountSummary().account().accountId()}"/>
+                <td th:text="${accountInfo.accountSummary().account().customerId()}"/>
+                <td th:text="${accountInfo.accountSummary().account().amount()}"></td>
+                <td>
+                    <a th:href="@{'/transfer-request/' + ${accountInfo.accountSummary().account().accountId()}}">Transfer</a>
+                </td>
+                <td>
+                    <a href="">Close</a>
+                </td>
+                <td>
+                    <a href="#" id="solution0" th:attr="onclick=|showDetails('${accountInfo.workflowId()}')|">Show
+                        details </a> <br>
+                    <div hidden th:id="${accountInfo.workflowId()}">
+                        <h3 th:text="'AccountId: ' + ${accountInfo.workflowId()}" />
+                        <h5 th:text="'Amount: ' + ${accountInfo.accountSummary().account().amount()}" />
+                        <ul>
+                            <li th:each="operation: ${accountInfo.accountSummary().operations()}" th:text="${operation.transferResponse().toString()}">
+                        </ul>
+                    </div>
+                </td>
+
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+
+    <div id="details">
+        <div id="accountDetails" hidden></div>
+        <div id="closeDetails" hidden>
+            <a href="#"  th:attr="onclick=|closeDetails()|">Close </a> <br>
+        </div>
+    </div>
+
+
 
 </div>
 
 <script type="text/javascript" th:src="@{webjars/bootstrap/5.3.3/js/bootstrap.min.js}"></script>
+
+<script>
+    function showDetails(id) {
+
+        const details = document.getElementById(id).innerHTML;
+        document.getElementById("accountDetails").innerHTML = details
+        document.getElementById("tableContainer").hidden=true;
+        document.getElementById("closeDetails").hidden=false;
+        document.getElementById("accountDetails").hidden=false;
+    }
+
+
+    function closeDetails() {
+        document.getElementById("tableContainer").hidden=false;
+        document.getElementById("closeDetails").hidden=true;
+        document.getElementById("accountDetails").hidden=true;
+
+
+    }
+</script>
 </body>
 </html>

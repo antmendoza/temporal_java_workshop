@@ -2,7 +2,6 @@ package io.temporal._final.solution.workflow;
 
 import io.temporal.model.*;
 import io.temporal.workflow.*;
-import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 
 import java.util.List;
 
@@ -28,6 +27,9 @@ public interface AccountWorkflow {
     @QueryMethod
     List<List<Operation>> getOperations();
 
+
+    @QueryMethod
+    AccountSummaryResponse getAccountSummary();
 
     @QueryMethod
     Account getAccount();
