@@ -13,7 +13,7 @@ Temporal is a durable execution system ....
 
 
 `temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true`
-
+- http://localhost:8233/
 
 
 

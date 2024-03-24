@@ -6,6 +6,7 @@ import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.service.BankingClient;
+import io.temporal.service.NotificationServiceImpl;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
@@ -49,6 +50,7 @@ public class WorkerProcess {
         worker.registerWorkflowImplementationTypes(
                 AccountWorkflowImpl.class, MoneyTransferWorkflowImpl.class);
         worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
+        worker.registerActivitiesImplementations(new NotificationServiceImpl());
 
         factory.start();
     }

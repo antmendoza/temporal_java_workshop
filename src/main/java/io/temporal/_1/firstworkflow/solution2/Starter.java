@@ -29,7 +29,7 @@ public class Starter {
                 client.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
         TransferRequest transferRequest =
-                new TransferRequest("fromAccount", "toAccount", "referenceId", 200);
+                new TransferRequest("fromAccount", "toAccount", 200);
         // Sync, blocking invocation
         // workflow.transfer(transferRequest);
 

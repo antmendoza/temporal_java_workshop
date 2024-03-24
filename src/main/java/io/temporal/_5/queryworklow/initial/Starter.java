@@ -27,6 +27,6 @@ public class Starter {
         final MoneyTransferWorkflow workflow =
                 client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-        workflow.transfer(new TransferRequest("fromAccount", "toAccount", "referenceId", 2000));
+        workflow.transfer(new TransferRequest("fromAccount", "toAccount", 2000));
     }
 }

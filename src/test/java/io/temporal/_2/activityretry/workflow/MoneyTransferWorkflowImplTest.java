@@ -60,7 +60,7 @@ public class MoneyTransferWorkflowImplTest {
                 workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
         TransferRequest transferRequest =
-                new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
+                new TransferRequest("fromAccount", "toAccount", 1.23);
 
         // Start workflow sync
         workflow.transfer(transferRequest);
@@ -116,7 +116,7 @@ public class MoneyTransferWorkflowImplTest {
                 workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
         TransferRequest transferRequest =
-                new TransferRequest("fromAccount", "toAccount", "reference1", 1.23);
+                new TransferRequest("fromAccount", "toAccount", 1.23);
 
         // Start workflow sync
         workflow.transfer(transferRequest);

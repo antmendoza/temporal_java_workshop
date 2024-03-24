@@ -2,18 +2,22 @@ package io.temporal._final.httpserver;
 
 import io.temporal._final.WorkerProcess;
 import io.temporal._final.solution.workflow.AccountWorkflow;
+import io.temporal._final.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.ListOpenWorkflowExecutionsRequest;
+import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
+import io.temporal.model.Transfer;
+import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +39,6 @@ public class AccountController {
     }
 
 
-
     @GetMapping("/")
     public String defaultView(Model model) {
         return accountsView(model); //view
@@ -46,20 +49,24 @@ public class AccountController {
     public String accountsView(Model model) {
 
         // We can query visibility API anytime as long as Temporal server is running
+        //
+        // Visibility API is eventually consistent, real word application should
+        // store data in external db for high throughput and real time data
+
         final List<AccountInfo> openAccounts = workflowClient.getWorkflowServiceStubs()
                 .blockingStub()
-                .listOpenWorkflowExecutions(ListOpenWorkflowExecutionsRequest.newBuilder()
+                .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
+                        .setQuery("WorkflowType=\"AccountWorkflow\"")
                         .setNamespace("default")
                         .build()).getExecutionsList().stream().map((execution) ->
                 {
                     final String workflowId = execution.getExecution().getWorkflowId();
 
-                    //This query is executed by our workers, we need a worker running to query a workflow
+                    //This query is executed by the workers, we need a worker running to query workflow executions
                     Account account = workflowClient.newWorkflowStub(AccountWorkflow.class, workflowId).getAccount();
                     return new AccountInfo(workflowId, account);
 
                 }).toList();
-
 
 
         model.addAttribute("openAccounts", openAccounts);
@@ -68,24 +75,18 @@ public class AccountController {
     }
 
 
-
     @GetMapping("/accounts-new")
-    public String newAccountView_(Model model) {
+    public String newAccountView(Model model) {
 
         final String accountId = "" + getRandom(1000) + System.currentTimeMillis();
         final String customerId = "" + getRandom(1000) + System.currentTimeMillis();
         final int amount = getRandom(1000);
-        Account account = new Account(accountId,customerId, amount);
+        Account account = new Account(accountId, customerId, amount);
 
         model.addAttribute("account", account);
 
         return "account-new"; //view
     }
-
-
-
-
-
 
 
     @PostMapping("/accounts")
@@ -102,14 +103,49 @@ public class AccountController {
         final WorkflowExecution workflow = WorkflowClient.start(accountWorkflow::open,
                 account);
 
-        model.addAttribute("new-workflowId", workflowId);
+
+        return "redirect:/accounts"; //view
+    }
+
+
+    ///
+
+
+
+    @GetMapping("/transfer-request/{accountId}")
+    public String newTransferView(@PathVariable String accountId, Model model) {
+
+        final String toAccountId = "" + getRandom(1000) + System.currentTimeMillis();
+        final int amount = getRandom(10);
+        TransferRequest transferRequest = new TransferRequest(accountId, toAccountId, amount);
+
+        model.addAttribute("transferRequest", transferRequest);
+
+        return "transfer-request"; //view
+    }
+
+
+
+    @PostMapping("/transfers")
+    public String requestTransfer(@ModelAttribute("transferRequest") TransferRequest transferRequest,
+                                  Model model) {
+
+
+        //We need the workflow id to signal it to make the transfer
+        final String workflowId = AccountWorkflow.workflowIdFromAccountId(transferRequest.fromAccountId());
+
+        final AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
+                workflowId);
+
+        //Signals are async request to server-> workflow execution
+        accountWorkflow.requestTransfer(transferRequest);
 
         return "redirect:/accounts"; //view
     }
 
 
     private int getRandom(int max) {
-        return ((int) (Math.random() * max)) ;
+        return ((int) (Math.random() * max));
     }
 
 

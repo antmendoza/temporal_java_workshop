@@ -35,12 +35,10 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         accountService.withdraw(
                 new WithdrawRequest(
                         transferRequest.fromAccountId(),
-                        transferRequest.referenceId(),
                         transferRequest.amount()));
         accountService.deposit(
                 new DepositRequest(
                         transferRequest.toAccountId(),
-                        transferRequest.referenceId(),
                         transferRequest.amount()));
 
         log.info("End transfer: " + transferRequest);

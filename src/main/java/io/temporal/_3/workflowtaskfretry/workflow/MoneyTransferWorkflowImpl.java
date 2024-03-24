@@ -25,7 +25,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         double amount = transferRequest.amount();
         accountService.withdraw(
                 new WithdrawRequest(
-                        transferRequest.fromAccountId(), transferRequest.referenceId(), amount));
+                        transferRequest.fromAccountId(), amount));
 
         double depositAmount = amount;
         if (amount > 20) {
@@ -40,7 +40,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         }
         accountService.deposit(
                 new DepositRequest(
-                        transferRequest.toAccountId(), transferRequest.referenceId(), depositAmount));
+                        transferRequest.toAccountId(), depositAmount));
 
         log.info("End transfer: " + transferRequest);
     }

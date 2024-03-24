@@ -17,6 +17,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
 import io.temporal.model.Transfer;
+import io.temporal.model.TransferRequest;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactoryOptions;
@@ -89,9 +90,9 @@ public class AccountWorkflowImplTest {
 
 
         // Start 3 request to transfer money
-        workflow.requestTransfer(new Transfer("" + Math.random(), "customerId", 10));
-        workflow.requestTransfer(new Transfer("" + Math.random(), "customerId", 10));
-        workflow.requestTransfer(new Transfer("" + Math.random(), "customerId", 10));
+        workflow.requestTransfer(new TransferRequest(accountId, "" + Math.random(),  10));
+        workflow.requestTransfer(new TransferRequest(accountId, "" + Math.random(),  10));
+        workflow.requestTransfer(new TransferRequest(accountId, "" + Math.random(),  10));
 
 
         // It will start 3 child workflows, lets wait until those workflows finish

@@ -32,6 +32,8 @@
             <th scope="col">AccountId</th>
             <th scope="col">CustomerId</th>
             <th scope="col">Amount</th>
+            <th scope="col">#</th>
+            <th scope="col">#</th>
         </tr>
         </thead>
         <tbody>
@@ -40,7 +42,13 @@
             <td th:text="${accountInfo.workflowId()}"/>
             <td th:text="${accountInfo.account().accountId()}"/>
             <td th:text="${accountInfo.account().customerId()}"/>
-            <td th:text="${accountInfo.account().amount()}"/>
+            <td th:text="${accountInfo.account().amount()}"></td>
+            <td>
+                <a th:href="@{'/transfer-request/' + ${accountInfo.account().accountId()}}">Transfer</a>
+            </td>
+            <td>
+                <a href="">Close</a>
+            </td>
         </tr>
 
         </tbody>

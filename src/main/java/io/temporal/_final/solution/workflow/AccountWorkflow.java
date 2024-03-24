@@ -17,7 +17,7 @@ public interface AccountWorkflow {
     void open(Account account);
 
     @SignalMethod
-    void requestTransfer(Transfer transferRequest);
+    void requestTransfer(TransferRequest transferRequest);
 
     @UpdateMethod
     UpdateCustomerResponse updateCustomer(String newCustomerIdValue);

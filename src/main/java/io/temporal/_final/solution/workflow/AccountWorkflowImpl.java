@@ -17,7 +17,7 @@ import java.util.List;
 public class AccountWorkflowImpl implements
         AccountWorkflow {
     private final Logger log = Workflow.getLogger(AccountWorkflowImpl.class.getSimpleName());
-    private final List<Transfer> requests = new ArrayList<>();
+    private final List<TransferRequest> requests = new ArrayList<>();
     private Account account;
     private boolean closeAccount = false;
     private List<Operation> operations = new ArrayList<>();
@@ -33,17 +33,16 @@ public class AccountWorkflowImpl implements
             Workflow.await(() -> !requests.isEmpty() || closeAccount);
 
             if (!requests.isEmpty()) {
-                final Transfer transfer = requests.remove(0);
-                final String targetCustomer = transfer.targetCustomer();
 
-                final MoneyTransferWorkflow child = Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class);
+                final TransferRequest transferRequest = requests.remove(0);
 
 
-                final TransferRequest transferRequest = new TransferRequest(
-                        this.account.accountId(),
-                        targetCustomer,
-                        transfer.requestId(),
-                        transfer.amount());
+                final MoneyTransferWorkflow child =
+                        Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
+                                ChildWorkflowOptions.newBuilder()
+                                        .setWorkflowId(MoneyTransferWorkflow.createWorkflowId(transferRequest))
+                                        .build());
+
 
 
                 //Start and wait for the child workflow to complete
@@ -51,9 +50,10 @@ public class AccountWorkflowImpl implements
 
 
                 if (childRequestResponse.isApproved()) {
-                    this.account = this.account.subtract(transfer.amount());
+                    this.account = this.account.subtract(transferRequest.amount());
                     this.operations.add(new Operation(childRequestResponse));
                 }
+
             }
         }
 
@@ -78,7 +78,7 @@ public class AccountWorkflowImpl implements
     }
 
     @Override
-    public void requestTransfer(final Transfer transferRequest) {
+    public void requestTransfer(final TransferRequest transferRequest) {
         this.requests.add(transferRequest);
     }
 
