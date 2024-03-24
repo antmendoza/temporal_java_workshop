@@ -1,11 +1,14 @@
 package io.temporal._final;
 
 import io.temporal._final.solution.workflow.AccountWorkflowImpl;
-import io.temporal._final.solution.workflow.activity.AccountServiceImpl;
+import io.temporal.activity.AccountServiceImpl;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowClientOptions;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.serviceclient.WorkflowServiceStubsOptions;
+import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
@@ -17,12 +20,18 @@ public class WorkerProcess {
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+        final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
+                .newBuilder()
+                .setTarget("127.0.0.1:7233") //Default value
+                .build());
 
         /*
          * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
          */
-        WorkflowClient client = WorkflowClient.newInstance(service);
+        WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions
+                .newBuilder()
+                        .setNamespace("default") // Default value
+                .build());
 
         /*
          * Define the workflow factory. It is used to create workflow workers for a specific task queue.
@@ -34,7 +43,7 @@ public class WorkerProcess {
          * Define the workflow worker. Workflow workers listen to a defined task queue and process
          * workflows and activities.
          */
-        io.temporal.worker.Worker worker =
+        Worker worker =
                 factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
 
         worker.registerWorkflowImplementationTypes(

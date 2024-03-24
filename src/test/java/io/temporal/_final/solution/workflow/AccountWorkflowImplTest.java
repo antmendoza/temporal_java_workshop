@@ -3,10 +3,10 @@ package io.temporal._final.solution.workflow;
 import io.temporal.TestEnvironment;
 import io.temporal.TestUtilInterceptorTracker;
 import io.temporal.TestUtilWorkerInterceptor;
-import io.temporal._final.solution.workflow.activity.AccountService;
-import io.temporal._final.solution.workflow.activity.AccountServiceImpl;
-import io.temporal._final.solution.workflow.activity.NotificationService;
-import io.temporal._final.solution.workflow.activity.NotificationServiceImpl;
+import io.temporal.activity.AccountService;
+import io.temporal.activity.AccountServiceImpl;
+import io.temporal.activity.NotificationService;
+import io.temporal.activity.NotificationServiceImpl;
 import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflow;
 import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
@@ -88,7 +88,7 @@ public class AccountWorkflowImplTest {
         WorkflowClient.start(workflow::open, new Account(accountId, "customerId", 50));
 
 
-        // Strat 3 request to transfer money from one account to another
+        // Start 3 request to transfer money
         workflow.requestTransfer(new Transfer("" + Math.random(), "customerId", 10));
         workflow.requestTransfer(new Transfer("" + Math.random(), "customerId", 10));
         workflow.requestTransfer(new Transfer("" + Math.random(), "customerId", 10));

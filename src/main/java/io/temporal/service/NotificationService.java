@@ -1,4 +1,4 @@
-package io.temporal._final.solution.workflow.activity;
+package io.temporal.service;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

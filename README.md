@@ -1,9 +1,21 @@
 # Introduction
 
+
+
+
 Temporal is a durable execution system ....
 
 //TODO Diagrams and stuff...
 //TODO start with update workflow
+
+
+## Prerequisites
+
+
+`temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true`
+
+
+
 
 ## Modules:
 

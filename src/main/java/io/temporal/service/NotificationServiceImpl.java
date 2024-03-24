@@ -1,4 +1,4 @@
-package io.temporal._final.solution.workflow.activity;
+package io.temporal.service;
 
 import io.temporal.model.Account;
 import io.temporal.model.TransferRequest;
@@ -18,12 +18,10 @@ public class NotificationServiceImpl implements
     @Override
     public void transferDenied(final TransferRequest transferRequest) {
         log.info("transferDenied: Sending notification" + transferRequest);
-
     }
 
     @Override
     public void transferCompleted(final TransferRequest transferRequest) {
         log.info("transferDenied: Sending notification" + transferRequest);
-
     }
 }

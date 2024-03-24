@@ -1,6 +1,6 @@
 package io.temporal._final.solution.workflow.child;
 
-import io.temporal._final.solution.workflow.activity.NotificationService;
+import io.temporal.activity.NotificationService;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.model.Account;
 import io.temporal.workflow.Workflow;
@@ -23,7 +23,7 @@ public class AccountCleanUpWorkflowImpl implements
                         .build());
 
 
-        //This is just to demonstrate that the child workflow run belong, and independently the parent
+        //This is just to demonstrate that the child workflow can continue running, independently
         Workflow.sleep(Duration.ofSeconds(5));
 
 

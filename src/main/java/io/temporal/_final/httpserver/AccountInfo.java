@@ -1,4 +1,4 @@
-package io.temporal.httpserver;
+package io.temporal._final.httpserver;
 
 import io.temporal.model.Account;
 
