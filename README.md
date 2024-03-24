@@ -1,6 +1,8 @@
 # Introduction
 
+State vs status
 
+Balance vs amount
 
 
 Temporal is a durable execution system ....
