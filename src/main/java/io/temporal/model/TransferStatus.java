@@ -1,4 +1,4 @@
-package io.temporal._final.solution.workflow.child;
+package io.temporal.model;
 
 public enum TransferStatus {
     Approved,

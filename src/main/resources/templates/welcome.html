@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Spring Boot Thymeleaf Hello World Example</title>
+
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/5.3.3/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+    <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
+
+    <a class="navbar-brand" href="/"> Accounts</a>
+
+</nav>
+
+
+<div role="main" class="container">
+
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Temporal-WorkflowId</th>
+            <th scope="col">AccountId</th>
+            <th scope="col">CustomerId</th>
+            <th scope="col">Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:each="accountInfo: ${openAccounts}">
+            <td th:text="${accountInfo.workflowId()}" />
+            <td th:text="${accountInfo.account().accountId()}" />
+            <td th:text="${accountInfo.account().customerId()}" />
+            <td th:text="${accountInfo.account().amount()}" />
+        </tr>
+
+        </tbody>
+    </table>
+
+
+
+    <form>
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                   placeholder="Enter email">
+            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+        <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+</div>
+
+
+<!-- /.container -->
+
+<script type="text/javascript" th:src="@{webjars/bootstrap/5.3.3/js/bootstrap.min.js}"></script>
+<script>
+
+    function showAlert() {
+        alert("The button was clicked!");
+    }
+
+</script>
+
+</body>
+</html>

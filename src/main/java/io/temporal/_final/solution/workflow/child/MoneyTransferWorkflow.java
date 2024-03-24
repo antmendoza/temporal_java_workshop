@@ -1,6 +1,8 @@
 package io.temporal._final.solution.workflow.child;
 
 import io.temporal.model.TransferRequest;
+import io.temporal.model.TransferResponse;
+import io.temporal.model.TransferStatus;
 import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;

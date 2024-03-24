@@ -106,6 +106,11 @@ public class AccountWorkflowImpl implements
         return List.of(this.operations);
     }
 
+    @Override
+    public Account getAccount() {
+        return this.account;
+    }
+
 }
 
 

@@ -47,7 +47,7 @@ public class HttpController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("/s")
     public String index() {
         return "Greetings from Spring Boot!";
     }

@@ -8,12 +8,10 @@ import org.slf4j.Logger;
 public class NotificationServiceImpl implements
         NotificationService {
 
-
     private final Logger log = Workflow.getLogger(NotificationServiceImpl.class.getSimpleName());
 
     @Override
     public void accountClosed(final Account account) {
-
         log.info("sendNotificationClosingAccount: Sending notification" + account);
     }
 

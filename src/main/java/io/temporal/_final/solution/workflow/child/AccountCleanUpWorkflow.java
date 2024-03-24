@@ -8,12 +8,14 @@ import io.temporal.workflow.WorkflowMethod;
 public interface AccountCleanUpWorkflow {
 
 
-    static String workflowIdFromAccountId(String value) {
-        return "cleanup-account-[" + value + "]";
-    }
 
     @WorkflowMethod
     void run(Account account);
+
+
+    static String workflowIdFromAccountId(String accountId) {
+        return "cleanup-account-[" + accountId + "]";
+    }
 
 }
 

@@ -2,14 +2,15 @@ package io.temporal._final.solution.workflow;
 
 import io.temporal.model.*;
 import io.temporal.workflow.*;
+import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 
 import java.util.List;
 
 @WorkflowInterface
 public interface AccountWorkflow {
 
-    static String workflowIdFromAccountId(String value) {
-        return "account[" + value + "]";
+    static String workflowIdFromAccountId(String accountId) {
+        return "account[" + accountId + "]";
     }
 
     @WorkflowMethod
@@ -26,6 +27,12 @@ public interface AccountWorkflow {
 
     @QueryMethod
     List<List<Operation>> getOperations();
+
+
+    @QueryMethod
+    Account getAccount();
+
+
 
 }
 

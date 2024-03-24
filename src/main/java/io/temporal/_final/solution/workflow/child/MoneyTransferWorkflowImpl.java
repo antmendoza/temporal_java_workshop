@@ -3,6 +3,8 @@ package io.temporal._final.solution.workflow.child;
 import io.temporal._final.solution.workflow.activity.NotificationService;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.model.TransferRequest;
+import io.temporal.model.TransferResponse;
+import io.temporal.model.TransferStatus;
 import io.temporal.service.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;

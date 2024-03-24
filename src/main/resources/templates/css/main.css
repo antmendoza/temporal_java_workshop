@@ -1,0 +1,6 @@
+/* using flex */
+nav {
+    /* flex put all the child element in a single line */
+    display: flex;
+    gap: 1rem;
+}
