@@ -6,7 +6,10 @@ public record TransferResponse(TransferRequest transferRequest, TransferState tr
 
     @JsonIgnore
     public boolean isApproved() {
-        return TransferState.Approved.equals(this.transferState());
+        return TransferState.Approved.equals(this.transferState()) ||
+        TransferState.ApprovalNotRequired.equals(this.transferState())
+
+        ;
     }
 
 }
