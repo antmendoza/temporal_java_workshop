@@ -1,8 +1,9 @@
 package io.temporal._final;
 
 import io.temporal._final.solution.workflow.AccountWorkflowImpl;
-import io.temporal.activity.AccountServiceImpl;
+import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
+import io.temporal.activity.AccountServiceImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.service.BankingClient;
@@ -17,13 +18,15 @@ import io.temporal.worker.WorkerOptions;
 public class WorkerProcess {
 
     public static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
+    public static final String namespace = "default";// Default value
+    public static final String targetGRPC = "127.0.0.1:7233";//Default value
 
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
                 .newBuilder()
-                .setTarget("127.0.0.1:7233") //Default value
+                .setTarget(targetGRPC)
                 .build());
 
         /*
@@ -31,7 +34,7 @@ public class WorkerProcess {
          */
         WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions
                 .newBuilder()
-                        .setNamespace("default") // Default value
+                .setNamespace(namespace)
                 .build());
 
         /*
@@ -48,7 +51,7 @@ public class WorkerProcess {
                 factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
 
         worker.registerWorkflowImplementationTypes(
-                AccountWorkflowImpl.class, MoneyTransferWorkflowImpl.class);
+                AccountWorkflowImpl.class, MoneyTransferWorkflowImpl.class, AccountCleanUpWorkflowImpl.class);
         worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
         worker.registerActivitiesImplementations(new NotificationServiceImpl());
 

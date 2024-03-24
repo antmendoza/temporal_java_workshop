@@ -32,7 +32,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         log.info("Init transfer: " + transferRequest);
 
-        if (transferRequest.amount() > 1000) {
+        if (transferRequest.amount() > 100) {
 
             log.info("request need approval: " + transferRequest);
 
@@ -49,8 +49,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
             // Or we can just wait forever
             // Workflow.await(() -> transferStatus != null);
-
-
             log.info("transferApproved: " + transferStatus);
 
             if (TransferStatus.Denied.equals(transferStatus)) {

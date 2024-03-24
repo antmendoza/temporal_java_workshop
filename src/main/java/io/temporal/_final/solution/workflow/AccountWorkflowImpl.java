@@ -48,10 +48,10 @@ public class AccountWorkflowImpl implements
                 //Start and wait for the child workflow to complete
                 var childRequestResponse = child.transfer(transferRequest);
 
+                this.operations.add(new Operation(childRequestResponse));
 
                 if (childRequestResponse.isApproved()) {
                     this.account = this.account.subtract(transferRequest.amount());
-                    this.operations.add(new Operation(childRequestResponse));
                 }
 
             }
@@ -75,22 +75,14 @@ public class AccountWorkflowImpl implements
         // More info for PARENT_CLOSE_POLICY https://docs.temporal.io/workflows#parent-close-policy
         childExecution.get();
 
+
+        //TODO add return
+
     }
 
     @Override
     public void requestTransfer(final TransferRequest transferRequest) {
         this.pendingRequest.add(transferRequest);
-    }
-
-    @Override
-    public UpdateCustomerResponse updateCustomer(final String newCustomerIdValue) {
-
-        log.debug("updating customer: " + newCustomerIdValue);
-        final UpdateCustomerResponse updateCustomerResponse =
-                new UpdateCustomerResponse(this.account.customerId(), newCustomerIdValue);
-        this.account = new Account(this.account.accountId(), newCustomerIdValue, this.account.amount());
-        return updateCustomerResponse;
-
     }
 
 

@@ -2,15 +2,13 @@ package io.temporal._final.httpserver;
 
 import io.temporal._final.WorkerProcess;
 import io.temporal._final.solution.workflow.AccountWorkflow;
-import io.temporal._final.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.api.workflowservice.v1.ListOpenWorkflowExecutionsRequest;
 import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
 import io.temporal.model.AccountSummaryResponse;
-import io.temporal.model.Transfer;
+import io.temporal.model.CloseAccountResponse;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import org.springframework.stereotype.Controller;
@@ -22,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static io.temporal._final.WorkerProcess.namespace;
 
 @Controller
 public class AccountController {
@@ -54,19 +54,24 @@ public class AccountController {
         // Visibility API is eventually consistent, real word application should
         // store data in external db for high throughput and real time data
 
-        final List<AccountInfo> accounts = workflowClient.getWorkflowServiceStubs()
+        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
+        final String query = "WorkflowType=\"AccountWorkflow\"";
+        final List<AccountInfoView> accounts = workflowClient.getWorkflowServiceStubs()
                 .blockingStub()
                 .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
-                        .setQuery("WorkflowType=\"AccountWorkflow\"")
-                        .setNamespace("default")
+                        .setQuery(query)
+                        .setNamespace(namespace)
                         .build()).getExecutionsList().stream().map((execution) ->
                 {
                     final String workflowId = execution.getExecution().getWorkflowId();
 
                     //This query is executed by the workers, we need a worker running to query workflow executions
-                    AccountSummaryResponse accountSummary = workflowClient.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
+                    final AccountSummaryResponse accountSummary =
+                            workflowClient.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
 
-                    return new AccountInfo(workflowId, accountSummary);
+                    final String status = "WORKFLOW_EXECUTION_STATUS_RUNNING".equals(execution.getStatus().toString()) ? "Open" : "Closed";
+
+                    return new AccountInfoView(workflowId, accountSummary, status);
 
                 }).toList();
 
@@ -88,6 +93,23 @@ public class AccountController {
         model.addAttribute("account", account);
 
         return "account-new"; //view
+    }
+
+
+    //TODO PostMapping
+    @GetMapping("/accounts/{accountId}/close")
+    public String closeAccount(@PathVariable String accountId, Model model) {
+
+        //We need the workflow id to signal it to make the transfer
+        final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
+
+        final AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
+                workflowId);
+
+        //Signals are async request to server-> workflow execution
+        CloseAccountResponse response = accountWorkflow.closeAccount();
+
+        return "redirect:/accounts"; //view
     }
 
 
@@ -113,7 +135,6 @@ public class AccountController {
     ///
 
 
-
     @GetMapping("/transfer-request/{accountId}")
     public String newTransferView(@PathVariable String accountId, Model model) {
 
@@ -125,7 +146,6 @@ public class AccountController {
 
         return "transfer-request"; //view
     }
-
 
 
     @PostMapping("/transfers")

@@ -19,9 +19,6 @@ public interface AccountWorkflow {
     void requestTransfer(TransferRequest transferRequest);
 
     @UpdateMethod
-    UpdateCustomerResponse updateCustomer(String newCustomerIdValue);
-
-    @UpdateMethod
     CloseAccountResponse closeAccount();
 
     @QueryMethod

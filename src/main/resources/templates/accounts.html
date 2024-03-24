@@ -45,6 +45,7 @@
                 <th scope="col">Amount</th>
                 <th scope="col">#</th>
                 <th scope="col">#</th>
+                <th scope="col">#</th>
             </tr>
             </thead>
             <tbody>
@@ -54,12 +55,6 @@
                 <td th:text="${accountInfo.accountSummary().account().accountId()}"/>
                 <td th:text="${accountInfo.accountSummary().account().customerId()}"/>
                 <td th:text="${accountInfo.accountSummary().account().amount()}"></td>
-                <td>
-                    <a th:href="@{'/transfer-request/' + ${accountInfo.accountSummary().account().accountId()}}">Transfer</a>
-                </td>
-                <td>
-                    <a href="">Close</a>
-                </td>
                 <td>
                     <a href="#" id="solution0" th:attr="onclick=|showDetails('${accountInfo.workflowId()}')|">Show
                         details </a> <br>
@@ -71,6 +66,15 @@
                         </ul>
                     </div>
                 </td>
+                <td>
+                    <a th:if="${accountInfo.status == 'Open'}"
+                       th:href="@{'/transfer-request/' + ${accountInfo.accountSummary().account().accountId()}}">Request transfer</a>
+                </td>
+                <td >
+                    <a th:if="${accountInfo.status == 'Open'}"
+                       th:href="@{'/accounts/' + ${accountInfo.accountSummary().account().accountId()} +'/close'}">Close account</a>
+                </td>
+
 
             </tr>
 
@@ -82,7 +86,7 @@
     <div id="details">
         <div id="accountDetails" hidden></div>
         <div id="closeDetails" hidden>
-            <a href="#"  th:attr="onclick=|closeDetails()|">Close </a> <br>
+            <a href="#"  th:attr="onclick=|closeDetails()|">Back </a> <br>
         </div>
     </div>
 
