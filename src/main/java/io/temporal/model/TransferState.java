@@ -4,7 +4,6 @@ public enum TransferState {
     Approved,
     ApprovalNotRequired,
     ApprovalTimedOut,
-
     ApprovalRequired,
     ApprovalDenied
 }

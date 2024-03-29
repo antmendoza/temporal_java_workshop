@@ -1,4 +1,4 @@
-package io.temporal._final.httpserver;
+package io.temporal._final.springrunner;
 
 import io.temporal.model.AccountSummaryResponse;
 

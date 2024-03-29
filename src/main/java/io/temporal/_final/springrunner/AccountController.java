@@ -1,10 +1,11 @@
-package io.temporal._final.httpserver;
+package io.temporal._final.springrunner;
 
 import io.temporal._final.WorkerProcess;
 import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
+import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.*;
@@ -26,21 +27,23 @@ public class AccountController {
 
 
     final String taskQueue = WorkerProcess.TASK_QUEUE;
-    private final WorkflowClient workflowClient;
-    private final String message = "test";
+    private static WorkflowClient workflowClientExecutionAPI;
     private final List<String> tasks = Arrays.asList("a", "b", "c", "d", "e", "f", "g");
 
     public AccountController() {
 
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
-        workflowClient = WorkflowClient.newInstance(service);
+        if(workflowClientExecutionAPI == null){
+            final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+            workflowClientExecutionAPI = WorkflowClient.newInstance(service);
+        }
 
     }
 
 
     @GetMapping("/")
     public String defaultView(Model model) {
-        return accountsView(model); //view
+
+        return "redirect:/accounts"; //view
     }
 
 
@@ -54,8 +57,7 @@ public class AccountController {
 
         // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
         final String query = "WorkflowType=\"AccountWorkflow\"";
-        final List<AccountInfoView> accounts = workflowClient.getWorkflowServiceStubs()
-                .blockingStub()
+        final List<AccountInfoView> accounts = workflowClienVisibilityAPI()
                 .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
                         .setQuery(query)
                         .setNamespace(namespace)
@@ -65,7 +67,7 @@ public class AccountController {
 
                     //This query is executed by the workers, we need a worker running to query workflow executions
                     final AccountSummaryResponse accountSummary =
-                            workflowClient.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
+                            workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
 
                     final String status = "WORKFLOW_EXECUTION_STATUS_RUNNING".equals(execution.getStatus().toString()) ? "Open" : "Closed";
 
@@ -78,6 +80,7 @@ public class AccountController {
 
         return "accounts"; //view
     }
+
 
 
     @GetMapping("/accounts-new")
@@ -101,7 +104,7 @@ public class AccountController {
         //We need the workflow id to signal it to make the transfer
         final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
 
-        final AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
+        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
                 workflowId);
 
         //Signals are async request to server-> workflow execution
@@ -116,14 +119,13 @@ public class AccountController {
 
         final String workflowId = AccountWorkflow.workflowIdFromAccountId(account.accountId());
 
-        final AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
+        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
                 WorkflowOptions.newBuilder()
                         .setWorkflowId(workflowId)
                         .setTaskQueue(taskQueue)
                         .build());
 
-        final WorkflowExecution workflow = WorkflowClient.start(accountWorkflow::open,
-                account);
+        WorkflowClient.start(accountWorkflow::open, account);
 
 
         return "redirect:/accounts"; //view
@@ -154,7 +156,7 @@ public class AccountController {
         //We need the workflow id to signal it to make the transfer
         final String workflowId = AccountWorkflow.workflowIdFromAccountId(transferRequest.fromAccountId());
 
-        final AccountWorkflow accountWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class,
+        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
                 workflowId);
 
         //Signals are async request to server-> workflow execution
@@ -176,8 +178,7 @@ public class AccountController {
         final String query = "WorkflowType=\"MoneyTransferWorkflow\" and ExecutionStatus=\"Running\" and " +
                 "TransferRequestState=\"ApprovalRequired\"";
 
-        final List<PendingApprovalInfoView> pendingApprovals = workflowClient.getWorkflowServiceStubs()
-                .blockingStub()
+        final List<PendingApprovalInfoView> pendingApprovals = workflowClienVisibilityAPI()
                 .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
                         .setQuery(query)
                         .setNamespace(namespace)
@@ -187,7 +188,7 @@ public class AccountController {
                     final String workflowId = execution.getExecution().getWorkflowId();
 
                     final TransferRequest transferRequest =
-                            workflowClient.newWorkflowStub(MoneyTransferWorkflow.class, workflowId).getTransferRequest();
+                            workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class, workflowId).getTransferRequest();
 
                     return new PendingApprovalInfoView(workflowId, transferRequest);
                 }).toList();
@@ -207,7 +208,7 @@ public class AccountController {
 
         //RequestId is workflowId,
         String workflowId = requestId;
-        final MoneyTransferWorkflow moneyTransferWorkflow = workflowClient.newWorkflowStub(MoneyTransferWorkflow.class,
+        final MoneyTransferWorkflow moneyTransferWorkflow = workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class,
                 workflowId);
 
         final TransferState transferState = (state.equals("approve") ? TransferState.Approved : TransferState.ApprovalDenied);
@@ -222,6 +223,12 @@ public class AccountController {
 
     private int getRandom(int max) {
         return 1 + ((int) (Math.random() * max));
+    }
+
+
+    private static WorkflowServiceGrpc.WorkflowServiceBlockingStub workflowClienVisibilityAPI() {
+        return workflowClientExecutionAPI.getWorkflowServiceStubs()
+                .blockingStub();
     }
 
 

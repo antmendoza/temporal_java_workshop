@@ -36,13 +36,11 @@ public class AccountWorkflowImpl implements
 
                 final TransferRequest transferRequest = pendingRequest.remove(0);
 
-
                 final MoneyTransferWorkflow child =
                         Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
                                 ChildWorkflowOptions.newBuilder()
                                         .setWorkflowId(MoneyTransferWorkflow.createWorkflowId(transferRequest))
                                         .build());
-
 
 
                 //Start and wait for the child workflow to complete
@@ -94,13 +92,16 @@ public class AccountWorkflowImpl implements
 
 
     @Override
-    public List<List<Operation>> getOperations() {
-        return List.of(this.operations);
+    public AccountSummaryResponse getAccountSummary() {
+        return new AccountSummaryResponse(account, operations);
     }
 
+
     @Override
-    public AccountSummaryResponse getAccountSummary() {
-        return new AccountSummaryResponse(account,operations);
+    public CloseAccountResponse updateCustomerName() {
+
+
+        return null;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.temporal._final.httpserver;
+package io.temporal._final.springrunner;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

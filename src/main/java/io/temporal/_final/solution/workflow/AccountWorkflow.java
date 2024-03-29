@@ -21,8 +21,9 @@ public interface AccountWorkflow {
     @UpdateMethod
     CloseAccountResponse closeAccount();
 
-    @QueryMethod
-    List<List<Operation>> getOperations();
+
+    @UpdateMethod
+    CloseAccountResponse updateCustomerName();
 
 
     @QueryMethod
