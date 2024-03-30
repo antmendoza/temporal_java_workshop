@@ -17,19 +17,22 @@ public class AccountCleanUpWorkflowImpl implements
     @Override
     public void run(final Account account) {
 
+        log.info("Init for account: "+account);
+
         final NotificationService notificationService = Workflow.newActivityStub(NotificationService.class,
                 ActivityOptions.newBuilder()
                         .setStartToCloseTimeout(Duration.ofSeconds(3))
                         .build());
 
 
-        //This is just to demonstrate that the child workflow can continue running, independently
+        //This is only to demonstrate that the child workflow can continue running, independently of the parent
         Workflow.sleep(Duration.ofSeconds(5));
 
 
         notificationService.accountClosed(account);
 
-        log.info("sendNotificationClosingAccount  done for account: " + account);
+        log.info("Completed for account: "+account);
+
     }
 
 

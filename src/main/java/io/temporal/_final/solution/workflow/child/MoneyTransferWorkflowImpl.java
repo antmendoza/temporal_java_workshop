@@ -35,9 +35,9 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     @Override
     public TransferResponse transfer(final TransferRequest transferRequest) {
 
-        this.transferRequest = transferRequest;
+        log.info("Init for transfer: " + transferRequest);
 
-        log.info("Init transfer: " + transferRequest);
+        this.transferRequest = transferRequest;
 
         this.transferState = TransferState.ApprovalNotRequired;
 
@@ -46,50 +46,47 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             transferState = TransferState.ApprovalRequired;
 
             //Setting this SA will allow query workflows by `TransferRequestState="ApprovalRequired"`
+            //http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestState%3D%22ApprovalRequired%22
             Workflow.upsertTypedSearchAttributes(
                     transferRequestState.valueSet(transferState.name())
             );
 
-            log.info("request need approval: " + transferRequest);
+            log.info("Request need approval: " + transferRequest);
 
-            // Wait until the signal is received or timeout reached
+            // Wait until the signal is received or timeout
             final Duration timeout = Duration.ofSeconds(30); // Can be days, years...
             boolean authorizationReceivedWithinTimeOut = Workflow.await(timeout, () -> approveReceived);
             if (!authorizationReceivedWithinTimeOut) {
                 transferState = TransferState.ApprovalTimedOut;
-                log.info("authorization not received within " + timeout);
+                log.info("Authorization not received within " + timeout);
                 return new TransferResponse(transferRequest, transferState);
             }
 
 
-            // Or we can just wait forever
-            // Workflow.await(() -> transferStatus != null);
-            log.info("transferApproved: " + transferState);
+            log.info("TransferApproved: " + transferState);
 
             if (TransferState.ApprovalDenied.equals(transferState)) {
                 // notify customer...
                 notificationService.transferDenied(transferRequest);
-                log.info("notify customer, transferApproved: " + transferRequest);
+                log.info("Notify customer, transferApproved: " + transferRequest);
                 return new TransferResponse(transferRequest, transferState);
 
             }
         }
 
-
         accountService.withdraw(
                 new WithdrawRequest(
                         transferRequest.fromAccountId(),
-
                         transferRequest.amount()));
+
         accountService.deposit(
                 new DepositRequest(
                         transferRequest.toAccountId(),
-
                         transferRequest.amount()));
 
         notificationService.transferCompleted(transferRequest);
 
-        log.info("End transfer: " + transferRequest);
+        log.info("Completed for transfer: " + transferRequest);
         return new TransferResponse(transferRequest, transferState);
     }
 

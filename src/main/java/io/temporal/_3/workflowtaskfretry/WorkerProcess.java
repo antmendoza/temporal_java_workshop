@@ -5,6 +5,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.service.AccountServiceImpl;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
@@ -17,7 +18,10 @@ public class WorkerProcess {
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+        final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
+                .newBuilder()
+                .setTarget(io.temporal.Constants.targetGRPC)
+                .build());
 
         /*
          * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.

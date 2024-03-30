@@ -58,7 +58,10 @@ public class WorkerProcess {
   public static void main(String[] args) {
 
     // Get a Workflow service stub.
-    final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+    final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
+                .newBuilder()
+                .setTarget(io.temporal.Constants.targetGRPC)
+                .build());
 
     /*
      * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
@@ -97,7 +100,10 @@ public class Starter {
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+        final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
+                .newBuilder()
+                .setTarget(io.temporal.Constants.targetGRPC)
+                .build());
 
         final WorkflowClient client = WorkflowClient.newInstance(service);
 

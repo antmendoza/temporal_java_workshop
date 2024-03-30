@@ -11,6 +11,7 @@ import io.temporal.model.Account;
 import io.temporal.model.AccountSummaryResponse;
 import io.temporal.model.CloseAccountResponse;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
-import static io.temporal._final.WorkerProcess.namespace;
+import static io.temporal.Constants.namespace;
+
 
 @Controller
 public class AccountViewController {
@@ -33,7 +35,12 @@ public class AccountViewController {
     public AccountViewController() {
 
         if (workflowClientExecutionAPI == null) {
-            final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+            //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
+            final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
+                    .newBuilder()
+                    .setTarget(io.temporal.Constants.targetGRPC)
+                    .build());
+
             workflowClientExecutionAPI = WorkflowClient.newInstance(service);
         }
 
@@ -51,16 +58,15 @@ public class AccountViewController {
     @GetMapping("/")
     public String defaultView(Model model) {
 
-        return "redirect:/accounts"; //view
+        return "redirect:/accounts"; //navigate to view
     }
 
     @GetMapping("/accounts")
     public String accountsView(Model model) {
 
-        // We can query visibility API anytime as long as Temporal server is running
-        //
-        // Visibility API is eventually consistent, real word application should
-        // store data in external db for high throughput and real time data
+        // Visibility API is eventually consistent.
+        // Real word applications that requires high throughput and real time data should
+        // store/query data in external DBs
 
         // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
         final String query = "WorkflowType=\"AccountWorkflow\"";
@@ -72,7 +78,7 @@ public class AccountViewController {
                 {
                     final String workflowId = execution.getExecution().getWorkflowId();
 
-                    //This query is executed by the workers, we need a worker running to query workflow executions
+                    //This query is performed by our Worker entity (no internal state is stored in the server)
                     final AccountSummaryResponse accountSummary =
                             workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
 
@@ -85,20 +91,42 @@ public class AccountViewController {
 
         model.addAttribute("accounts", accounts);
 
-        return "accounts"; //view
+        return "accounts"; //navigate to view
+    }
+
+
+    @PostMapping("/accounts")
+    public String createAccount(@ModelAttribute("account") Account account, Model model) {
+
+        final String workflowId = AccountWorkflow.workflowIdFromAccountId(account.accountId());
+
+        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
+                WorkflowOptions.newBuilder()
+                        // workflowId should be our business id
+                        .setWorkflowId(workflowId)
+                        .setTaskQueue(taskQueue)
+                        .build());
+
+        // Start account workflow
+        WorkflowClient.start(accountWorkflow::open, account);
+
+
+        return "redirect:/accounts"; //navigate to view
     }
 
     @GetMapping("/accounts/new")
     public String newAccountView(Model model) {
 
+        //Dummy values
         final String accountId = "" + fakerInstance.random().nextInt(100_000, 1_000_000);
         final String customerName = fakerInstance.artist().name();
         final int balance = fakerInstance.random().nextInt(500, 1_000);
-        Account account = new Account(accountId, customerName, balance);
+
+        final Account account = new Account(accountId, customerName, balance);
 
         model.addAttribute("account", account);
 
-        return "account-new"; //view
+        return "account-new"; //navigate to view
     }
 
     //TODO PostMapping
@@ -111,28 +139,13 @@ public class AccountViewController {
         final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
                 workflowId);
 
-        //Signals are async request to server-> workflow execution
-        CloseAccountResponse response = accountWorkflow.closeAccount();
+        //UpdateWorkflow is a sync request, this code will block until the workflow method returns
+        accountWorkflow.closeAccount();
 
-        return "redirect:/accounts"; //view
+        return "redirect:/accounts"; //navigate to view
     }
 
-    @PostMapping("/accounts")
-    public String createAccount(@ModelAttribute("account") Account account, Model model) {
 
-        final String workflowId = AccountWorkflow.workflowIdFromAccountId(account.accountId());
-
-        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
-                WorkflowOptions.newBuilder()
-                        .setWorkflowId(workflowId)
-                        .setTaskQueue(taskQueue)
-                        .build());
-
-        WorkflowClient.start(accountWorkflow::open, account);
-
-
-        return "redirect:/accounts"; //view
-    }
 
 
 }

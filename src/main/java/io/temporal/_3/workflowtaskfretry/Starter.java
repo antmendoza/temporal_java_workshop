@@ -5,6 +5,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
+import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 
 public class Starter {
 
@@ -13,7 +14,10 @@ public class Starter {
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
-        final WorkflowServiceStubs service = WorkflowServiceStubs.newLocalServiceStubs();
+        final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
+                .newBuilder()
+                .setTarget(io.temporal.Constants.targetGRPC)
+                .build());
 
         final WorkflowClient client = WorkflowClient.newInstance(service);
 

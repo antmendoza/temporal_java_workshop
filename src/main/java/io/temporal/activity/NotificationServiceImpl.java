@@ -12,7 +12,7 @@ public class NotificationServiceImpl implements
 
     @Override
     public void accountClosed(final Account account) {
-        log.info("sendNotificationClosingAccount: Sending notification" + account);
+        log.info("accountClosed: Sending notification" + account);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class NotificationServiceImpl implements
 
     @Override
     public void transferCompleted(final TransferRequest transferRequest) {
-        log.info("transferDenied: Sending notification" + transferRequest);
+        log.info("transferCompleted: Sending notification" + transferRequest);
 
     }
 }

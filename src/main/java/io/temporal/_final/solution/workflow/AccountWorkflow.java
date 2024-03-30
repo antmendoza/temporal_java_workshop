@@ -1,9 +1,10 @@
 package io.temporal._final.solution.workflow;
 
-import io.temporal.model.*;
+import io.temporal.model.Account;
+import io.temporal.model.AccountSummaryResponse;
+import io.temporal.model.CloseAccountResponse;
+import io.temporal.model.TransferRequest;
 import io.temporal.workflow.*;
-
-import java.util.List;
 
 @WorkflowInterface
 public interface AccountWorkflow {
@@ -21,16 +22,8 @@ public interface AccountWorkflow {
     @UpdateMethod
     CloseAccountResponse closeAccount();
 
-
-    @UpdateMethod
-    CloseAccountResponse updateCustomerName();
-
-
     @QueryMethod
     AccountSummaryResponse getAccountSummary();
-
-    @QueryMethod
-    Account getAccount();
 
 
 }

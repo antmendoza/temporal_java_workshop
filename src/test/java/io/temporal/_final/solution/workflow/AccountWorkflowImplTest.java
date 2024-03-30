@@ -16,7 +16,6 @@ import io.temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
-import io.temporal.model.Transfer;
 import io.temporal.model.TransferRequest;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;

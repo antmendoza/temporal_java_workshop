@@ -25,6 +25,8 @@ public class AccountWorkflowImpl implements
 
     @Override
     public void open(final Account account) {
+
+        log.info("Account created " + account);
         this.account = account;
         this.operations = new ArrayList<>();
 
@@ -55,11 +57,16 @@ public class AccountWorkflowImpl implements
             }
         }
 
-
+        
+        // Closing account
+        // Start AccountCleanUpWorkflow that will be responsible for sending a notification to the customer,
+        // among other things...
         final AccountCleanUpWorkflow accountCleanUpWorkflow = Workflow.newChildWorkflowStub(AccountCleanUpWorkflow.class,
                 ChildWorkflowOptions
                         .newBuilder()
                         .setWorkflowId(AccountCleanUpWorkflow.workflowIdFromAccountId(account.accountId()))
+                        // AccountCleanUpWorkflow will continue running due to PARENT_CLOSE_POLICY_ABANDON
+                        // More info PARENT_CLOSE_POLICY https://docs.temporal.io/workflows#parent-close-policy
                         .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
                         .build());
 
@@ -68,14 +75,10 @@ public class AccountWorkflowImpl implements
         Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(accountCleanUpWorkflow);
 
         // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
-        // By exiting here we are closing the current workflow
-        // AccountCleanUpWorkflow will continue running due to PARENT_CLOSE_POLICY_ABANDON
-        // More info for PARENT_CLOSE_POLICY https://docs.temporal.io/workflows#parent-close-policy
         childExecution.get();
 
-
+        // By exiting here we are closing the current workflow
         //TODO add return
-
     }
 
     @Override
@@ -96,18 +99,6 @@ public class AccountWorkflowImpl implements
         return new AccountSummaryResponse(account, operations);
     }
 
-
-    @Override
-    public CloseAccountResponse updateCustomerName() {
-
-
-        return null;
-    }
-
-    @Override
-    public Account getAccount() {
-        return this.account;
-    }
 
 }
 

@@ -42,7 +42,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         accountService.deposit(
                 new DepositRequest(
                         transferRequest.toAccountId(),
-
                         transferRequest.amount()));
 
         log.info("End transfer: " + transferRequest);

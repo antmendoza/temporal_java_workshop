@@ -15,18 +15,20 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
+import static io.temporal.Constants.namespace;
+
 public class WorkerProcess {
 
     public static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
-    public static final String namespace = "default";// Default value
-    public static final String targetGRPC = "127.0.0.1:7233";//Default value
+
+
 
     public static void main(String[] args) {
 
         // Get a Workflow service stub.
         final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
                 .newBuilder()
-                .setTarget(targetGRPC)
+                .setTarget(io.temporal.Constants.targetGRPC)
                 .build());
 
         /*
