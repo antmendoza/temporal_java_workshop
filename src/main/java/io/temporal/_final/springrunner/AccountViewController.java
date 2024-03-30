@@ -3,13 +3,16 @@ package io.temporal._final.springrunner;
 import com.github.javafaker.Faker;
 import io.temporal._final.WorkerProcess;
 import io.temporal._final.solution.workflow.AccountWorkflow;
+import io.temporal.api.common.v1.WorkflowExecution;
+import io.temporal.api.enums.v1.WorkflowExecutionStatus;
+import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
+import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
 import io.temporal.model.AccountSummaryResponse;
-import io.temporal.model.CloseAccountResponse;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import org.springframework.stereotype.Controller;
@@ -82,7 +85,11 @@ public class AccountViewController {
                     final AccountSummaryResponse accountSummary =
                             workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
 
-                    final String status = "WORKFLOW_EXECUTION_STATUS_RUNNING".equals(execution.getStatus().toString()) ? "Open" : "Closed";
+
+                    final WorkflowExecutionStatus workflowExecutionStatus = getWorkflowExecutionStatus(workflowId);
+
+                    final String status = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING
+                            .equals(workflowExecutionStatus) ? "Open" : "Closed";
 
                     return new AccountInfoView(workflowId, accountSummary, status);
 
@@ -146,6 +153,18 @@ public class AccountViewController {
     }
 
 
+    private WorkflowExecutionStatus getWorkflowExecutionStatus(final String workflowId) {
+        final DescribeWorkflowExecutionResponse describeNamespaceResponse = workflowClientExecutionAPI.getWorkflowServiceStubs().blockingStub()
+                .describeWorkflowExecution(DescribeWorkflowExecutionRequest.newBuilder()
+                        .setNamespace(namespace)
+                        .setExecution(WorkflowExecution.newBuilder()
+                                .setWorkflowId(workflowId)
+                                .build())
+                        .build());
+
+        final WorkflowExecutionStatus workflowExecutionStatus = describeNamespaceResponse.getWorkflowExecutionInfo().getStatus();
+        return workflowExecutionStatus;
+    }
 
 
 }

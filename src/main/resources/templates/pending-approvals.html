@@ -5,24 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>$ - Temporal bank- $</title>
     <link rel="stylesheet" th:href="@{/bootstrap-5.0.2/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
-
 
 <body>
 
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-
-    <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
-    <a class="navbar-brand" href="/accounts"> Accounts</a>
-    <a class="navbar-brand" href="/pending-approvals"> Pending approvals <span id="pa_count"></span></a>
-
+    <div class="">
+        <a class="navbar-brand" href="/">
+            <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
+        </a>
+        <a class="navbar-brand" href="/accounts"> Accounts</a>
+        <a class="navbar-brand" id="pa_info" href="/pending-approvals"> <span id="pa_count"></span> Pending approvals </a>
+    </div>
 </nav>
 
 
 <div role="main" class="container">
 
 
-    <br/>
+
+<br/>
     <br/>
 
 
