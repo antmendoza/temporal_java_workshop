@@ -105,7 +105,10 @@ public class Starter {
                 .setTarget(io.temporal.Constants.targetGRPC)
                 .build());
 
-        final WorkflowClient client = WorkflowClient.newInstance(service);
+        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions
+                .newBuilder()
+                .setNamespace(io.temporal.Constants.namespace)
+                .build());
 
         final WorkflowOptions options =
                 WorkflowOptions.newBuilder()

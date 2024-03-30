@@ -2,6 +2,7 @@ package io.temporal._3.workflowtaskfretry;
 
 import io.temporal._3.workflowtaskfretry.workflow.MoneyTransferWorkflow;
 import io.temporal.client.WorkflowClient;
+import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -19,7 +20,10 @@ public class Starter {
                 .setTarget(io.temporal.Constants.targetGRPC)
                 .build());
 
-        final WorkflowClient client = WorkflowClient.newInstance(service);
+        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions
+                .newBuilder()
+                .setNamespace(io.temporal.Constants.namespace)
+                .build());
 
         // Create the workflow client stub. It is used to start our workflow execution.
         final WorkflowOptions build =

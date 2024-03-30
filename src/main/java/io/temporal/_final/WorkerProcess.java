@@ -15,7 +15,6 @@ import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
-import static io.temporal.Constants.namespace;
 
 public class WorkerProcess {
 
@@ -34,9 +33,9 @@ public class WorkerProcess {
         /*
          * Get a Workflow service client which can be used to start, Signal, and Query Workflow Executions.
          */
-        WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions
+        final WorkflowClient client = WorkflowClient.newInstance(service, WorkflowClientOptions
                 .newBuilder()
-                .setNamespace(namespace)
+                .setNamespace(io.temporal.Constants.namespace)
                 .build());
 
         /*
