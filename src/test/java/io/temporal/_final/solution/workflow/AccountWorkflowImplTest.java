@@ -86,7 +86,7 @@ public class AccountWorkflowImplTest {
                 .build());
 
         //Start workflow async, so we don't block the test here until the workflow completes
-        WorkflowClient.start(workflow::open, new Account(accountId, "customerId", 50));
+        WorkflowClient.start(workflow::open, new Account(accountId, "customerName", 50));
 
 
         // Start 3 request to transfer money
@@ -107,7 +107,7 @@ public class AccountWorkflowImplTest {
         var closeAccountResponse = workflow.closeAccount();
 
         //Verify amount in the account after closing it
-        final double accountAmount = closeAccountResponse.account().amount();
+        final double accountAmount = closeAccountResponse.account().balance();
         Assert.assertEquals(20, accountAmount, 0.2);
 
         testUtilInterceptorTracker.waitUntilWorkflowIsClosed(workflowId);

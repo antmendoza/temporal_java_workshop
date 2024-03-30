@@ -3,13 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <title>$ - Temporal bank- $</title>
-
-    <link rel="stylesheet" th:href="@{webjars/bootstrap/5.3.3/css/bootstrap.min.css}"/>
-
-
+    <link rel="stylesheet" th:href="@{/bootstrap-5.0.2/css/bootstrap.min.css}"/>
 </head>
+
 
 <body>
 
@@ -17,8 +14,7 @@
 
     <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
     <a class="navbar-brand" href="/accounts"> Accounts</a>
-    <a class="navbar-brand" href="/accounts-new"> New account</a>
-    <a class="navbar-brand" href="/pending-approvals"> Pending approvals</a>
+    <a class="navbar-brand" href="/pending-approvals"> Pending approvals <span id="pa_count"></span></a>
 
 </nav>
 
@@ -68,7 +64,12 @@
 
 </div>
 
-<script type="text/javascript" th:src="@{webjars/bootstrap/5.3.3/js/bootstrap.min.js}"></script>
+
+
+<script type="text/javascript"  th:src="@{/bootstrap-5.0.2/js/bootstrap.min.js}"></script>
+<script type="text/javascript"  th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script type="text/javascript"  th:src="@{/js/app.js}"></script>
+
 
 </body>
 </html>
