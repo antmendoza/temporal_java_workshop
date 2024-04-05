@@ -5,6 +5,7 @@ import io.temporal._final.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
+import io.temporal.failure.TemporalException;
 import io.temporal.model.TransferRequest;
 import io.temporal.model.TransferState;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -47,12 +49,66 @@ public class PendingApprovalViewController {
 
     }
 
-    private static WorkflowServiceGrpc.WorkflowServiceBlockingStub workflowClientVisibilityAPI() {
+    @GetMapping("/pending-approvals")
+    public String pendingApprovals(Model model) {
+
+        final List<PendingApprovalInfoView> pendingApprovals = queryPendingApprovals();
+
+
+        model.addAttribute("pendingApprovals", pendingApprovals);
+
+        return "pending-approvals"; //navigate to view
+    }
+
+    //TODO make post
+    @GetMapping("/pending-approvals/{requestId}/{state}")
+    public String submitApproval(@PathVariable String requestId,
+                                 @PathVariable String state,
+                                 Model model,
+                                 RedirectAttributes redirectAttrs) {
+
+
+        try {
+
+
+            //We have set in the view workflowId as requestId
+            String workflowId = requestId;
+            final MoneyTransferWorkflow moneyTransferWorkflow = workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class,
+                    workflowId);
+
+            final TransferState transferState = (state.equals("approve") ? TransferState.Approved : TransferState.ApprovalDenied);
+
+
+            //Signal to approve / deny operation.
+            //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
+            // reception of the request
+            moneyTransferWorkflow.approveTransfer(transferState);
+
+            return "redirect:/accounts"; //navigate to view
+
+        } catch (TemporalException e) {
+            redirectAttrs.addFlashAttribute("msg", e.getCause());
+            return "redirect:/pending-approvals"; //navigate to view
+        }
+
+    }
+
+    @RequestMapping(value = "/api/pending-approvals",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity pendingApprovals() {
+        return new ResponseEntity(queryPendingApprovals().size(),
+                HttpStatus.OK);
+    }
+
+    private WorkflowServiceGrpc.WorkflowServiceBlockingStub workflowClientVisibilityAPI() {
         return workflowClientExecutionAPI.getWorkflowServiceStubs()
                 .blockingStub();
     }
 
-    private static List<PendingApprovalInfoView> queryPendingApprovals() {
+    private List<PendingApprovalInfoView> queryPendingApprovals() {
 
         // Visibility API is eventually consistent.
         // Real word applications that requires high throughput and real time data should
@@ -82,49 +138,5 @@ public class PendingApprovalViewController {
         return pendingApprovals;
     }
 
-    @GetMapping("/pending-approvals")
-    public String pendingApprovals(Model model) {
-
-        final List<PendingApprovalInfoView> pendingApprovals = queryPendingApprovals();
-
-
-        model.addAttribute("pendingApprovals", pendingApprovals);
-
-        return "pending-approvals"; //navigate to view
-    }
-
-    //TODO make post
-    @GetMapping("/pending-approvals/{requestId}/{state}")
-    public String submitApproval(@PathVariable String requestId,
-                                 @PathVariable String state,
-                                 Model model) {
-
-
-        //We have set in the view workflowId as requestId
-        String workflowId = requestId;
-        final MoneyTransferWorkflow moneyTransferWorkflow = workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class,
-                workflowId);
-
-        final TransferState transferState = (state.equals("approve") ? TransferState.Approved : TransferState.ApprovalDenied);
-
-
-        //Signal to approve / deny operation.
-        //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
-        // reception of the request
-        moneyTransferWorkflow.approveTransfer(transferState);
-
-        return "redirect:/accounts"; //navigate to view
-
-    }
-
-    @RequestMapping(value = "/api/pending-approvals",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity pendingApprovals() {
-        return new ResponseEntity(queryPendingApprovals().size(),
-                HttpStatus.OK);
-    }
 
 }

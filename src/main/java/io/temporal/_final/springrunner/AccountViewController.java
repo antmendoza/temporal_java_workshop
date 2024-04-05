@@ -11,6 +11,7 @@ import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.failure.TemporalException;
 import io.temporal.model.Account;
 import io.temporal.model.AccountSummaryResponse;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -99,26 +101,36 @@ public class AccountViewController {
         model.addAttribute("accounts", accounts);
 
         return "accounts"; //navigate to view
+
+
     }
 
 
     @PostMapping("/accounts")
-    public String createAccount(@ModelAttribute("account") Account account, Model model) {
+    public String createAccount(@ModelAttribute("account") Account account, Model model, RedirectAttributes redirectAttrs) {
 
-        final String workflowId = AccountWorkflow.workflowIdFromAccountId(account.accountId());
+        try {
 
-        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
-                WorkflowOptions.newBuilder()
-                        // workflowId should be our business id
-                        .setWorkflowId(workflowId)
-                        .setTaskQueue(taskQueue)
-                        .build());
+            final String workflowId = AccountWorkflow.workflowIdFromAccountId(account.accountId());
 
-        // Start account workflow
-        WorkflowClient.start(accountWorkflow::open, account);
+            final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
+                    WorkflowOptions.newBuilder()
+                            // workflowId should be our business id
+                            .setWorkflowId(workflowId)
+                            .setTaskQueue(taskQueue)
+                            .build());
 
+            // Start account workflow
+            WorkflowClient.start(accountWorkflow::open, account);
+
+
+        } catch (
+                TemporalException e) {
+            redirectAttrs.addFlashAttribute("msg", e.getCause());
+        }
 
         return "redirect:/accounts"; //navigate to view
+
     }
 
     @GetMapping("/accounts/new")

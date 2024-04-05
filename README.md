@@ -1,8 +1,8 @@
 # Introduction
 
-State vs status
+## What is temporal?
 
-Balance vs amount
+
 
 
 Temporal is a durable execution system ....
@@ -88,6 +88,7 @@ This is a Temporal workshop to introduce the main Temporal primitives:
 
 - https://www.youtube.com/watch?v=kkP899WxgzY
 - https://community.temporal.io/t/workflow-versioning-strategies/6911
+- https://temporal.io/blog/learn-temporal-workflow-versioning-with-free-hands-on-training
 
 ### Timeouts:
 

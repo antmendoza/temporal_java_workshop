@@ -3,6 +3,7 @@ package io.temporal._final.springrunner;
 import com.github.javafaker.Faker;
 import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal.client.WorkflowClient;
+import io.temporal.failure.TemporalException;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class TransferViewController {
@@ -25,9 +27,9 @@ public class TransferViewController {
         if (workflowClientExecutionAPI == null) {
             //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
             final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
-                .newBuilder()
-                .setTarget(io.temporal.Constants.targetGRPC)
-                .build());
+                    .newBuilder()
+                    .setTarget(io.temporal.Constants.targetGRPC)
+                    .build());
             workflowClientExecutionAPI = WorkflowClient.newInstance(service);
         }
 
@@ -55,20 +57,29 @@ public class TransferViewController {
 
     @PostMapping("/transfers")
     public String requestTransfer(@ModelAttribute("transferRequest") TransferRequest transferRequest,
-                                  Model model) {
+                                  Model model,
+                                  RedirectAttributes redirectAttrs) {
 
 
-        //We need the workflow id to signal the workflow, to request the transference
-        final String workflowId = AccountWorkflow.workflowIdFromAccountId(transferRequest.fromAccountId());
+        try {
 
-        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
-                workflowId);
+            //We need the workflow id to signal the workflow, to request the transference
+            final String workflowId = AccountWorkflow.workflowIdFromAccountId(transferRequest.fromAccountId());
 
-        //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
-        // reception of the request
-        accountWorkflow.requestTransfer(transferRequest);
+            final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
+                    workflowId);
+
+            //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
+            // reception of the request
+            accountWorkflow.requestTransfer(transferRequest);
+
+
+        } catch (TemporalException e) {
+            redirectAttrs.addFlashAttribute("msg", e.getCause());
+        }
 
         return "redirect:/accounts"; //navigate to view
+
     }
 
 

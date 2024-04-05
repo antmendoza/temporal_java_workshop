@@ -17,16 +17,20 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
-        <a class="navbar-brand" id="pa_info" href="/pending-approvals"> <span id="pa_count"></span> Pending approvals </a>
+        <a class="navbar-brand" id="pa_info" href="/pending-approvals"> <span id="pa_count"></span> Pending approvals
+        </a>
     </div>
 </nav>
-
 
 <div role="main" class="container">
 
 
     <br/>
+    <div  th:if="${msg != null}" class="alert alert-secondary" role="alert">
+        <span th:text="${msg}"></span>
+    </div>
     <br/>
+
 
     <form action="#" th:action="@{/transfers}" method="post" th:object="${transferRequest}">
         <div class="mb-3" style="font-weight: bold;">

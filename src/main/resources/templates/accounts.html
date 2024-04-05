@@ -17,7 +17,8 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
-        <a class="navbar-brand" id="pa_info" href="/pending-approvals"> <span id="pa_count"></span> Pending approvals </a>
+        <a class="navbar-brand" id="pa_info" href="/pending-approvals"> <span id="pa_count"></span> Pending approvals
+        </a>
     </div>
 </nav>
 
@@ -25,22 +26,30 @@
 <div role="main" class="container">
 
 
-
-<br/>
+    <br/>
     <br/>
 
 
     <div id="tableContainer">
 
+        <br/>
+
+        <div  th:if="${msg != null}" class="alert alert-secondary" role="alert">
+            <span th:text="${msg}"></span>
+        </div>
+
+        <br/>
 
         <a role="button" href="/accounts/new"> New Account</a>
-        <br/>
-        <br/>
+
         <br/>
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">Temporal-WorkflowId</th>
+                <th scope="col">
+                    <a href="http://localhost:8233/namespaces/default/workflows"
+                       target="_blank"><img src="temporal.png" alt="Temporal.io" width="15" height="15"></a>Temporal-WorkflowId
+                </th>
                 <th scope="col">Account Id</th>
                 <th scope="col">Customer Name</th>
                 <th scope="col">Balance</th>
@@ -52,7 +61,13 @@
             <tbody>
 
             <tr th:each="accountInfo: ${accounts}">
-                <td th:text="${accountInfo.workflowId()}"/>
+                <td>
+                    <a th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${accountInfo.workflowId()}}"
+                       target="_blank">
+                        <img src="temporal.png" alt="Temporal.io" width="15" height="15">
+                    </a>
+                    <span th:text="${accountInfo.workflowId()}"></span>
+                </td>
                 <td th:text="${accountInfo.accountSummary().account().accountId()}"/>
                 <td th:text="${accountInfo.accountSummary().account().customerName()}"/>
                 <td th:text="${accountInfo.accountSummary().account().balance()}"></td>
@@ -60,20 +75,23 @@
                     <a href="#" id="solution0" th:attr="onclick=|showDetails('${accountInfo.workflowId()}')|">Show
                         details </a> <br>
                     <div hidden th:id="${accountInfo.workflowId()}">
-                        <h3 th:text="'AccountId: ' + ${accountInfo.workflowId()}" />
-                        <h5 th:text="'Amount: ' + ${accountInfo.accountSummary().account().balance()}" />
+                        <h3 th:text="'AccountId: ' + ${accountInfo.workflowId()}"/>
+                        <h5 th:text="'Amount: ' + ${accountInfo.accountSummary().account().balance()}"/>
                         <ul>
-                            <li th:each="operation: ${accountInfo.accountSummary().operations()}" th:text="${operation.transferResponse().toString()}">
+                            <li th:each="operation: ${accountInfo.accountSummary().operations()}"
+                                th:text="${operation.transferResponse().toString()}">
                         </ul>
                     </div>
                 </td>
                 <td>
                     <a th:if="${accountInfo.status == 'Open'}"
-                       th:href="@{'/transfer-request/' + ${accountInfo.accountSummary().account().accountId()}}">Request transfer</a>
+                       th:href="@{'/transfer-request/' + ${accountInfo.accountSummary().account().accountId()}}">Request
+                        transfer</a>
                 </td>
-                <td >
+                <td>
                     <a th:if="${accountInfo.status == 'Open'}"
-                       th:href="@{'/accounts/' + ${accountInfo.accountSummary().account().accountId()} +'/close'}">Close account</a>
+                       th:href="@{'/accounts/' + ${accountInfo.accountSummary().account().accountId()} +'/close'}">Close
+                        account</a>
                 </td>
 
 
@@ -87,33 +105,32 @@
     <div id="details">
         <div id="accountDetails" hidden></div>
         <div id="closeDetails" hidden>
-            <a href="#"  th:attr="onclick=|closeDetails()|">Back </a> <br>
+            <a href="#" th:attr="onclick=|closeDetails()|">Back </a> <br>
         </div>
     </div>
 
 
-
 </div>
 
-<script type="text/javascript"  th:src="@{/bootstrap-5.0.2/js/bootstrap.min.js}"></script>
-<script type="text/javascript"  th:src="@{/js/jquery-3.7.1.min.js}"></script>
-<script type="text/javascript"  th:src="@{/js/app.js}"></script>
+<script type="text/javascript" th:src="@{/bootstrap-5.0.2/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/jquery-3.7.1.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/app.js}"></script>
 
 <script>
     function showDetails(id) {
 
         const details = document.getElementById(id).innerHTML;
         document.getElementById("accountDetails").innerHTML = details
-        document.getElementById("tableContainer").hidden=true;
-        document.getElementById("closeDetails").hidden=false;
-        document.getElementById("accountDetails").hidden=false;
+        document.getElementById("tableContainer").hidden = true;
+        document.getElementById("closeDetails").hidden = false;
+        document.getElementById("accountDetails").hidden = false;
     }
 
 
     function closeDetails() {
-        document.getElementById("tableContainer").hidden=false;
-        document.getElementById("closeDetails").hidden=true;
-        document.getElementById("accountDetails").hidden=true;
+        document.getElementById("tableContainer").hidden = false;
+        document.getElementById("closeDetails").hidden = true;
+        document.getElementById("accountDetails").hidden = true;
     }
 </script>
 </body>
