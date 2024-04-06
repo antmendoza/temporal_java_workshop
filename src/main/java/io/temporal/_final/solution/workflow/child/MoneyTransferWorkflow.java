@@ -16,8 +16,8 @@ public interface MoneyTransferWorkflow {
     @WorkflowMethod
     TransferResponse transfer(TransferRequest transferRequest);
 
-    //We use signal to introduce the concept, a better approach is to use
-    // UpdateWorkflow. We will introduce UpdateWorkflow latter
+    //We use signal to introduce the concept. Better approach for this use-case is to use
+    // UpdateWorkflow, which we will introduce latter
     @SignalMethod
     void approveTransfer(TransferState transferApproved);
 

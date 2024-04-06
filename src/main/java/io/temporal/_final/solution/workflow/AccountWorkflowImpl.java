@@ -12,15 +12,18 @@ import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AccountWorkflowImpl implements
         AccountWorkflow {
     private final Logger log = Workflow.getLogger(AccountWorkflowImpl.class.getSimpleName());
     private final List<TransferRequest> pendingRequest = new ArrayList<>();
+    private List<Operation> operations = new ArrayList<>();
     private Account account;
     private boolean closeAccount = false;
-    private List<Operation> operations = new ArrayList<>();
+    private final Map<TransferRequest, WorkflowExecution> map = new HashMap<TransferRequest, WorkflowExecution>();
 
     @Override
     public void open(final Account account) {
@@ -29,25 +32,24 @@ public class AccountWorkflowImpl implements
         this.account = account;
         this.operations = new ArrayList<>();
 
-        while (!closeAccount
-            //        || !ongoingRequests.isEmpty()
-        ) {
+        while (!closeAccount) {
 
             Workflow.await(() -> !pendingRequest.isEmpty() || closeAccount);
 
             if (!pendingRequest.isEmpty()) {
 
-                TransferRequest transferRequest = pendingRequest.get(0);
+                final TransferRequest transferRequest = pendingRequest.remove(0);
 
 
                 final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
                         "_TO_" + transferRequest.toAccountId() +
                         //https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
-                        "_MS_" + Workflow.currentTimeMillis();
+                        "_" + Workflow.currentTimeMillis();
 
 
+                log.info("Scheduling workflow " + moneyTransferWorkflowId);
 
-                final MoneyTransferWorkflow child =
+                final MoneyTransferWorkflow moneyTransferWorkflow =
                         Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
                                 ChildWorkflowOptions.newBuilder()
                                         .setWorkflowId(
@@ -55,18 +57,19 @@ public class AccountWorkflowImpl implements
                                         .build());
 
 
-                final Promise<TransferResponse> request = Async.function(child::transfer, transferRequest);
+                // Starting child workflow async
+                // Wait for child to start
+                // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
+                final Promise<TransferResponse> request = Async.function(moneyTransferWorkflow::transfer, transferRequest);
+                WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
 
-                // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
-                WorkflowExecution execution = Workflow.getWorkflowExecution(child).get();
 
-
-                //To unblock #1
-                pendingRequest.remove(transferRequest);
+                //Unblock #requestTransfer.workflowAwait
+                map.put(transferRequest, execution);
 
 
                 // wait for the child to complete
-                TransferResponse transferResponse = request.get();
+                final TransferResponse transferResponse = request.get();
                 this.operations.add(new Operation(transferResponse));
                 if (transferResponse.isApproved()) {
                     this.account = this.account.subtract(transferResponse.transferRequest().amount());
@@ -94,7 +97,7 @@ public class AccountWorkflowImpl implements
         // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
         Workflow.getWorkflowExecution(accountCleanUpWorkflow).get();
 
-        // By exiting here we are closing the current workflow
+        // By exiting here we are closing the current workflow execution
         //TODO add return
     }
 
@@ -103,12 +106,11 @@ public class AccountWorkflowImpl implements
 
         this.pendingRequest.add(transferRequest);
 
-
-        //#1
-        Workflow.await(()->!pendingRequest.contains(transferRequest) );
+        //#requestTransfer.workflowAwait
+        Workflow.await(() -> map.get(transferRequest) != null);
 
         //Return workflowId
-        final String operationId = "fake";//execution.getWorkflowId();
+        final String operationId = map.get(transferRequest).getWorkflowId();
         return new RequestTransferResponse(operationId);
 
     }
