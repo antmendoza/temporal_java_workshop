@@ -35,7 +35,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         accountService.withdraw(
                 new WithdrawRequest(
                         transferRequest.fromAccountId(),
-
                         transferRequest.amount()));
 
         // invocation to this method is gonna fail four times

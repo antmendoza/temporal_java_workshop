@@ -22,7 +22,6 @@ public class AccountWorkflowImpl implements
     private boolean closeAccount = false;
     private List<Operation> operations = new ArrayList<>();
 
-
     @Override
     public void open(final Account account) {
 
@@ -30,34 +29,54 @@ public class AccountWorkflowImpl implements
         this.account = account;
         this.operations = new ArrayList<>();
 
-        while (!closeAccount) {
+        while (!closeAccount
+            //        || !ongoingRequests.isEmpty()
+        ) {
 
             Workflow.await(() -> !pendingRequest.isEmpty() || closeAccount);
 
             if (!pendingRequest.isEmpty()) {
 
-                final TransferRequest transferRequest = pendingRequest.remove(0);
+                TransferRequest transferRequest = pendingRequest.get(0);
+
+
+                final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
+                        "_TO_" + transferRequest.toAccountId() +
+                        //https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
+                        "_MS_" + Workflow.currentTimeMillis();
+
+
 
                 final MoneyTransferWorkflow child =
                         Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
                                 ChildWorkflowOptions.newBuilder()
-                                        .setWorkflowId(MoneyTransferWorkflow.createWorkflowId(transferRequest))
+                                        .setWorkflowId(
+                                                moneyTransferWorkflowId)
                                         .build());
 
 
-                //Start and wait for the child workflow to complete
-                var childRequestResponse = child.transfer(transferRequest);
+                final Promise<TransferResponse> request = Async.function(child::transfer, transferRequest);
 
-                this.operations.add(new Operation(childRequestResponse));
+                // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
+                WorkflowExecution execution = Workflow.getWorkflowExecution(child).get();
 
-                if (childRequestResponse.isApproved()) {
-                    this.account = this.account.subtract(transferRequest.amount());
+
+                //To unblock #1
+                pendingRequest.remove(transferRequest);
+
+
+                // wait for the child to complete
+                TransferResponse transferResponse = request.get();
+                this.operations.add(new Operation(transferResponse));
+                if (transferResponse.isApproved()) {
+                    this.account = this.account.subtract(transferResponse.transferRequest().amount());
                 }
+
 
             }
         }
 
-        
+
         // Closing account
         // Start AccountCleanUpWorkflow that will be responsible for sending a notification to the customer,
         // among other things...
@@ -72,20 +91,27 @@ public class AccountWorkflowImpl implements
 
 
         Async.procedure(accountCleanUpWorkflow::run, this.account);
-        Promise<WorkflowExecution> childExecution = Workflow.getWorkflowExecution(accountCleanUpWorkflow);
-
         // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
-        childExecution.get();
+        Workflow.getWorkflowExecution(accountCleanUpWorkflow).get();
 
         // By exiting here we are closing the current workflow
         //TODO add return
     }
 
     @Override
-    public void requestTransfer(final TransferRequest transferRequest) {
-        this.pendingRequest.add(transferRequest);
-    }
+    public RequestTransferResponse requestTransfer(final TransferRequest transferRequest) {
 
+        this.pendingRequest.add(transferRequest);
+
+
+        //#1
+        Workflow.await(()->!pendingRequest.contains(transferRequest) );
+
+        //Return workflowId
+        final String operationId = "fake";//execution.getWorkflowId();
+        return new RequestTransferResponse(operationId);
+
+    }
 
     @Override
     public CloseAccountResponse closeAccount() {
@@ -93,12 +119,10 @@ public class AccountWorkflowImpl implements
         return new CloseAccountResponse(account);
     }
 
-
     @Override
     public AccountSummaryResponse getAccountSummary() {
         return new AccountSummaryResponse(account, operations);
     }
-
 
 }
 

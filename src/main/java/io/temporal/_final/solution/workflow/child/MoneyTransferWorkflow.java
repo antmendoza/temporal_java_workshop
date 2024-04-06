@@ -3,10 +3,7 @@ package io.temporal._final.solution.workflow.child;
 import io.temporal.model.TransferRequest;
 import io.temporal.model.TransferResponse;
 import io.temporal.model.TransferState;
-import io.temporal.workflow.QueryMethod;
-import io.temporal.workflow.SignalMethod;
-import io.temporal.workflow.WorkflowInterface;
-import io.temporal.workflow.WorkflowMethod;
+import io.temporal.workflow.*;
 
 /**
  * Workflow interface has to have at least one method annotated with @WorkflowMethod.
@@ -15,14 +12,12 @@ import io.temporal.workflow.WorkflowMethod;
 public interface MoneyTransferWorkflow {
 
 
-    static String createWorkflowId(TransferRequest transferRequest) {
-        return "money-transfer-FROM_"+transferRequest.fromAccountId()+"_TO_"+transferRequest.toAccountId();
-    }
-
     // The Workflow method is called by the initiator either via code or CLI.
     @WorkflowMethod
     TransferResponse transfer(TransferRequest transferRequest);
 
+    //We use signal to introduce the concept, a better approach is to use
+    // UpdateWorkflow. We will introduce UpdateWorkflow latter
     @SignalMethod
     void approveTransfer(TransferState transferApproved);
 

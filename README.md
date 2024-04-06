@@ -13,10 +13,20 @@ Temporal is a durable execution system ....
 
 ## Prerequisites
 
-To persist the state to a file on disk, use --db-filename add `--db-filename my_test.db`
+Temporal provides a lightweight server for development (called temporal cli), 
+that contains the server itself plus the UI and an in-memory DB.
+
+You can install cli from https://docs.temporal.io/cli#install
+Other option is to use docker-compose (https://github.com/temporalio/docker-compose)
 
 
-`temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true`
+For this exersice we will require temporal running and to run a extra command to create a Custom Search Attribute (that 
+will allow search workflows matching a specific key/value)
+
+
+
+
+`temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true --db-filename my_test.db`
 - http://localhost:8233/
 
 

@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.failure.TemporalException;
+import io.temporal.model.RequestTransferResponse;
 import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
@@ -71,7 +72,10 @@ public class TransferViewController {
 
             //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
             // reception of the request
-            accountWorkflow.requestTransfer(transferRequest);
+            RequestTransferResponse response = accountWorkflow.requestTransfer(transferRequest);
+
+            redirectAttrs.addFlashAttribute("msg", "Request created with operation id " +
+                    response.getOperationId());
 
 
         } catch (TemporalException e) {
