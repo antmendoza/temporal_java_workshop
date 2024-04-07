@@ -17,6 +17,7 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
+        <a class="navbar-brand" href="/requests"> Requests</a>
         <a class="navbar-brand" id="pa_info" href="/pending-requests"> <span id="pa_count"></span> Pending requests
         </a>
     </div>
@@ -38,13 +39,15 @@
 
         <br/>
         <br/>
+        <a class="view-ui" href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestState%3D%22ApprovalRequired%22"
+           target="_blank">View in Temporal UI</a>
+
         <table class="table">
             <thead>
             <tr>
 
                 <th scope="col">
-                    <a href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+TransferRequestState%09%3D%22ApprovalRequired%22"
-                       target="_blank"><img src="temporal.png" alt="Temporal.io" width="15" height="15"></a>Temporal-WorkflowId
+                    Temporal-WorkflowId
                 </th>
                 <th scope="col">Request summary</th>
                 <th scope="col">#</th>
@@ -55,9 +58,10 @@
 
             <tr th:each="pendingApproval: ${pendingRequests}">
                 <td>
-                    <a th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${pendingApproval.workflowId()}}"
-                       target="_blank"><img src="temporal.png" alt="Temporal.io" width="15" height="15">
-                    </a><span th:text="${pendingApproval.workflowId()}"></span>
+                    <span th:text="${pendingApproval.workflowId()}"></span>
+                    <a  class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${pendingApproval.workflowId()}}"
+                        target="_blank">View in Temporal UI
+                    </a>
                 </td>
 
                 <td th:text="${pendingApproval.toString()}"/>

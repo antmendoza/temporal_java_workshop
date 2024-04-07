@@ -83,17 +83,7 @@ public class AccountViewController {
                 {
                     final String workflowId = execution.getExecution().getWorkflowId();
 
-                    //This query is performed by our Worker entity (no internal state is stored in the server)
-                    final AccountSummaryResponse accountSummary =
-                            workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
-
-
-                    final WorkflowExecutionStatus workflowExecutionStatus = getWorkflowExecutionStatus(workflowId);
-
-                    final String status = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING
-                            .equals(workflowExecutionStatus) ? "Open" : "Closed";
-
-                    return new AccountInfoView(workflowId, accountSummary, status);
+                    return getAccountInfoView(workflowId);
 
                 }).toList();
 
@@ -102,6 +92,44 @@ public class AccountViewController {
 
         return "accounts"; //navigate to view
 
+
+    }
+
+    private AccountInfoView getAccountInfoView(final String workflowId) {
+        //This query is performed by our Worker entity (no internal state is stored in the server)
+        final AccountSummaryResponse accountSummary =
+                workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
+
+
+        final WorkflowExecutionStatus workflowExecutionStatus = getWorkflowExecutionStatus(workflowId);
+
+        final String status = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING
+                .equals(workflowExecutionStatus) ? "Open" : "Closed";
+
+        return new AccountInfoView(workflowId, accountSummary, status);
+    }
+
+
+    @GetMapping("/accounts/{accountId}")
+    public String createAccount(@PathVariable String accountId,
+                                Model model
+    ,RedirectAttributes redirectAttrs) {
+
+        try {
+
+            final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
+
+            AccountInfoView account =  getAccountInfoView(workflowId);
+
+            model.addAttribute("account", account);
+
+
+        } catch (
+                TemporalException e) {
+            redirectAttrs.addFlashAttribute("msg", e.getCause());
+        }
+
+        return "account-info"; //navigate to view
 
     }
 
@@ -147,6 +175,8 @@ public class AccountViewController {
 
         return "account-new"; //navigate to view
     }
+
+
 
     //TODO PostMapping
     @GetMapping("/accounts/{accountId}/close")

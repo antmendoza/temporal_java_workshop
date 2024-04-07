@@ -70,7 +70,7 @@ public class AccountWorkflowImpl implements
 
                 // wait for the child to complete
                 final TransferResponse transferResponse = request.get();
-                this.operations.add(new Operation(transferResponse));
+                this.operations.add(new Operation(execution.getWorkflowId(),transferResponse));
                 if (transferResponse.isApproved()) {
                     this.account = this.account.subtract(transferResponse.transferRequest().amount());
                 }

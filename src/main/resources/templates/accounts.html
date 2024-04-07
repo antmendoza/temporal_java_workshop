@@ -17,6 +17,7 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
+        <a class="navbar-brand" href="/requests"> Requests</a>
         <a class="navbar-brand" id="pa_info" href="/pending-requests"> <span id="pa_count"></span> Pending requests
         </a>
     </div>
@@ -40,15 +41,15 @@
 
         <br/>
 
-        <a role="button" href="/accounts/new"> New Account</a>
+        <a class="view-ui" href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22"
+           target="_blank">View in Temporal UI</a>
 
         <br/>
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">
-                    <a href="http://localhost:8233/namespaces/default/workflows"
-                       target="_blank"><img src="temporal.png" alt="Temporal.io" width="15" height="15"></a>Temporal-WorkflowId
+                    Temporal-WorkflowId
                 </th>
                 <th scope="col">Account Id</th>
                 <th scope="col">Customer Name</th>
@@ -62,27 +63,20 @@
 
             <tr th:each="accountInfo: ${accounts}">
                 <td>
-                    <a th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${accountInfo.workflowId()}}"
-                       target="_blank">
-                        <img src="temporal.png" alt="Temporal.io" width="15" height="15">
-                    </a>
                     <span th:text="${accountInfo.workflowId()}"></span>
+                    <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${accountInfo.workflowId()}}"
+                       target="_blank">
+                        View in Temporal UI
+                    </a>
                 </td>
                 <td th:text="${accountInfo.accountSummary().account().accountId()}"/>
                 <td th:text="${accountInfo.accountSummary().account().customerName()}"/>
                 <td th:text="${accountInfo.accountSummary().account().balance()}"></td>
+
                 <td>
-                    <a href="#" id="solution0" th:attr="onclick=|showDetails('${accountInfo.workflowId()}')|">Show
-                        details </a> <br>
-                    <div hidden th:id="${accountInfo.workflowId()}">
-                        <h3 th:text="'AccountId: ' + ${accountInfo.workflowId()}"/>
-                        <h5 th:text="'Amount: ' + ${accountInfo.accountSummary().account().balance()}"/>
-                        <ul>
-                            <li th:each="operation: ${accountInfo.accountSummary().operations()}"
-                                th:text="${operation.transferResponse().toString()}">
-                        </ul>
-                    </div>
+                    <a th:href="@{'/accounts/' + ${accountInfo.accountSummary().account().accountId()}}">Show details</a>
                 </td>
+
                 <td>
                     <a th:if="${accountInfo.status == 'Open'}"
                        th:href="@{'/transfer-request/' + ${accountInfo.accountSummary().account().accountId()}}">Request
@@ -99,6 +93,9 @@
 
             </tbody>
         </table>
+
+        <a role="button" href="/accounts/new"> New Account</a>
+
     </div>
 
 
@@ -116,22 +113,5 @@
 <script type="text/javascript" th:src="@{/js/jquery-3.7.1.min.js}"></script>
 <script type="text/javascript" th:src="@{/js/app.js}"></script>
 
-<script>
-    function showDetails(id) {
-
-        const details = document.getElementById(id).innerHTML;
-        document.getElementById("accountDetails").innerHTML = details
-        document.getElementById("tableContainer").hidden = true;
-        document.getElementById("closeDetails").hidden = false;
-        document.getElementById("accountDetails").hidden = false;
-    }
-
-
-    function closeDetails() {
-        document.getElementById("tableContainer").hidden = false;
-        document.getElementById("closeDetails").hidden = true;
-        document.getElementById("accountDetails").hidden = true;
-    }
-</script>
 </body>
 </html>

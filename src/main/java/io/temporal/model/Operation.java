@@ -1,5 +1,5 @@
 package io.temporal.model;
 
 
-public record Operation(TransferResponse transferResponse) {
+public record Operation(String workflowId, TransferResponse transferResponse) {
 }
