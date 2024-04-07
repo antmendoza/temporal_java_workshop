@@ -49,19 +49,31 @@ public class PendingApprovalViewController {
 
     }
 
-    @GetMapping("/pending-approvals")
-    public String pendingApprovals(Model model) {
-
-        final List<PendingApprovalInfoView> pendingApprovals = queryPendingApprovals();
 
 
-        model.addAttribute("pendingApprovals", pendingApprovals);
+    @GetMapping("/requests")
+    public String requests(Model model) {
 
-        return "pending-approvals"; //navigate to view
+        final List<PendingRequestInfoView> request = queryPendingApprovals(getAllRequests());
+
+        model.addAttribute("requests", request);
+
+        return "requests"; //navigate to view
+    }
+
+
+    @GetMapping("/pending-requests")
+    public String pendingRequests(Model model) {
+
+        final List<PendingRequestInfoView> pendingRequests = queryPendingApprovals(getQueryPendingRequests());
+
+        model.addAttribute("pendingRequests", pendingRequests);
+
+        return "pending-requests"; //navigate to view
     }
 
     //TODO make post
-    @GetMapping("/pending-approvals/{requestId}/{state}")
+    @GetMapping("/pending-requests/{requestId}/{state}")
     public String submitApproval(@PathVariable String requestId,
                                  @PathVariable String state,
                                  Model model,
@@ -88,18 +100,18 @@ public class PendingApprovalViewController {
 
         } catch (TemporalException e) {
             redirectAttrs.addFlashAttribute("msg", e.getCause());
-            return "redirect:/pending-approvals"; //navigate to view
+            return "redirect:/pending-requests"; //navigate to view
         }
 
     }
 
-    @RequestMapping(value = "/api/pending-approvals",
+    @RequestMapping(value = "/api/pending-requests",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity pendingApprovals() {
-        return new ResponseEntity(queryPendingApprovals().size(),
+        return new ResponseEntity(queryPendingApprovals(getQueryPendingRequests()).size(),
                 HttpStatus.OK);
     }
 
@@ -108,22 +120,17 @@ public class PendingApprovalViewController {
                 .blockingStub();
     }
 
-    private List<PendingApprovalInfoView> queryPendingApprovals() {
+    private List<PendingRequestInfoView> queryPendingApprovals(final String query) {
 
         // Visibility API is eventually consistent.
         // Real word applications that requires high throughput and real time data should
         // store/query data in external DBs
-
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestState%3D%22ApprovalRequired%22
-        final String query = "WorkflowType=\"MoneyTransferWorkflow\" and ExecutionStatus=\"Running\" and " +
-                "TransferRequestState=\"ApprovalRequired\"";
-
         final ListWorkflowExecutionsRequest listWorkflowExecutionsRequest = ListWorkflowExecutionsRequest.newBuilder()
                 .setQuery(query)
                 .setNamespace(namespace)
                 .build();
 
-        final List<PendingApprovalInfoView> pendingApprovals = workflowClientVisibilityAPI()
+        final List<PendingRequestInfoView> pendingApprovals = workflowClientVisibilityAPI()
                 .listWorkflowExecutions(listWorkflowExecutionsRequest).getExecutionsList().stream().map(execution -> {
 
                     //For each workflow running and waiting for approval
@@ -133,10 +140,27 @@ public class PendingApprovalViewController {
                     final TransferRequest transferRequest =
                             workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class, workflowId).getTransferRequest();
 
-                    return new PendingApprovalInfoView(workflowId, transferRequest);
+                    return new PendingRequestInfoView(workflowId, transferRequest);
                 }).toList();
         return pendingApprovals;
     }
+
+
+
+
+    private static String getQueryPendingRequests() {
+        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestState%3D%22ApprovalRequired%22
+        final String query = "WorkflowType=\"MoneyTransferWorkflow\" and ExecutionStatus=\"Running\" and " +
+                "TransferRequestState=\"ApprovalRequired\"";
+        return query;
+    }
+
+    private static String getAllRequests() {
+        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22
+        final String query = "WorkflowType=\"MoneyTransferWorkflow\"";
+        return query;
+    }
+
 
 
 }

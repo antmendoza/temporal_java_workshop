@@ -17,7 +17,7 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
-        <a class="navbar-brand" id="pa_info" href="/pending-approvals"> <span id="pa_count"></span> Pending approvals
+        <a class="navbar-brand" id="pa_info" href="/pending-requests"> <span id="pa_count"></span> Pending requests
         </a>
     </div>
 </nav>
@@ -46,14 +46,14 @@
                     <a href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+TransferRequestState%09%3D%22ApprovalRequired%22"
                        target="_blank"><img src="temporal.png" alt="Temporal.io" width="15" height="15"></a>Temporal-WorkflowId
                 </th>
-                <th scope="col">Approval summary</th>
+                <th scope="col">Request summary</th>
                 <th scope="col">#</th>
                 <th scope="col">#</th>
             </tr>
             </thead>
             <tbody>
 
-            <tr th:each="pendingApproval: ${pendingApprovals}">
+            <tr th:each="pendingApproval: ${pendingRequests}">
                 <td>
                     <a th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${pendingApproval.workflowId()}}"
                        target="_blank"><img src="temporal.png" alt="Temporal.io" width="15" height="15">
@@ -62,11 +62,11 @@
 
                 <td th:text="${pendingApproval.toString()}"/>
                 <td>
-                    <a th:href="@{'/pending-approvals/' + ${pendingApproval.workflowId()}+'/approve' }">Approve
+                    <a th:href="@{'/pending-requests/' + ${pendingApproval.workflowId()}+'/approve' }">Approve
                         operation</a>
                 </td>
                 <td>
-                    <a th:href="@{'/pending-approvals/' + ${pendingApproval.workflowId()}+'/deny' }">Deny operation</a>
+                    <a th:href="@{'/pending-requests/' + ${pendingApproval.workflowId()}+'/deny' }">Deny operation</a>
                 </td>
 
             </tr>

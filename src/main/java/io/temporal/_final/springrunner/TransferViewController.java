@@ -74,7 +74,7 @@ public class TransferViewController {
             // reception of the request
             RequestTransferResponse response = accountWorkflow.requestTransfer(transferRequest);
 
-            redirectAttrs.addFlashAttribute("msg", "Request created with operation id " +
+            redirectAttrs.addFlashAttribute("msg", "Request created; operation id: " +
                     response.getOperationId());
 
 
