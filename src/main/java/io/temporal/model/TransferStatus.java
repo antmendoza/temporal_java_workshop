@@ -1,9 +1,9 @@
 package io.temporal.model;
 
-public enum TransferState {
+public enum TransferStatus {
     Approved,
     ApprovalNotRequired,
-    ApprovalTimedOut,
+    TimedOut,
     ApprovalRequired,
-    ApprovalDenied
+    Denied
 }

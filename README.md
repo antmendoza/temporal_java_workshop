@@ -31,7 +31,7 @@ will allow search workflows matching a specific key/value)
 
 
 Open other terminal an run the following command to create the search attribute
-`temporal operator search-attribute create --namespace default --type Keyword --name TransferRequestState`
+`temporal operator search-attribute create --namespace default --type Keyword --name TransferRequestStatus`
 
 
 ## Modules:

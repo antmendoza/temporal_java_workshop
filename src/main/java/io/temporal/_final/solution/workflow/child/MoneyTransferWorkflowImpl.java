@@ -5,7 +5,7 @@ import io.temporal.activity.NotificationService;
 import io.temporal.common.SearchAttributeKey;
 import io.temporal.model.TransferRequest;
 import io.temporal.model.TransferResponse;
-import io.temporal.model.TransferState;
+import io.temporal.model.TransferStatus;
 import io.temporal.service.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
@@ -27,8 +27,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
                     NotificationService.class,
                     ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-    private final SearchAttributeKey<String> transferRequestState = SearchAttributeKey.forKeyword("TransferRequestState");
-    private TransferState transferState;
+    private final SearchAttributeKey<String> TransferRequestStatus = SearchAttributeKey.forKeyword("TransferRequestStatus");
+    private TransferStatus transferStatus;
     private boolean approveReceived = false;
     private TransferRequest transferRequest;
 
@@ -39,16 +39,16 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         this.transferRequest = transferRequest;
 
-        this.transferState = TransferState.ApprovalNotRequired;
+        this.transferStatus = TransferStatus.ApprovalNotRequired;
 
         if (transferRequest.amount() > 100) {
 
-            transferState = TransferState.ApprovalRequired;
+            transferStatus = TransferStatus.ApprovalRequired;
 
-            //Setting this SA will allow query workflows by `TransferRequestState="ApprovalRequired"`
-            //http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestState%3D%22ApprovalRequired%22
+            //Setting this SA will allow query workflows by `TransferRequestStatus="ApprovalRequired"`
+            //http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22
             Workflow.upsertTypedSearchAttributes(
-                    transferRequestState.valueSet(transferState.name())
+                    TransferRequestStatus.valueSet(transferStatus.name())
             );
 
             log.info("Request need approval: " + transferRequest);
@@ -57,19 +57,19 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             final Duration timeout = Duration.ofSeconds(30); // Can be days, years...
             boolean authorizationReceivedWithinTimeOut = Workflow.await(timeout, () -> approveReceived);
             if (!authorizationReceivedWithinTimeOut) {
-                transferState = TransferState.ApprovalTimedOut;
+                transferStatus = TransferStatus.TimedOut;
                 log.info("Authorization not received within " + timeout);
-                return new TransferResponse(transferRequest, transferState);
+                return new TransferResponse(transferRequest, transferStatus);
             }
 
 
-            log.info("TransferApproved: " + transferState);
+            log.info("TransferApproved: " + transferStatus);
 
-            if (TransferState.ApprovalDenied.equals(transferState)) {
+            if (TransferStatus.Denied.equals(transferStatus)) {
                 // notify customer...
                 notificationService.transferDenied(transferRequest);
                 log.info("Notify customer, transferApproved: " + transferRequest);
-                return new TransferResponse(transferRequest, transferState);
+                return new TransferResponse(transferRequest, transferStatus);
 
             }
         }
@@ -87,12 +87,12 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         notificationService.transferCompleted(transferRequest);
 
         log.info("Completed for transfer: " + transferRequest);
-        return new TransferResponse(transferRequest, transferState);
+        return new TransferResponse(transferRequest, transferStatus);
     }
 
     @Override
-    public void approveTransfer(TransferState transferState) {
-        this.transferState = transferState;
+    public void approveTransfer(TransferStatus transferStatus) {
+        this.transferStatus = transferStatus;
         this.approveReceived = true;
     }
 

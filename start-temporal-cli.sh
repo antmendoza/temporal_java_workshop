@@ -13,7 +13,7 @@ add_custom_search_attributes() {
     echo "Adding Custom  search attributes."
 
     temporal operator search-attribute create --namespace "${DEFAULT_NAMESPACE}" \
-        --name TransferRequestState --type Keyword
+        --name TransferRequestStatus --type Keyword
 }
 
 setup_server(){

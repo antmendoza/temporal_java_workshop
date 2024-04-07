@@ -17,8 +17,8 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
-        <a class="navbar-brand" href="/requests"> Requests</a>
-        <a class="navbar-brand" id="pa_info" href="/pending-requests"> <span id="pa_count"></span> Pending requests
+        <a class="navbar-brand" href="/transfers"> Transfers</a>
+        <a class="navbar-brand" id="pa_info" href="/pending-transfers"> <span id="pa_count"></span> Pending transfers
         </a>
     </div>
 </nav>
@@ -39,16 +39,18 @@
 
         <br/>
         <br/>
-        <b>Account  <span th:text="${account.accountSummary().account().accountId()}"></span></b>
-        <br/>
+        <b>Account </b><span th:text="${account.accountSummary().account().accountId()}"></span>;<b> Balance</b> <span th:text="${account.accountSummary().account().balance()}"></span>
         <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${account.workflowId()}}" target="_blank">
             View in Temporal UI
         </a>
+        <br/>
+        <br/>
+        <b>Operations </b>
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">Temporal-WorkflowId</th>
-                <th scope="col">Operations</th>
+                <th scope="col">Operation</th>
             </tr>
             </thead>
             <tbody>

@@ -17,8 +17,8 @@
             <img src="https://docs.temporal.io/img/temporal-logo-dark.svg" width="140" height="35">
         </a>
         <a class="navbar-brand" href="/accounts"> Accounts</a>
-        <a class="navbar-brand" href="/requests"> Requests</a>
-        <a class="navbar-brand" id="pa_info" href="/pending-requests"> <span id="pa_count"></span> Pending requests
+        <a class="navbar-brand" href="/transfers"> Transfers</a>
+        <a class="navbar-brand" id="pa_info" href="/pending-transfers"> <span id="pa_count"></span> Pending transfers
         </a>
     </div>
 </nav>
@@ -39,38 +39,44 @@
 
         <br/>
         <br/>
-
-        <a class="view-ui" href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+TransferRequestState%09%3D%22ApprovalRequired%22"
+        <b>Pending operations</b><a class="view-ui" href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22"
            target="_blank">View in Temporal UI</a>
 
         <table class="table">
             <thead>
             <tr>
+
                 <th scope="col">
                     Temporal-WorkflowId
                 </th>
                 <th scope="col">Request summary</th>
+                <th scope="col">#</th>
+                <th scope="col">#</th>
             </tr>
             </thead>
             <tbody>
 
-            <tr th:each="request: ${requests}">
+            <tr th:each="pendingApproval: ${pendingRequests}">
                 <td>
-                    <span th:text="${request.workflowId()}"></span>
-                    <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${request.workflowId()}}"
-                       target="_blank">View in Temporal UI
+                    <span th:text="${pendingApproval.workflowId()}"></span>
+                    <a  class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${pendingApproval.workflowId()}}"
+                        target="_blank">View in Temporal UI
                     </a>
                 </td>
 
-                <td th:text="${request.toString()}"/>
+                <td th:text="${pendingApproval.toString()}"/>
+                <td>
+                    <a th:href="@{'/pending-transfers/' + ${pendingApproval.workflowId()}+'/approve' }">Approve
+                        operation</a>
+                </td>
+                <td>
+                    <a th:href="@{'/pending-transfers/' + ${pendingApproval.workflowId()}+'/deny' }">Deny operation</a>
+                </td>
 
             </tr>
 
             </tbody>
         </table>
-
-
-
     </div>
 
 

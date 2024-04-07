@@ -2,7 +2,7 @@ package io.temporal._final.solution.workflow.child;
 
 import io.temporal.model.TransferRequest;
 import io.temporal.model.TransferResponse;
-import io.temporal.model.TransferState;
+import io.temporal.model.TransferStatus;
 import io.temporal.workflow.*;
 
 /**
@@ -19,7 +19,7 @@ public interface MoneyTransferWorkflow {
     //We use signal to introduce the concept. Better approach for this use-case is to use
     // UpdateWorkflow, which we will introduce latter
     @SignalMethod
-    void approveTransfer(TransferState transferApproved);
+    void approveTransfer(TransferStatus transferApproved);
 
     @QueryMethod
     TransferRequest getTransferRequest();
