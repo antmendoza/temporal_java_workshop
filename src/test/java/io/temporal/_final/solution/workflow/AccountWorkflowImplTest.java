@@ -111,7 +111,7 @@ public class AccountWorkflowImplTest {
 
         testUtilInterceptorTracker.waitUntilWorkflowIsClosed(workflowId);
 
-        // We have introduced an artificial sleep to the child workflow just to show the child
+        // We have introduced an artificial sleep to the child workflow, just to show the child
         // workflow can continue running after the parent workflow is closed,
         // Let's "travel in time" forward 5 second
         testWorkflowRule.getTestEnvironment().sleep(Duration.ofSeconds(5));

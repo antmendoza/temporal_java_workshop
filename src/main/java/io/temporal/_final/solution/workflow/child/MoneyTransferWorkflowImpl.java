@@ -29,7 +29,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
     private final SearchAttributeKey<String> TransferRequestStatus = SearchAttributeKey.forKeyword("TransferRequestStatus");
     private TransferStatus transferStatus;
-    private boolean approveReceived = false;
     private TransferRequest transferRequest;
 
     @Override
@@ -53,9 +52,12 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
             log.info("Request need approval: " + transferRequest);
 
-            // Wait until the signal is received or timeout
+            // Wait until status != TransferStatus.ApprovalRequired  or timeout
             final Duration timeout = Duration.ofSeconds(30); // Can be days, years...
-            boolean authorizationReceivedWithinTimeOut = Workflow.await(timeout, () -> approveReceived);
+            boolean authorizationReceivedWithinTimeOut =
+                    Workflow.await(timeout, () ->
+                    transferStatus != TransferStatus.ApprovalRequired);
+
             if (!authorizationReceivedWithinTimeOut) {
                 transferStatus = TransferStatus.TimedOut;
                 log.info("Authorization not received within " + timeout);
@@ -63,17 +65,18 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             }
 
 
-            log.info("TransferApproved: " + transferStatus);
+            log.info("transferStatus: " + transferStatus);
 
             if (TransferStatus.Denied.equals(transferStatus)) {
                 // notify customer...
                 notificationService.transferDenied(transferRequest);
-                log.info("Notify customer, transferApproved: " + transferRequest);
+                log.info("Notify customer, transferRequest: " + transferRequest);
                 return new TransferResponse(transferRequest, transferStatus);
 
             }
         }
 
+        //TODO add implementation to
         accountService.withdraw(
                 new WithdrawRequest(
                         transferRequest.fromAccountId(),
@@ -91,9 +94,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     }
 
     @Override
-    public void approveTransfer(TransferStatus transferStatus) {
+    public void changeTransferStatus(TransferStatus transferStatus) {
         this.transferStatus = transferStatus;
-        this.approveReceived = true;
     }
 
     @Override

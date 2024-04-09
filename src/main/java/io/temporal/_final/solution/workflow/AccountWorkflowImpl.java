@@ -38,14 +38,13 @@ public class AccountWorkflowImpl implements
 
             if (!pendingRequest.isEmpty()) {
 
-                final TransferRequest transferRequest = pendingRequest.remove(0);
-
+                final TransferRequest transferRequest = pendingRequest.get(0);
 
                 final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
                         "_TO_" + transferRequest.toAccountId() +
-                        //https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
+                        // Why we use Workflow.currentTimeMillis()?
+                        // https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
                         "_" + Workflow.currentTimeMillis();
-
 
                 log.info("Scheduling workflow " + moneyTransferWorkflowId);
 
@@ -56,7 +55,6 @@ public class AccountWorkflowImpl implements
                                                 moneyTransferWorkflowId)
                                         .build());
 
-
                 // Starting child workflow async
                 // Wait for child to start
                 // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
@@ -64,17 +62,15 @@ public class AccountWorkflowImpl implements
                 WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
 
 
-                //Unblock #requestTransfer.workflowAwait
-                map.put(transferRequest, execution);
+                //#2
+                pendingRequest.remove(transferRequest);
 
+                //Unblock #1 in method requestTransfer
+                map.put(transferRequest, execution);
 
                 // wait for the child to complete
                 final TransferResponse transferResponse = request.get();
                 this.operations.add(new Operation(execution.getWorkflowId(),transferResponse));
-                if (transferResponse.isApproved()) {
-                    this.account = this.account.subtract(transferResponse.transferRequest().amount());
-                }
-
 
             }
         }
@@ -106,13 +102,21 @@ public class AccountWorkflowImpl implements
 
         this.pendingRequest.add(transferRequest);
 
-        //#requestTransfer.workflowAwait
+        //#1
         Workflow.await(() -> map.get(transferRequest) != null);
 
         //Return workflowId
         final String operationId = map.get(transferRequest).getWorkflowId();
         return new RequestTransferResponse(operationId);
 
+    }
+
+    @Override
+    public void validateCloseAccount() {
+        //#2
+        if(!pendingRequest.isEmpty()){
+            throw new RuntimeException("Account can't be closed, there are transfer requests in progress");
+        }
     }
 
     @Override
@@ -124,6 +128,17 @@ public class AccountWorkflowImpl implements
     @Override
     public AccountSummaryResponse getAccountSummary() {
         return new AccountSummaryResponse(account, operations);
+    }
+
+    @Override
+    public void withdraw(final double amount) {
+        this.account = this.account.withdraw(amount);
+    }
+
+    @Override
+    public void deposit(final double amount) {
+        this.account = this.account.deposit(amount);
+
     }
 
 }

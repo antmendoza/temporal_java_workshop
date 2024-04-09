@@ -25,9 +25,8 @@ public class AccountCleanUpWorkflowImpl implements
                         .build());
 
 
-        //This is only to demonstrate that the child workflow can continue running, independently of the parent
+        //Only to demonstrate that the child workflow can continue running, independently of the parent
         Workflow.sleep(Duration.ofSeconds(5));
-
 
         notificationService.accountClosed(account);
 

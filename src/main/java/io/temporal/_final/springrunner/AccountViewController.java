@@ -113,13 +113,13 @@ public class AccountViewController {
     @GetMapping("/accounts/{accountId}")
     public String createAccount(@PathVariable String accountId,
                                 Model model
-    ,RedirectAttributes redirectAttrs) {
+            , RedirectAttributes redirectAttrs) {
 
         try {
 
             final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
 
-            AccountInfoView account =  getAccountInfoView(workflowId);
+            AccountInfoView account = getAccountInfoView(workflowId);
 
             model.addAttribute("account", account);
 
@@ -135,7 +135,9 @@ public class AccountViewController {
 
 
     @PostMapping("/accounts")
-    public String createAccount(@ModelAttribute("account") Account account, Model model, RedirectAttributes redirectAttrs) {
+    public String createAccount(@ModelAttribute("account") Account account,
+                                Model model,
+                                RedirectAttributes redirectAttrs) {
 
         try {
 
@@ -152,8 +154,7 @@ public class AccountViewController {
             WorkflowClient.start(accountWorkflow::open, account);
 
 
-        } catch (
-                TemporalException e) {
+        } catch (TemporalException e) {
             redirectAttrs.addFlashAttribute("msg", e.getCause());
         }
 
@@ -177,19 +178,27 @@ public class AccountViewController {
     }
 
 
-
     //TODO PostMapping
     @GetMapping("/accounts/{accountId}/close")
-    public String closeAccount(@PathVariable String accountId, Model model) {
+    public String closeAccount(@PathVariable String accountId,
+                               Model model,
+                               RedirectAttributes redirectAttrs) {
 
-        //We need the workflow id to signal it to make the transfer
-        final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
+        try {
 
-        final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
-                workflowId);
 
-        //UpdateWorkflow is a sync request, this code will block until the workflow method returns
-        accountWorkflow.closeAccount();
+            //We need the workflow id to signal it to make the transfer
+            final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
+
+            final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
+                    workflowId);
+
+            //UpdateWorkflow is a sync request, this code will block until the workflow method returns
+            accountWorkflow.closeAccount();
+        } catch (TemporalException e) {
+            //Update workflow can throw exceptions
+            redirectAttrs.addFlashAttribute("msg", e.getCause());
+        }
 
         return "redirect:/accounts"; //navigate to view
     }

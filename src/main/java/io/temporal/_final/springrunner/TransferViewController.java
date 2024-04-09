@@ -138,7 +138,7 @@ public class TransferViewController {
             //Signal to approve / deny operation.
             //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
             // reception of the request
-            moneyTransferWorkflow.approveTransfer(transferStatus);
+            moneyTransferWorkflow.changeTransferStatus(transferStatus);
 
             return "redirect:/accounts"; //navigate to view
 

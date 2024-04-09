@@ -16,6 +16,9 @@ public interface AccountWorkflow {
     @UpdateMethod
     RequestTransferResponse requestTransfer(TransferRequest transferRequest);
 
+    @UpdateValidatorMethod(updateName = "closeAccount")
+    void validateCloseAccount();
+
     @UpdateMethod
     CloseAccountResponse closeAccount();
 
@@ -23,5 +26,10 @@ public interface AccountWorkflow {
     AccountSummaryResponse getAccountSummary();
 
 
+    @UpdateMethod
+    void withdraw(double amount);
+
+    @UpdateMethod
+    void deposit(double amount);
 }
 
