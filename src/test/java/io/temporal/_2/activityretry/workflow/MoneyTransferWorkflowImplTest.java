@@ -7,7 +7,7 @@ import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.TransferRequest;
-import io.temporal.service.AccountService;
+import io.temporal.activity.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.testing.TestWorkflowRule;

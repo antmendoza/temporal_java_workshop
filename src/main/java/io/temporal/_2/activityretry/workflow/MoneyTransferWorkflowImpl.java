@@ -3,7 +3,7 @@ package io.temporal._2.activityretry.workflow;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.model.TransferRequest;
-import io.temporal.service.AccountService;
+import io.temporal.activity.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;

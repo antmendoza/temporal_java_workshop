@@ -2,7 +2,7 @@ package io.temporal._3.workflowtaskfretry.workflow;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.model.TransferRequest;
-import io.temporal.service.AccountService;
+import io.temporal.activity.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;

@@ -6,7 +6,7 @@ import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
-import io.temporal.service.NotificationServiceImpl;
+import io.temporal.activity.NotificationServiceImpl;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;

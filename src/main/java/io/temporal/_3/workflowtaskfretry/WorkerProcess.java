@@ -2,7 +2,7 @@ package io.temporal._3.workflowtaskfretry;
 
 import io.temporal._3.workflowtaskfretry.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.client.WorkflowClient;
-import io.temporal.service.AccountServiceImpl;
+import io.temporal.activity.AccountServiceImpl;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;

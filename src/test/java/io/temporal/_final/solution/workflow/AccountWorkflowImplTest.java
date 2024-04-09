@@ -3,20 +3,18 @@ package io.temporal._final.solution.workflow;
 import io.temporal.TestEnvironment;
 import io.temporal.TestUtilInterceptorTracker;
 import io.temporal.TestUtilWorkerInterceptor;
-import io.temporal.activity.AccountService;
-import io.temporal.activity.AccountServiceImpl;
+import io.temporal._final.solution.activity.AccountServiceWithTemporalClient;
 import io.temporal.activity.NotificationService;
 import io.temporal.activity.NotificationServiceImpl;
 import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflow;
 import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;
-import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
 import io.temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.model.Account;
 import io.temporal.model.TransferRequest;
+import io.temporal.activity.AccountService;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactoryOptions;
@@ -31,7 +29,7 @@ import java.time.Duration;
 public class AccountWorkflowImplTest {
 
     // Namespace is dynamically set
-    private static final String namespace = "test-namespace";
+    private static final String namespace = "default";
     private static TestUtilInterceptorTracker testUtilInterceptorTracker =
             new TestUtilInterceptorTracker();
     @Rule
@@ -44,6 +42,7 @@ public class AccountWorkflowImplTest {
                                             new TestUtilWorkerInterceptor(testUtilInterceptorTracker))
                                     .build())
                     .setDoNotStart(true)
+                   // .setUseExternalService(true)
                     .build();
 
 
@@ -56,7 +55,7 @@ public class AccountWorkflowImplTest {
     @Test
     public void testE2E() {
 
-        final AccountService accountService = Mockito.mock(AccountServiceImpl.class);
+        final AccountService accountService = new AccountServiceWithTemporalClient(testWorkflowRule.getWorkflowClient());
         final NotificationService notificationService = Mockito.mock(NotificationServiceImpl.class);
 
         //Setup worker, register workflows and activities
@@ -74,24 +73,36 @@ public class AccountWorkflowImplTest {
         //Workflow client to interact with Temporal server
         final WorkflowClient workflowClient = testWorkflowRule.getWorkflowClient();
 
-        //setup ids
-        final String accountId = "r-" + Math.random();
-        final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
-
-        final AccountWorkflow workflow = workflowClient.newWorkflowStub(AccountWorkflow.class, WorkflowOptions
+        //Source workflow
+        final String sourceAccountId = "r-" + Math.random();
+        final String sourceWorkflowId = AccountWorkflow.workflowIdFromAccountId(sourceAccountId);
+        final AccountWorkflow sourceWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class, WorkflowOptions
                 .newBuilder()
-                .setWorkflowId(workflowId)
+                .setWorkflowId(sourceWorkflowId)
                 .setTaskQueue(testWorkflowRule.getTaskQueue())
                 .build());
-
         //Start workflow async, so we don't block the test here until the workflow completes
-        WorkflowClient.start(workflow::open, new Account(accountId, "customerName", 50));
+        WorkflowClient.start(sourceWorkflow::open, new Account(sourceAccountId, "customerName", 50));
+
+
+
+
+        //Target workflow
+        final String targetAccountId = "r-" + Math.random();
+        final String targetWorkflowId = AccountWorkflow.workflowIdFromAccountId(targetAccountId);
+        final AccountWorkflow targetWorkflow = workflowClient.newWorkflowStub(AccountWorkflow.class, WorkflowOptions
+                .newBuilder()
+                .setWorkflowId(targetWorkflowId)
+                .setTaskQueue(testWorkflowRule.getTaskQueue())
+                .build());
+        //Start workflow async, so we don't block the test here until the workflow completes
+        WorkflowClient.start(targetWorkflow::open, new Account(targetAccountId, "customerName", 50));
 
 
         // Start 3 request to transfer money
-        workflow.requestTransfer(new TransferRequest(accountId, "" + Math.random(),  10));
-        workflow.requestTransfer(new TransferRequest(accountId, "" + Math.random(),  10));
-        workflow.requestTransfer(new TransferRequest(accountId, "" + Math.random(),  10));
+        sourceWorkflow.requestTransfer(new TransferRequest(sourceAccountId, targetAccountId,  10));
+        sourceWorkflow.requestTransfer(new TransferRequest(sourceAccountId, targetAccountId,  10));
+        sourceWorkflow.requestTransfer(new TransferRequest(sourceAccountId, targetAccountId,  10));
 
 
         // It will start 3 child workflows, lets wait until those workflows finish
@@ -103,28 +114,20 @@ public class AccountWorkflowImplTest {
         );
 
         //close account
-        var closeAccountResponse = workflow.closeAccount();
+        var closeAccountResponse = sourceWorkflow.closeAccount();
 
         //Verify amount in the account after closing it
         final double accountAmount = closeAccountResponse.account().balance();
         Assert.assertEquals(20, accountAmount, 0.2);
 
-        testUtilInterceptorTracker.waitUntilWorkflowIsClosed(workflowId);
+        testUtilInterceptorTracker.waitUntilWorkflowIsClosed(sourceWorkflowId);
 
         // We have introduced an artificial sleep to the child workflow, just to show the child
         // workflow can continue running after the parent workflow is closed,
         // Let's "travel in time" forward 5 second
         testWorkflowRule.getTestEnvironment().sleep(Duration.ofSeconds(5));
-        testUtilInterceptorTracker.waitUntilWorkflowIsClosed(AccountCleanUpWorkflow.workflowIdFromAccountId(accountId));
+        testUtilInterceptorTracker.waitUntilWorkflowIsClosed(AccountCleanUpWorkflow.workflowIdFromAccountId(sourceAccountId));
 
-    }
-
-    private DescribeWorkflowExecutionResponse getDescribeWorkflowExecutionResponse(final String workflowId, String namespace) {
-        DescribeWorkflowExecutionResponse describe = TestEnvironment.describeWorkflowExecution(
-                WorkflowExecution.newBuilder().setWorkflowId(workflowId)
-                        .build(), namespace, testWorkflowRule
-        );
-        return describe;
     }
 
 

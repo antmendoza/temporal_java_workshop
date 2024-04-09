@@ -1,7 +1,7 @@
 package io.temporal._2.activityretry.workflow;
 
 import io.temporal.activity.Activity;
-import io.temporal.service.AccountService;
+import io.temporal.activity.AccountService;
 import io.temporal.service.BankingClient;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;

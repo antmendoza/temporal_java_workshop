@@ -6,7 +6,7 @@ import io.temporal.common.SearchAttributeKey;
 import io.temporal.model.TransferRequest;
 import io.temporal.model.TransferResponse;
 import io.temporal.model.TransferStatus;
-import io.temporal.service.AccountService;
+import io.temporal.activity.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;

@@ -2,7 +2,7 @@ package io.temporal._final.solution.activity;
 
 import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal.client.WorkflowClient;
-import io.temporal.service.AccountService;
+import io.temporal.activity.AccountService;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
