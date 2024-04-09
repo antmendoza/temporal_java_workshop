@@ -3,19 +3,14 @@ package io.temporal._final.springrunner;
 import com.github.javafaker.Faker;
 import io.temporal._final.WorkerProcess;
 import io.temporal._final.solution.workflow.AccountWorkflow;
-import io.temporal.api.common.v1.WorkflowExecution;
-import io.temporal.api.enums.v1.WorkflowExecutionStatus;
-import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
-import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
-import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.failure.TemporalException;
 import io.temporal.model.Account;
-import io.temporal.model.AccountSummaryResponse;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-import static io.temporal.Constants.namespace;
+import static io.temporal._final.springrunner.AccountService.getAccountInfoView;
 
 
 @Controller
@@ -69,44 +64,13 @@ public class AccountViewController {
     @GetMapping("/accounts")
     public String accountsView(Model model) {
 
-        // Visibility API is eventually consistent.
-        // Real word applications that requires high throughput and real time data should
-        // store/query data in external DBs
-
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
-        final String query = "WorkflowType=\"AccountWorkflow\"";
-        final List<AccountInfoView> accounts = workflowClientVisibilityAPI()
-                .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
-                        .setQuery(query)
-                        .setNamespace(namespace)
-                        .build()).getExecutionsList().stream().map((execution) ->
-                {
-                    final String workflowId = execution.getExecution().getWorkflowId();
-
-                    return getAccountInfoView(workflowId);
-
-                }).toList();
-
+        final List<AccountInfoView> accounts =
+                AccountService.getAccounts(workflowClientVisibilityAPI(), workflowClientExecutionAPI);
 
         model.addAttribute("accounts", accounts);
 
         return "accounts"; //navigate to view
 
-
-    }
-
-    private AccountInfoView getAccountInfoView(final String workflowId) {
-        //This query is performed by our Worker entity (no internal state is stored in the server)
-        final AccountSummaryResponse accountSummary =
-                workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class, workflowId).getAccountSummary();
-
-
-        final WorkflowExecutionStatus workflowExecutionStatus = getWorkflowExecutionStatus(workflowId);
-
-        final String status = WorkflowExecutionStatus.WORKFLOW_EXECUTION_STATUS_RUNNING
-                .equals(workflowExecutionStatus) ? "Open" : "Closed";
-
-        return new AccountInfoView(workflowId, accountSummary, status);
     }
 
 
@@ -119,7 +83,7 @@ public class AccountViewController {
 
             final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
 
-            AccountInfoView account = getAccountInfoView(workflowId);
+            AccountInfoView account = getAccountInfoView(workflowId, workflowClientExecutionAPI);
 
             model.addAttribute("account", account);
 
@@ -201,20 +165,6 @@ public class AccountViewController {
         }
 
         return "redirect:/accounts"; //navigate to view
-    }
-
-
-    private WorkflowExecutionStatus getWorkflowExecutionStatus(final String workflowId) {
-        final DescribeWorkflowExecutionResponse describeNamespaceResponse = workflowClientExecutionAPI.getWorkflowServiceStubs().blockingStub()
-                .describeWorkflowExecution(DescribeWorkflowExecutionRequest.newBuilder()
-                        .setNamespace(namespace)
-                        .setExecution(WorkflowExecution.newBuilder()
-                                .setWorkflowId(workflowId)
-                                .build())
-                        .build());
-
-        final WorkflowExecutionStatus workflowExecutionStatus = describeNamespaceResponse.getWorkflowExecutionInfo().getStatus();
-        return workflowExecutionStatus;
     }
 
 

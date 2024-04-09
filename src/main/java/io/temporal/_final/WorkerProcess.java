@@ -1,6 +1,6 @@
 package io.temporal._final;
 
-import io.temporal._final.solution.workflow.AccountServiceWithTemporalClient;
+import io.temporal._final.solution.activity.AccountServiceWithTemporalClient;
 import io.temporal._final.solution.workflow.AccountWorkflowImpl;
 import io.temporal._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflowImpl;

@@ -1,8 +1,8 @@
-package io.temporal._final.solution.workflow;
+package io.temporal._final.solution.activity;
 
+import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.service.AccountService;
-import io.temporal.service.AccountServiceImpl;
 import io.temporal.service.DepositRequest;
 import io.temporal.service.WithdrawRequest;
 import io.temporal.workflow.Workflow;
@@ -23,18 +23,13 @@ public class AccountServiceWithTemporalClient implements AccountService {
         log.info("Init withdraw : " + withdrawRequest);
         final String workflowId =
                 AccountWorkflow.workflowIdFromAccountId(withdrawRequest.accountId());
-        try {
+        client
+                .newWorkflowStub(AccountWorkflow.class,
+                        workflowId)
+                //Update workflow, this is a blocking operations that will
+                // return once the returns once deposit method has completed
+                .withdraw(withdrawRequest.amount());
 
-            client
-                    .newWorkflowStub(AccountWorkflow.class,
-                            workflowId)
-                    //Update workflow, this is a blocking operations that will
-                    // return once the returns once deposit method has completed
-                    .withdraw(withdrawRequest.amount());
-
-        } catch (Exception e) {
-
-        }
         log.info("End withdraw : " + withdrawRequest);
     }
 
@@ -43,20 +38,13 @@ public class AccountServiceWithTemporalClient implements AccountService {
         log.info("Init deposit : " + depositRequest);
         final String workflowId =
                 AccountWorkflow.workflowIdFromAccountId(depositRequest.accountId());
+        client
+                .newWorkflowStub(AccountWorkflow.class,
+                        workflowId)
+                //Update workflow, this is a blocking operations that will
+                // return once the returns once deposit method has completed
+                .deposit(depositRequest.amount());
 
-        try {
-
-
-            client
-                    .newWorkflowStub(AccountWorkflow.class,
-                            workflowId)
-                    //Update workflow, this is a blocking operations that will
-                    // return once the returns once deposit method has completed
-                    .deposit(depositRequest.amount());
-
-        } catch (Exception e) {
-
-        }
         log.info("Init deposit : " + depositRequest);
     }
 }

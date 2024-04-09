@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 import static io.temporal.Constants.namespace;
 
@@ -50,14 +51,31 @@ public class TransferViewController {
 
 
     @GetMapping("/transfer-request/{fromAccountId}")
-    public String newTransferView(@PathVariable String fromAccountId, Model model) {
+    public String newTransferView(@PathVariable String fromAccountId,
+                                  Model model,
+                                  RedirectAttributes redirectAttrs) {
 
         //Dummy values
-        final String toAccountId = "" + fakerInstance.random().nextInt(100_000, 1_000_000);
         final int amount = fakerInstance.random().nextInt(10, 100);
 
-        final TransferRequest transferRequest = new TransferRequest(fromAccountId, toAccountId, amount);
+        final List<String> accounts =
+                AccountService.getOpenAccounts(workflowClientVisibilityAPI(), workflowClientExecutionAPI)
+                        .stream().map(accountInfo -> accountInfo.accountSummary().account().accountId())
+                        .filter(accountId -> {
+                            return !Objects.equals(accountId, fromAccountId);
+                        }).toList();
 
+        model.addAttribute("accounts", accounts);
+
+
+        if (accounts.isEmpty()){
+            redirectAttrs.addFlashAttribute("msg", "Please, create one more account!");
+            return "redirect:/accounts"; //navigate to view
+
+        }
+
+        final String toAccountId = null;
+        final TransferRequest transferRequest = new TransferRequest(fromAccountId, toAccountId, amount);
         model.addAttribute("transferRequest", transferRequest);
 
         return "transfer-request"; //navigate to view

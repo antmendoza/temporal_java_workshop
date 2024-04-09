@@ -8,7 +8,6 @@ add_custom_search_attributes() {
       echo "Waiting for namespace cache to refresh..."
       sleep 1
     done
-    echo "Namespace cache refreshed."
 
     echo "Adding Custom  search attributes."
 
@@ -17,6 +16,9 @@ add_custom_search_attributes() {
 }
 
 setup_server(){
+
+    sleep 2
+
     add_custom_search_attributes
     echo ">>> UI running in http://localhost:8233/"
     echo ">>> UI running in http://localhost:8233/"
