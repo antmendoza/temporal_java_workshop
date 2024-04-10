@@ -10,7 +10,6 @@ import io.temporal.failure.TemporalException;
 import io.temporal.model.Account;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,18 +20,24 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-import static io.temporal._final.springrunner.AccountService.getAccountInfoView;
+import static io.temporal._final.springrunner.TemporalService.getAccountInfoView;
 
 
 @Controller
 public class AccountViewController {
 
 
+
+    private final TemporalService temporalService;
+
+
+
     private static Faker fakerInstance;
     private static WorkflowClient workflowClientExecutionAPI;
     final String taskQueue = WorkerProcess.TASK_QUEUE;
 
-    public AccountViewController() {
+    public AccountViewController(final TemporalService temporalService) {
+        this.temporalService = temporalService;
 
         if (workflowClientExecutionAPI == null) {
             //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
@@ -65,7 +70,7 @@ public class AccountViewController {
     public String accountsView(Model model) {
 
         final List<AccountInfoView> accounts =
-                AccountService.getAccounts(workflowClientVisibilityAPI(), workflowClientExecutionAPI);
+                this.temporalService.getAccounts();
 
         model.addAttribute("accounts", accounts);
 
@@ -83,7 +88,7 @@ public class AccountViewController {
 
             final String workflowId = AccountWorkflow.workflowIdFromAccountId(accountId);
 
-            AccountInfoView account = getAccountInfoView(workflowId, workflowClientExecutionAPI);
+            AccountInfoView account = getAccountInfoView(workflowId);
 
             model.addAttribute("account", account);
 

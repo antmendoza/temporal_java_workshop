@@ -1,6 +1,15 @@
 #!/bin/bash
 
 
+
+file="my_test.db"
+
+if [ -f "$file" ] ; then
+
+    rm "$file"
+fi
+
+
 : "${DEFAULT_NAMESPACE:=default}"
 
 add_custom_search_attributes() {
@@ -30,4 +39,4 @@ setup_server(){
 setup_server &
 
 temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true \
---db-filename my_test.db
+--db-filename $file

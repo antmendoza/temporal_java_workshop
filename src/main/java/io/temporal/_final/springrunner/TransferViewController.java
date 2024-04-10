@@ -3,7 +3,6 @@ package io.temporal._final.springrunner;
 import com.github.javafaker.Faker;
 import io.temporal._final.solution.workflow.AccountWorkflow;
 import io.temporal._final.solution.workflow.child.MoneyTransferWorkflow;
-import io.temporal.api.workflowservice.v1.ListWorkflowExecutionsRequest;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.failure.TemporalException;
@@ -23,16 +22,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Objects;
 
-import static io.temporal.Constants.namespace;
-
 @Controller
 public class TransferViewController {
 
+
     private static Faker fakerInstance;
+    private final TemporalService temporalService;
 
     private static WorkflowClient workflowClientExecutionAPI;
 
-    public TransferViewController() {
+    public TransferViewController(final TemporalService temporalService) {
+        this.temporalService = temporalService;
+
+        if (fakerInstance == null) {
+            fakerInstance = Faker.instance();
+        }
 
         if (workflowClientExecutionAPI == null) {
             //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
@@ -41,10 +45,6 @@ public class TransferViewController {
                     .setTarget(io.temporal.Constants.targetGRPC)
                     .build());
             workflowClientExecutionAPI = WorkflowClient.newInstance(service);
-        }
-
-        if (fakerInstance == null) {
-            fakerInstance = Faker.instance();
         }
 
     }
@@ -59,7 +59,7 @@ public class TransferViewController {
         final int amount = fakerInstance.random().nextInt(10, 100);
 
         final List<String> accounts =
-                AccountService.getOpenAccounts(workflowClientVisibilityAPI(), workflowClientExecutionAPI)
+                this.temporalService.getOpenAccounts()
                         .stream().map(accountInfo -> accountInfo.accountSummary().account().accountId())
                         .filter(accountId -> {
                             return !Objects.equals(accountId, fromAccountId);
@@ -68,7 +68,7 @@ public class TransferViewController {
         model.addAttribute("accounts", accounts);
 
 
-        if (accounts.isEmpty()){
+        if (accounts.isEmpty()) {
             redirectAttrs.addFlashAttribute("msg", "Please, create one more account!");
             return "redirect:/accounts"; //navigate to view
 
@@ -116,7 +116,7 @@ public class TransferViewController {
     @GetMapping("/transfers")
     public String requests(Model model) {
 
-        final List<PendingRequestInfoView> transfers = queryPendingApprovals(getAllRequests());
+        final List<PendingRequestInfoView> transfers = temporalService.getRequests();
 
         model.addAttribute("transfers", transfers);
 
@@ -127,7 +127,7 @@ public class TransferViewController {
     @GetMapping("/pending-transfers")
     public String pendingRequests(Model model) {
 
-        final List<PendingRequestInfoView> pendingRequests = queryPendingApprovals(getQueryPendingRequests());
+        final List<PendingRequestInfoView> pendingRequests = temporalService.getPendingRequests();
 
         model.addAttribute("pendingRequests", pendingRequests);
 
@@ -143,7 +143,6 @@ public class TransferViewController {
 
 
         try {
-
 
             //We have set in the view workflowId as requestId
             String workflowId = requestId;
@@ -173,54 +172,8 @@ public class TransferViewController {
     )
     @ResponseBody
     public ResponseEntity pendingApprovals() {
-        return new ResponseEntity(queryPendingApprovals(getQueryPendingRequests()).size(),
+        return new ResponseEntity(temporalService.getPendingRequests().size(),
                 HttpStatus.OK);
-    }
-
-    private WorkflowServiceGrpc.WorkflowServiceBlockingStub workflowClientVisibilityAPI() {
-        return workflowClientExecutionAPI.getWorkflowServiceStubs()
-                .blockingStub();
-    }
-
-    private List<PendingRequestInfoView> queryPendingApprovals(final String query) {
-
-        // Visibility API is eventually consistent.
-        // Real word applications that requires high throughput and real time data should
-        // store/query data in external DBs
-        final ListWorkflowExecutionsRequest listWorkflowExecutionsRequest = ListWorkflowExecutionsRequest.newBuilder()
-                .setQuery(query)
-                .setNamespace(namespace)
-                .build();
-
-        final List<PendingRequestInfoView> pendingApprovals = workflowClientVisibilityAPI()
-                .listWorkflowExecutions(listWorkflowExecutionsRequest).getExecutionsList().stream().map(execution -> {
-
-                    //For each workflow running and waiting for approval
-                    final String workflowId = execution.getExecution().getWorkflowId();
-
-                    // Query the workflow through the queryMethod getTransferRequest to retrieve internal state (stored as a workflow variable)
-                    final TransferRequest transferRequest =
-                            workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class, workflowId).getTransferRequest();
-
-                    return new PendingRequestInfoView(workflowId, transferRequest);
-                }).toList();
-        return pendingApprovals;
-    }
-
-
-
-
-    private static String getQueryPendingRequests() {
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22
-        final String query = "WorkflowType=\"MoneyTransferWorkflow\" and ExecutionStatus=\"Running\" and " +
-                "TransferRequestStatus=\"ApprovalRequired\"";
-        return query;
-    }
-
-    private static String getAllRequests() {
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22
-        final String query = "WorkflowType=\"MoneyTransferWorkflow\"";
-        return query;
     }
 
 
