@@ -16,7 +16,7 @@ public class NotificationServiceImpl implements
     }
 
     @Override
-    public void transferDenied(final TransferRequest transferRequest) {
+    public void operationDenied(final TransferRequest transferRequest) {
         log.info("transferDenied: Sending notification" + transferRequest);
 
     }

@@ -40,7 +40,7 @@
         <br/>
         <br/>
         <b>Account </b><span th:text="${account.accountSummary().account().accountId()}"></span>;<b> Balance</b> <span th:text="${account.accountSummary().account().balance()}"></span>
-        <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${account.workflowId()}}" target="_blank">
+        <a class="view-ui" th:href="@{'http://localhost:8080/namespaces/default/workflows/' + ${account.workflowId()}}" target="_blank">
             View in Temporal UI
         </a>
         <br/>
@@ -59,7 +59,7 @@
 
                 <td>
                     <span th:text="${operation.workflowId()}"></span>
-                    <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${operation.workflowId()}}"
+                    <a class="view-ui" th:href="@{'http://localhost:8080/namespaces/default/workflows/' + ${operation.workflowId()}}"
                        target="_blank">
                         View in Temporal UI
                     </a>

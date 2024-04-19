@@ -1,50 +1,28 @@
 # Introduction
 
-## What is temporal?
-
-
-
-
-Temporal is a durable execution system ....
-
-//TODO Diagrams and stuff...
-//TODO start with update workflow
+This workshop is an introduction to [Temporal](https://temporal.io/) in Java. Across several and iterative exercises, it introduces the main 
+Temporal concepts like [workflows](https://docs.temporal.io/workflows), [activities](https://docs.temporal.io/activities), 
+[signals](https://docs.temporal.io/workflows#signal), [queries](https://docs.temporal.io/workflows#query), 
+[update workflow](https://docs.temporal.io/workflows#update) and [search attributes](https://docs.temporal.io/visibility#search-attribute)
 
 
 ## Prerequisites
 
-Temporal provides a lightweight server for development (called temporal cli), 
-that contains the server itself plus the UI and an in-memory DB.
+**Temporal** provides a lightweight server for development, called [Temporal CLI](https://docs.temporal.io/cli). It comes
+with everything we need to start developing Temporal applications (Temporal server, in-memory DB and UI)
 
-You can install cli from https://docs.temporal.io/cli#install
-Other option is to use docker-compose (https://github.com/temporalio/docker-compose)
-
-
-For this exersice we will require temporal running and to run a extra command to create a Custom Search Attribute (that 
-will allow search workflows matching a specific key/value)
-
-
-
-
-`temporal server start-dev --dynamic-config-value frontend.enableUpdateWorkflowExecution=true --db-filename my_test.db`
-- http://localhost:8233/
-
-
-Open other terminal an run the following command to create the search attribute
-`temporal operator search-attribute create --namespace default --type Keyword --name TransferRequestStatus`
+Please, go ahead and install [Temporal CLI](https://docs.temporal.io/cli) in your laptop.
 
 
 ## Modules:
 
-### My first workflow
+#### demo
 
-Two main building blocks, workflows and activities:
+Feel free to use this code as 
 
-- firstworkflow
+#### demo
 
-### What the f** is a durable execution?
-
-.. Temporal will ensure your workflow is executed `at least once`, and will recover ...
+#### firstworkflow
 
 #### workflowtaskfretry
 
@@ -82,9 +60,12 @@ This is a Temporal workshop to introduce the main Temporal primitives:
 
 ## env setup
 
-[env-setup.md](./env-setup.md)
+[env-setup.md](doc/env-setup.md)
 
 ## Resources:
+
+- [Learn Temporal](https://learn.temporal.io/)
+- [Documentation](https://docs.temporal.io/)
 
 ### Java Workshops:
 

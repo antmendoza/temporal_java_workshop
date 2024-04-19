@@ -1,7 +1,5 @@
 package io.temporal.activity;
 
-import io.temporal.activity.ActivityInterface;
-import io.temporal.activity.ActivityMethod;
 import io.temporal.model.Account;
 import io.temporal.model.TransferRequest;
 
@@ -13,7 +11,7 @@ public interface NotificationService {
     void accountClosed(Account account);
 
     @ActivityMethod
-    void transferDenied(TransferRequest transferRequest);
+    void operationDenied(TransferRequest transferRequest);
 
     @ActivityMethod
     void transferCompleted(TransferRequest transferRequest);

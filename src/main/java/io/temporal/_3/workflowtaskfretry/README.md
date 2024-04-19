@@ -1,6 +1,6 @@
 # Workflow task  failure
 
-This example demostrate the workflow task will retry in prosence of errors.
+This example demonstrate the workflow task will retry in prosence of errors.
 The workflow code throws runtime error, once we fix the code and redeploy the worker, the worker will continue the
 workflow execution.
 

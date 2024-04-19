@@ -42,7 +42,7 @@
         <br/>
 
         <b>Accounts </b>
-        <a class="view-ui" href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22"
+        <a class="view-ui" href="http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22"
            target="_blank">View in Temporal UI</a>
 
         <br/>
@@ -65,7 +65,7 @@
             <tr th:each="accountInfo: ${accounts}">
                 <td>
                     <span th:text="${accountInfo.workflowId()}"></span>
-                    <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${accountInfo.workflowId()}}"
+                    <a class="view-ui" th:href="@{'http://localhost:8080/namespaces/default/workflows/' + ${accountInfo.workflowId()}}"
                        target="_blank">
                         View in Temporal UI
                     </a>

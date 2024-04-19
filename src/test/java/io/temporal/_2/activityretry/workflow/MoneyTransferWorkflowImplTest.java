@@ -1,6 +1,7 @@
 package io.temporal._2.activityretry.workflow;
 
 import io.temporal.DescribeWorkflowExecution;
+import io.temporal.activity.AccountServiceImplWithRuntimeException;
 import io.temporal.activity.Activity;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionResponse;
@@ -37,7 +38,7 @@ public class MoneyTransferWorkflowImplTest {
     @Test
     public void testTransfer() {
 
-        AccountService accountService = Mockito.mock(AccountServiceImplRetry.class);
+        AccountService accountService = Mockito.mock(AccountServiceImplWithRuntimeException.class);
 
         Worker worker = testWorkflowRule.getWorker();
         worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
@@ -79,7 +80,7 @@ public class MoneyTransferWorkflowImplTest {
     @Test
     public void testRetryAndSuccess() {
 
-        AccountService accountService = Mockito.mock(AccountServiceImplRetry.class);
+        AccountService accountService = Mockito.mock(AccountServiceImplWithRuntimeException.class);
         doThrow(RuntimeException.class).when(accountService).deposit(any());
 
         Worker worker = testWorkflowRule.getWorker();

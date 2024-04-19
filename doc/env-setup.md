@@ -1,6 +1,6 @@
 # Env Setup
 
-## Temporal Cluster (env-setup.md)
+## Temporal Cluster
 
 ### Two options:
 
@@ -10,7 +10,7 @@
 
 `temporal server start-dev --f java_workshop`
 
-- UI: http://localhost:8233/
+- UI: http://localhost:8080/
 
 #### Docker-compose
 

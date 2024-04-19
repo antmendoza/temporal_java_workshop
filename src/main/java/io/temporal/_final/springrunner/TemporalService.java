@@ -79,7 +79,7 @@ public class TemporalService {
         // Real word applications that requires high throughput and real time data should
         // store/query data in external DBs
 
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
+        // http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
         final String query = "WorkflowType=\"AccountWorkflow\"";
         return workflowClientQueryAPI
                 .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
@@ -98,7 +98,7 @@ public class TemporalService {
     public List<AccountInfoView> getOpenAccounts() {
 
 
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22+AND+ExecutionStatus%3D%22Running%22
+        // http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22+AND+ExecutionStatus%3D%22Running%22
         final String query = "WorkflowType=\"AccountWorkflow\" AND ExecutionStatus=\"Running\"";
         return workflowClientQueryAPI
                 .listWorkflowExecutions(ListWorkflowExecutionsRequest.newBuilder()
@@ -143,7 +143,7 @@ public class TemporalService {
     public List<PendingRequestInfoView> getPendingRequests() {
 
 
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22
+        // http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22
         final String query = "WorkflowType=\"MoneyTransferWorkflow\" and ExecutionStatus=\"Running\" and " +
                 "TransferRequestStatus=\"ApprovalRequired\"";
 
@@ -152,7 +152,7 @@ public class TemporalService {
     }
 
     public List<PendingRequestInfoView> getRequests() {
-        // http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22
+        // http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22
         final String query = "WorkflowType=\"MoneyTransferWorkflow\"";
         return queryRequest(query);
 

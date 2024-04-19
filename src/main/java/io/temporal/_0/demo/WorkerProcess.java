@@ -1,7 +1,8 @@
-package io.temporal._2.activityretry;
+package io.temporal._0.demo;
 
+import io.temporal._0.demo.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.activity.AccountServiceImplWithRuntimeException;
-import io.temporal._2.activityretry.workflow.MoneyTransferWorkflowImpl;
+import io.temporal.activity.NotificationServiceImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.service.BankingClient;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -42,6 +43,7 @@ public class WorkerProcess {
 
         worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
         worker.registerActivitiesImplementations(new AccountServiceImplWithRuntimeException(new BankingClient()));
+        worker.registerActivitiesImplementations(new NotificationServiceImpl());
 
         factory.start();
     }

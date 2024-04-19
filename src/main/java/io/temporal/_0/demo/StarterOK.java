@@ -1,6 +1,6 @@
-package io.temporal._2.activityretry;
+package io.temporal._0.demo;
 
-import io.temporal._2.activityretry.workflow.MoneyTransferWorkflow;
+import io.temporal._0.demo.workflow.MoneyTransferWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
@@ -8,9 +8,9 @@ import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 
-public class Starter {
+public class StarterOK {
 
-    static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
+    static final String MY_BUSINESS_ID = StarterOK.class.getPackageName() + ":money-transfer";
 
     public static void main(String[] args) {
 

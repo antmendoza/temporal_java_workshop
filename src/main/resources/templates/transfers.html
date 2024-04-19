@@ -40,7 +40,7 @@
         <br/>
         <br/>
 
-        <b>Operations </b><a class="view-ui" href="http://localhost:8233/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22"
+        <b>Operations </b><a class="view-ui" href="http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22"
            target="_blank">View in Temporal UI</a>
 
         <table class="table">
@@ -57,7 +57,7 @@
             <tr th:each="transfer: ${transfers}">
                 <td>
                     <span th:text="${transfer.workflowId()}"></span>
-                    <a class="view-ui" th:href="@{'http://localhost:8233/namespaces/default/workflows/' + ${transfer.workflowId()}}"
+                    <a class="view-ui" th:href="@{'http://localhost:8080/namespaces/default/workflows/' + ${transfer.workflowId()}}"
                        target="_blank">View in Temporal UI
                     </a>
                 </td>

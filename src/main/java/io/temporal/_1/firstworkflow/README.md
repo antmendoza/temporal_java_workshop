@@ -136,7 +136,7 @@ public class Starter {
 
 ```
 
-- navigate to the UI (http://localhost:8233 or http://localhost:8080) and note workflow is not making progress,
+- navigate to the UI (http://localhost:8080 or http://localhost:8080) and note workflow is not making progress,
   there are no workers polling workflow/activity tasks.
 
 ### Start the worker (run WorkerProcess main method)

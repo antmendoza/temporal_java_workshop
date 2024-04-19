@@ -1,6 +1,6 @@
-package io.temporal._2.activityretry;
+package io.temporal._0.demo;
 
-import io.temporal._2.activityretry.workflow.MoneyTransferWorkflow;
+import io.temporal._0.demo.workflow.MoneyTransferWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
@@ -8,9 +8,11 @@ import io.temporal.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 
-public class Starter {
+import static io.temporal.activity.AccountServiceImplWithRuntimeException.VALUE_TO_THROW_EXCEPTION;
 
-    static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
+public class StarterRetry {
+
+    static final String MY_BUSINESS_ID = StarterRetry.class.getPackageName() + ":money-transfer";
 
     public static void main(String[] args) {
 
@@ -36,6 +38,12 @@ public class Starter {
         final MoneyTransferWorkflow workflow =
                 client.newWorkflowStub(MoneyTransferWorkflow.class, options);
 
-        workflow.transfer(new TransferRequest("fromAccount", "toAccount", 200));
+        // For demo (if amount == VALUE_TO_THROW_EXCEPTION),
+        // AccountServiceImplWithRuntimeException.deposit will throw a RuntimeException several times
+        // before success
+        workflow.transfer(new TransferRequest(
+                "fromAccount",
+                "toAccount",
+                VALUE_TO_THROW_EXCEPTION));
     }
 }

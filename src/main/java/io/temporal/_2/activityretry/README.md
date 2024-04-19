@@ -1,9 +1,9 @@
 # Introduction
 
-This example demostrate how Temporal retry activity execution in presence of errors.
+This example demonstrate how Temporal retry activity execution in presence of errors.
 
-The activity code contains logic to simulate 4 consecutive failures and will success after the
-forth attend.
+Activity implementation contains logic to simulate 4 consecutive failures and will success after the
+forth attend,
 
 ```
   private void simulateServiceIsDownAndSuccessAfterNumIteractions(int numIterationsBeforeSuccess) {
@@ -27,5 +27,8 @@ forth attend.
 
 The activity will fail four times, after forth attend will success.
 This is the default behavior of activity execution, you can configure the retry policy setting activity options.
+
+
+
 
 
