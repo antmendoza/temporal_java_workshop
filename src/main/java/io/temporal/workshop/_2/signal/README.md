@@ -1,10 +1,11 @@
-# Signal
+# Signal Workflow
 
 [What is a Signal?](https://docs.temporal.io/workflows#signal) 
 
-Let's modify the money transfer workflow so that it will wait for an input if the amount to transfer is greater than 100.
 
 ## Exercise: Add a SignalMethod to the workflow and block the execution if the amount to transfer is greater than 100
+
+Modify the money transfer workflow so that it will wait for an input if the amount to transfer is greater than 100.
 
 This folder contains two sub-folders:
 - `initial` is you starting point, the code skeleton you have to work in to complete the exercise following the
@@ -23,7 +24,7 @@ Take your time to familiarize yourself with the following pieces of code:
 
 ####  Implementation
 
-- Declare the signal in the workflow interface:
+- Declare the @SignalMethod in the workflow interface:
 
 Open [./initial/MoneyTransferWorkflow.java](./initial/MoneyTransferWorkflow.java) and comment out the following code:
 
@@ -33,7 +34,7 @@ Open [./initial/MoneyTransferWorkflow.java](./initial/MoneyTransferWorkflow.java
 ```
 
 
-- Implement the signal method:
+- Implement the new method:
 
 Open [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowImpl.java) and implement the new method. Set the input value to `this.transferStatus`.
 
@@ -84,6 +85,8 @@ workflow.setTransferStatus(TransferStatus.Approved);
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
 
+- Stop any processes that are running as part of other exercises (such as workers), except the Temporal Server.
+
 - Execute the file Starter [./initial/Starter.java](./initial/Starter.java), to start the workflow.
 
 ```bash
@@ -92,7 +95,7 @@ cd ./../../../../../../../../
 
 ```
 
-> Note that the request has amount > 100
+> Note that the amount > 100
 
 - Start the worker
 

@@ -1,5 +1,7 @@
-package io.temporal.workshop._final.initial.workflow.child;
+package io.temporal.workshop._3.query.solution;
 
+import io.temporal.activity.ActivityOptions;
+import io.temporal.workflow.Workflow;
 import io.temporal.workshop.activity.AccountService;
 import io.temporal.workshop.activity.NotificationService;
 import io.temporal.workshop.model.TransferRequest;
@@ -7,9 +9,6 @@ import io.temporal.workshop.model.TransferResponse;
 import io.temporal.workshop.model.TransferStatus;
 import io.temporal.workshop.service.DepositRequest;
 import io.temporal.workshop.service.WithdrawRequest;
-import io.temporal.activity.ActivityOptions;
-import io.temporal.common.SearchAttributeKey;
-import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
 import java.time.Duration;
@@ -27,56 +26,39 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
                     NotificationService.class,
                     ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
-    private final SearchAttributeKey<String> TransferRequestStatus = SearchAttributeKey.forKeyword("TransferRequestStatus");
     private TransferStatus transferStatus;
-    private TransferRequest transferRequest;
 
     @Override
     public TransferResponse transfer(final TransferRequest transferRequest) {
 
         log.info("Init for request: " + transferRequest);
 
-        this.transferRequest = transferRequest;
+        transferStatus = TransferStatus.Approved;
 
-        this.transferStatus = TransferStatus.ApprovalNotRequired;
-
-        if (transferRequest.amount() > 100) {
-
+        if (transferRequest.amount() >= 100) {
             transferStatus = TransferStatus.ApprovalRequired;
 
-            //Setting this SA will allow query workflows by `TransferRequestStatus="ApprovalRequired"`
-            //http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22
-            Workflow.upsertTypedSearchAttributes(
-                    TransferRequestStatus.valueSet(transferStatus.name())
-            );
-
-            log.info("Request need approval: " + transferRequest);
-
-            // Wait until status != TransferStatus.ApprovalRequired  or timeout
-            final Duration timeout = Duration.ofSeconds(30); // Can be days, years...
-            boolean statusUpdatedWithinTimeOut =
+            final Duration timeout = Duration.ofSeconds(5); // Can be days, years...
+            boolean transferStatusUpdatedWithinTimeOut =
                     Workflow.await(timeout, () ->
-                    transferStatus != TransferStatus.ApprovalRequired);
+                            transferStatus != TransferStatus.ApprovalRequired);
 
-            if (!statusUpdatedWithinTimeOut) {
+            if (!transferStatusUpdatedWithinTimeOut) {
                 transferStatus = TransferStatus.TimedOut;
                 log.info("Status not updated within " + timeout+ " seconds");
                 return new TransferResponse(transferRequest, transferStatus);
             }
 
-
-            log.info("transferStatus: " + transferStatus);
-
-            if (TransferStatus.Denied.equals(transferStatus)) {
-                // notify customer...
-                notificationService.operationDenied(transferRequest);
-                log.info("Notify customer, transferRequest: " + transferRequest);
-                return new TransferResponse(transferRequest, transferStatus);
-
-            }
         }
 
-        //TODO add implementation to
+
+        if (TransferStatus.Approved != this.transferStatus) {
+            log.info("Completed for request: " + transferRequest);
+            final TransferResponse transferResponse = new TransferResponse(transferRequest, transferStatus);
+            log.info("TransferResponse: " + transferResponse);
+            return transferResponse;
+        }
+
         accountService.withdraw(
                 new WithdrawRequest(
                         transferRequest.fromAccountId(),
@@ -89,19 +71,18 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         notificationService.transferCompleted(transferRequest);
 
+
         log.info("Completed for request: " + transferRequest);
-        return new TransferResponse(transferRequest, transferStatus);
+        final TransferResponse transferResponse = new TransferResponse(transferRequest, transferStatus);
+        log.info("TransferResponse: " + transferResponse);
+        return transferResponse;
     }
 
     @Override
-    public void setTransferStatus(TransferStatus transferStatus) {
-        this.transferStatus = transferStatus;
+    public TransferStatus getStatus() {
+        return this.transferStatus;
     }
 
-    @Override
-    public TransferRequest getTransferRequest() {
-        return this.transferRequest;
-    }
 
 
 

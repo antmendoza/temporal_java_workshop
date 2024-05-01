@@ -54,13 +54,13 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
             // Wait until status != TransferStatus.ApprovalRequired  or timeout
             final Duration timeout = Duration.ofSeconds(30); // Can be days, years...
-            boolean authorizationReceivedWithinTimeOut =
+            boolean statusUpdatedWithinTimeOut =
                     Workflow.await(timeout, () ->
                     transferStatus != TransferStatus.ApprovalRequired);
 
-            if (!authorizationReceivedWithinTimeOut) {
+            if (!statusUpdatedWithinTimeOut) {
                 transferStatus = TransferStatus.TimedOut;
-                log.info("Authorization not received within " + timeout);
+                log.info("Status not updated within " + timeout+ " seconds");
                 return new TransferResponse(transferRequest, transferStatus);
             }
 

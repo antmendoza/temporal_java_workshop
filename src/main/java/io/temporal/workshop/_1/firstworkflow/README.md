@@ -1,6 +1,6 @@
 # My first workflow
 
-This example will guide you, step by step, on how to:
+This exercise will guide you, step by step, on how to:
 - implement a workflow
 - implement activities
 - register workflow and activity implementation to the worker
@@ -80,8 +80,10 @@ request sent by the client.
 
 ####  Run the code
 
-- Ensure you have everything you need to run the code, and the Temporal Server is running. 
+- Ensure you have everything you need to run the code, and the Temporal Server is running.
 See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
+
+- Stop any processes that are running as part of other exercises (such as workers), except the Temporal Server.
 
 - Execute the file Starter [./initial/Starter.java](./initial/Starter.java), that sends a request to the server to start the workflow.
 
@@ -182,7 +184,8 @@ Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
 
-- If you have a worker running (the one we started in the previous steps) stop it.
+- Stop any processes that are running as part of other exercises (such as workers), except the Temporal Server.
+
 
 - Schedule the workflow [./initial/Starter.java](./initial/Starter.java).
 
