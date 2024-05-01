@@ -1,4 +1,4 @@
-# RUN MANUALLY THE STEPS IN THE SCRIPT 
+# Run manually the steps in the script 
 
 This repository provides a script [start-temporal-cli.sh](start-temporal-cli.sh) to run temporal cli with the needed 
 configuration for this workshop. 
