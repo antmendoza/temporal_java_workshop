@@ -88,7 +88,7 @@ workflow.setTransferStatus(TransferStatus.Approved);
 
 ```bash
 cd ./../../../../../../../../
- ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._2.signals.initial.Starter"
+ ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._2.signal.initial.Starter"
 
 ```
 
@@ -98,14 +98,14 @@ cd ./../../../../../../../../
 
 ```bash
 cd ./../../../../../../../../
- ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._2.signals.initial.WorkerProcess"
+ ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._2.signal.initial.WorkerProcess"
 
 ```
 
 Navigate to  [http://localhost:8080/](http://localhost:8080/), open the workflow execution and click on `Call Stack`.
 From this tab we can infer why our execution is not making progress, is `BLOCKED on await`
 
-![](blockedInAwait.png)
+![](blockedOnAwait.png)
 
 
 
@@ -113,7 +113,7 @@ From this tab we can infer why our execution is not making progress, is `BLOCKED
 
 ```bash
 cd ./../../../../../../../../
- ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._2.signals.initial.Signal"
+ ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._2.signal.initial.Signal"
 
 ```
 

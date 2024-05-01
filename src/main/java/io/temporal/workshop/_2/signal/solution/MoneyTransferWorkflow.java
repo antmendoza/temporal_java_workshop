@@ -1,4 +1,4 @@
-package io.temporal.workshop._2.signals.initial;
+package io.temporal.workshop._2.signal.solution;
 
 
 import io.temporal.workflow.SignalMethod;
@@ -20,6 +20,6 @@ public interface MoneyTransferWorkflow {
     TransferResponse transfer(TransferRequest transferRequest);
 
     
-    //@SignalMethod
-    //void setTransferStatus(TransferStatus transferStatus);
+    @SignalMethod
+    void setTransferStatus(TransferStatus transferStatus);
 }

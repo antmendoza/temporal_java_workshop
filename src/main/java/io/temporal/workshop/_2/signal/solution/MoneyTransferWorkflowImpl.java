@@ -1,4 +1,4 @@
-package io.temporal.workshop._2.signals.solution;
+package io.temporal.workshop._2.signal.solution;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workflow.Workflow;
