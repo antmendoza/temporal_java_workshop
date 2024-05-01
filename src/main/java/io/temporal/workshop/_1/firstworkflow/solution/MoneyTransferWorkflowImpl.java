@@ -1,5 +1,6 @@
 package io.temporal.workshop._1.firstworkflow.solution;
 
+import io.temporal.common.RetryOptions;
 import io.temporal.workshop.model.TransferRequest;
 import io.temporal.workshop.service.DepositRequest;
 import io.temporal.workshop.service.WithdrawRequest;
@@ -14,7 +15,13 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     private final AccountService accountService =
             Workflow.newActivityStub(
                     AccountService.class,
-                    ActivityOptions.newBuilder().setStartToCloseTimeout(Duration.ofSeconds(3)).build());
+                    ActivityOptions.newBuilder()
+                            .setStartToCloseTimeout(Duration.ofSeconds(3))
+//                            .setRetryOptions(
+//                                    RetryOptions.newBuilder()
+//                                            .setMaximumAttempts(5)
+//                                            .build())
+                            .build());
 
     private final Logger log = Workflow.getLogger(MoneyTransferWorkflowImpl.class.getSimpleName());
 

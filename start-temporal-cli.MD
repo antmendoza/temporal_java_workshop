@@ -1,5 +1,13 @@
 # RUN MANUALLY THE STEPS IN THE SCRIPT 
 
+This repository provides a script [start-temporal-cli.sh](start-temporal-cli.sh) to run temporal cli with the needed 
+configuration for this workshop. 
+
+This document describe the steps you will have to follow if for some reason the script does not work for you.
+
+
+- Ensure you have [temporal cli installed](https://docs.temporal.io/cli#install)
+
 - Start the server
 
 ```bash
@@ -10,9 +18,11 @@ temporal server start-dev \
 
 ```
 
-The previous command persist the data in the filesystem. You can clean the environment by deleting the file (and restart the server after).
+The previous command persist the data in the filesystem (in a file called my_test.db). To clean 
+the environment just delete the file and restart the server.
 
-- Wait until the server is up. You navigate to http://localhost:8080/ to verify it.
+
+- Wait until the server is up. You can navigate to [http://localhost:8080/](http://localhost:8080/) to verify it.
 
 - Add the Search attribute `TransferRequestStatus` (this is only needed for the `_final` exercise)
 

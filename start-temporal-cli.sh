@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 : "${DEFAULT_NAMESPACE:=default}"
 
 : "${FILE_DB:=my_test.db}"

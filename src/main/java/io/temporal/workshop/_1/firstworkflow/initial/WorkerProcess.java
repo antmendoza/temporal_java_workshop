@@ -39,7 +39,14 @@ public class WorkerProcess {
          */
         //Worker worker = factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
 
+        /**
+         * Register the workflow implementation.
+         */
         //worker.registerWorkflowImplementationTypes(MoneyTransferWorkflowImpl.class);
+
+        /**
+         * Register the activity implementation.
+         */
         //worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));
 
         factory.start();
