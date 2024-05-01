@@ -1,4 +1,4 @@
-package io.temporal.workshop._3.workflowtaskfretry.workflow;
+package io.temporal.workshop._0.demo.workflowtaskfretry;
 
 import io.temporal.workshop.model.TransferRequest;
 import io.temporal.workflow.WorkflowInterface;

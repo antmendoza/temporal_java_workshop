@@ -1,9 +1,9 @@
-package io.temporal.workshop._2.activityretry;
+package io.temporal.workshop._0.demo.activityretry;
 
-import io.temporal.workshop.Constants;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
+import io.temporal.workshop.Constants;
 import io.temporal.workshop.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;

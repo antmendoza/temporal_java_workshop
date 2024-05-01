@@ -1,4 +1,4 @@
-package io.temporal.workshop._3.workflowtaskfretry.workflow;
+package io.temporal.workshop._0.demo.workflowtaskfretry;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.workshop.activity.AccountService;
@@ -35,8 +35,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
             // calculate fee
             // TODO fix the code and restart WorkerProcess
-            depositAmount = amount - amount * 0.1;
-            //depositAmount = amount - (int) amount / 0;
+            //depositAmount = amount - amount * 0.1;
+            depositAmount = amount - (int) amount / 0;
         }
         accountService.deposit(
                 new DepositRequest(

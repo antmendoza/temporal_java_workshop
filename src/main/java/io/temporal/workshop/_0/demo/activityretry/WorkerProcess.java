@@ -1,4 +1,4 @@
-package io.temporal.workshop._0.demo;
+package io.temporal.workshop._0.demo.activityretry;
 
 import io.temporal.workshop.Constants;
 import io.temporal.workshop.activity.NotificationServiceImpl;

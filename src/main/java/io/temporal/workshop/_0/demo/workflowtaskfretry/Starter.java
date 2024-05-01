@@ -1,10 +1,10 @@
-package io.temporal.workshop._0.demo;
+package io.temporal.workshop._0.demo.workflowtaskfretry;
 
+import io.temporal.workshop.Constants;
+import io.temporal.workshop.model.TransferRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.client.WorkflowOptions;
-import io.temporal.workshop.Constants;
-import io.temporal.workshop.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 
@@ -25,17 +25,18 @@ public class Starter {
                 .setNamespace(Constants.namespace)
                 .build());
 
-        final WorkflowOptions options =
+        // Create the workflow client stub. It is used to start our workflow execution.
+        final WorkflowOptions build =
                 WorkflowOptions.newBuilder()
                         .setWorkflowId(MY_BUSINESS_ID)
                         .setTaskQueue(WorkerProcess.TASK_QUEUE)
                         .build();
 
-        // Create the workflow client stub.
-        // It is used to start our workflow execution.
         final MoneyTransferWorkflow workflow =
-                client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+                client.newWorkflowStub(MoneyTransferWorkflow.class, build);
 
-        workflow.transfer(new TransferRequest("fromAccount", "toAccount", 200));
+        TransferRequest transferRequest =
+                new TransferRequest("fromAccount", "toAccount", 200);
+        workflow.transfer(transferRequest);
     }
 }

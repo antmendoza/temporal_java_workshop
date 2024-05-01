@@ -1,4 +1,4 @@
-package io.temporal.workshop._0.demo;
+package io.temporal.workshop._0.demo.activityretry;
 
 import io.temporal.workshop.service.DepositRequest;
 import io.temporal.workshop.service.WithdrawRequest;

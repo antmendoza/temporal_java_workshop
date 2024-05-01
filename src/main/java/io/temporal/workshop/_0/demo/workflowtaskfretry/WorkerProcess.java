@@ -1,7 +1,6 @@
-package io.temporal.workshop._3.workflowtaskfretry;
+package io.temporal.workshop._0.demo.workflowtaskfretry;
 
 import io.temporal.workshop.Constants;
-import io.temporal.workshop._3.workflowtaskfretry.workflow.MoneyTransferWorkflowImpl;
 import io.temporal.workshop.activity.AccountServiceImpl;
 import io.temporal.workshop.service.BankingClient;
 import io.temporal.client.WorkflowClient;
