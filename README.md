@@ -88,3 +88,6 @@ This is a Temporal workshop to introduce the main Temporal primitives:
 ### Debug:
 
 - [Reply workflow](https://github.com/temporalio/samples-java/blob/main/src/test/java/io/temporal/samples/hello/HelloActivityReplayTest.java)
+
+
+https://docs.google.com/presentation/d/1MvKASDEW7WanRItvkJDdEpiaA5Z2ovpHlhxwbfgrOEg/edit#slide=id.g2cc0e2e86fe_4_25
