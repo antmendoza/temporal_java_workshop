@@ -36,8 +36,6 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
         transferStatus = TransferStatus.Approved;
 
 
-        //TODO Add the code here
-
         if (transferRequest.amount() >= 100) {
             transferStatus = TransferStatus.ApprovalRequired;
             Workflow.await(() -> this.transferStatus != TransferStatus.ApprovalRequired);
@@ -72,7 +70,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     public String setTransferStatus(final TransferStatus transferStatus) {
         Workflow.sleep(Duration.ofSeconds(5));
         this.transferStatus = transferStatus;
-        return "Dummy result";
+        return transferStatus.name();
     }
 
 

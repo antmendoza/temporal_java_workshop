@@ -5,8 +5,7 @@
 
 ## Exercise: Add a SignalMethod to the workflow and block the execution if the amount to transfer is greater than 100
 
-Modify the money transfer workflow so that it will wait for an input if the amount to transfer is greater than 100.
-
+Modify the money transfer workflow so that it blocks and waits to receive an input if the amount to transfer is greater than 100.
 This folder contains two sub-folders:
 - `initial` is you starting point, the code skeleton you have to work in to complete the exercise following the
   steps described below.

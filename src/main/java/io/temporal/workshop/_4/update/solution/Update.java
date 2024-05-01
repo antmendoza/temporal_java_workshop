@@ -33,12 +33,13 @@ public class Update {
 
         Date beforeUpdate = new Date();
 
+        System.out.println("About to execute setTransferStatus ");
         String updateResult = workflow.setTransferStatus(TransferStatus.Approved);
         System.out.println("Update result: "+ updateResult);
 
-        int secondsBetween = (int) (new Date().getTime() - (beforeUpdate.getTime() ) / 1000);
+        int secondsBetween = (int) ((new Date().getTime() - beforeUpdate.getTime() ) / 1000);
 
-        System.out.println("After "+secondsBetween+" seconds");
+        System.out.println("Update method returns after "+secondsBetween+" seconds");
 
         System.exit(0);
 

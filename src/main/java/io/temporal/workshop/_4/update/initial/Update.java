@@ -32,11 +32,11 @@ public class Update {
                 client.newWorkflowStub(MoneyTransferWorkflow.class, Starter.MY_BUSINESS_ID);
 
         Date beforeUpdate = new Date();
-
+        System.out.println("About to execute setTransferStatus ");
         //String updateResult = workflow.setTransferStatus(TransferStatus.Approved);
         //System.out.println("Update result: "+ updateResult);
 
-        int secondsBetween = (int) (new Date().getTime() - (beforeUpdate.getTime() ) / 1000);
+        int secondsBetween = (int) ((new Date().getTime() - beforeUpdate.getTime() ) / 1000);
 
         System.out.println("After "+secondsBetween+" seconds");
 

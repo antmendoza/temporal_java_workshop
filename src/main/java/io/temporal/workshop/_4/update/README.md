@@ -2,13 +2,16 @@
 
 [What is an Update?](https://docs.temporal.io/workflows#update) 
 
-Let's modify the money transfer workflow so that it will wait for an input if the amount to transfer is greater than 100.
+
+## Exercise: Add a UpdateMethod to the workflow and block the execution if the amount to transfer is greater than 100
 
 This exercise is similar to `_2.signal`, with the difference that we will use UpdateWorkflow to set the operation status.
 
-While Signal is an asynchronous request and can't return anything, Update is synchronous and blocks the call until the method returns.
+Modify the money transfer workflow so that it blocks and waits to receive an input if the amount to transfer is greater than 100.
 
-## Exercise: Add a UpdateMethod to the workflow and block the execution if the amount to transfer is greater than 100
+Use UpdateWorkflow for the implementation. While Signal is an asynchronous request and can't return anything, 
+Update is synchronous and blocks the call until the method returns.
+
 
 This folder contains two sub-folders:
 - `initial` is you starting point, the code skeleton you have to work in to complete the exercise following the
@@ -120,8 +123,6 @@ From this tab we can infer why our execution is not making progress, is `BLOCKED
 
 ![](blockedOnAwait.png)
 
-
-
 - Invoke the update method to `Approve` or `Deny` the operation.
 
 ```bash
@@ -131,3 +132,17 @@ cd ./../../../../../../../../
 ```
 
 The execution unblocks and completes.
+
+Note that update is a blocking call, and the client call unblocks when the update method returns.
+
+```
+About to execute setTransferStatus 
+Update result: Approved
+Update method returns after 5 seconds
+```
+
+Navigate to  [http://localhost:8080/](http://localhost:8080/), open the workflow execution look into the workflow history.
+- Note the timer inside the update method.
+
+![img.png](img.png)
+
