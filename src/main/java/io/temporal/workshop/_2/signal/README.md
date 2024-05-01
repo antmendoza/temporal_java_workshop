@@ -1,8 +1,8 @@
-# Temporal Signal
+# Signal
 
 [What is a Signal?](https://docs.temporal.io/workflows#signal) 
 
-We are going to modify the money transfer workflow so that it will wait for an input if the amount to transfer is greater than 100.
+Let's modify the money transfer workflow so that it will wait for an input if the amount to transfer is greater than 100.
 
 ## Exercise: Add a SignalMethod to the workflow and block the execution if the amount to transfer is greater than 100
 
@@ -64,7 +64,7 @@ Open [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowI
 ```
 
 
-> `Workflow.await` will block the current Workflow Execution until the provided unblock condition is evaluated to true.
+> `Workflow.await` blocks the current Workflow Execution until the provided unblock condition is evaluated to true.
 The method accepts a timer too, to unblock after the provided duration. E.g.:
 > - `Workflow.await(Duration.ofDays(5), () -> this.transferStatus != TransferStatus.ApprovalRequired);`
 > - `Workflow.await(Duration.ofSeconds(30), () -> this.transferStatus != TransferStatus.ApprovalRequired);`

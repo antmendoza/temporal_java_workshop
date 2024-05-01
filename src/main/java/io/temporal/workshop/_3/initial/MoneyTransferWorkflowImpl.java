@@ -1,4 +1,4 @@
-package io.temporal.workshop._4.query.initial;
+package io.temporal.workshop._3.initial;
 
 import io.temporal.workshop.activity.AccountService;
 import io.temporal.workshop.activity.NotificationService;
