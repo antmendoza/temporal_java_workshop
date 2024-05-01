@@ -1,16 +1,15 @@
-package io.temporal.workshop._0.demo.activityretry;
+package io.temporal.workshop._2.signals.solution;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
-import io.temporal.client.WorkflowOptions;
-import io.temporal.workshop.Constants;
-import io.temporal.workshop.model.TransferRequest;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
+import io.temporal.workshop.Constants;
+import io.temporal.workshop.model.TransferStatus;
 
-public class Starter {
 
-    static final String MY_BUSINESS_ID = Starter.class.getPackageName() + ":money-transfer";
+public class Signal {
+
 
     public static void main(String[] args) {
 
@@ -25,19 +24,13 @@ public class Starter {
                 .setNamespace(Constants.namespace)
                 .build());
 
-        final WorkflowOptions options =
-                WorkflowOptions.newBuilder()
-                        .setWorkflowId(MY_BUSINESS_ID)
-                        .setTaskQueue(WorkerProcess.TASK_QUEUE)
-                        .build();
 
-        // Create the workflow client stub.
-        // It is used to start our workflow execution.
+        // Create the workflow client stub to communicate with the execution
         final MoneyTransferWorkflow workflow =
-                client.newWorkflowStub(MoneyTransferWorkflow.class, options);
+                client.newWorkflowStub(MoneyTransferWorkflow.class, Starter.MY_BUSINESS_ID);
 
-        workflow.transfer(new TransferRequest("fromAccount", "toAccount", 200));
 
+        workflow.setTransferStatus(TransferStatus.Denied);
         System.exit(0);
 
     }

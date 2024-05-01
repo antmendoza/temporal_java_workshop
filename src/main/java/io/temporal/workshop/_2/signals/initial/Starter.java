@@ -1,4 +1,4 @@
-package io.temporal.workshop._1.firstworkflow.solution;
+package io.temporal.workshop._2.signals.initial;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -7,6 +7,7 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.workshop.Constants;
 import io.temporal.workshop.model.TransferRequest;
+import io.temporal.workshop.model.TransferResponse;
 
 public class Starter {
 
@@ -39,10 +40,15 @@ public class Starter {
         TransferRequest transferRequest =
                 new TransferRequest("fromAccount", "toAccount", 200);
 
-        // block and wait execution to finish
-        String result = workflow.transfer(transferRequest);
-        System.out.println("Result " + result);
 
+        // Sync, blocking invocation
+        // workflow.transfer(transferRequest);
+        // Async invocation, won't block
+        WorkflowClient.start(workflow::transfer, transferRequest);
+
+        // block and wait execution to finish
+        TransferResponse result = client.newUntypedWorkflowStub(MY_BUSINESS_ID).getResult(TransferResponse.class);
+        System.out.println("Result " + result);
         System.exit(0);
     }
 }

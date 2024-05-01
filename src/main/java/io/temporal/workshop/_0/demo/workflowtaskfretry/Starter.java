@@ -38,5 +38,7 @@ public class Starter {
         TransferRequest transferRequest =
                 new TransferRequest("fromAccount", "toAccount", 200);
         workflow.transfer(transferRequest);
+
+        System.exit(0);
     }
 }

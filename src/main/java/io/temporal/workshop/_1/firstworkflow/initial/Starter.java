@@ -42,5 +42,7 @@ public class Starter {
         // block and wait execution to finish
         String result = workflow.transfer(transferRequest);
         System.out.println("Result " + result);
+
+        System.exit(0);
     }
 }

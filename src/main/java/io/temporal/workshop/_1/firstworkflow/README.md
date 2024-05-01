@@ -15,13 +15,13 @@ This folder contains two sub-folders:
 - `solution` contains the final code, after all steps are implemented.
 
 
-Start working with the code in the folder `initial`. 
+Start working with the code in the `initial` folder. 
 Take your time to familiarize yourself with the following pieces of code: 
 - [./initial/MoneyTransferWorkflow.java](./initial/MoneyTransferWorkflow.java): Workflow interface
 - [./initial/AccountService.java](./initial/AccountService.java): Activity interface
 - [./initial/AccountServiceImpl.java](./initial/AccountServiceImpl.java): Activity implementation
 - [./initial/Starter.java](./initial/Starter.java): Client that sends the request to the server to initiate the workflow.
-- [./initial/WorkerProcess.java](./initial/WorkerProcess.java): This is our application, the one that executes our code.
+- [./initial/WorkerProcess.java](./initial/WorkerProcess.java): This is our application, this process executes our code.
 
 
 ####  Workflow implementation
@@ -83,7 +83,7 @@ request sent by the client.
 - Ensure you have everything you need to run the code, and the Temporal Server is running. 
 See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
 
-- Run the file Starter [./initial/Starter.java](./initial/Starter.java), that sends a request to the server to start the workflow.
+- Execute the file Starter [./initial/Starter.java](./initial/Starter.java), that sends a request to the server to start the workflow.
 
 ```bash
 cd ./../../../../../../../../

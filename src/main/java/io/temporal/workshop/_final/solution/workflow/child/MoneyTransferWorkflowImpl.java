@@ -34,7 +34,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     @Override
     public TransferResponse transfer(final TransferRequest transferRequest) {
 
-        log.info("Init for transfer: " + transferRequest);
+        log.info("Init for request: " + transferRequest);
 
         this.transferRequest = transferRequest;
 
@@ -89,12 +89,12 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
         notificationService.transferCompleted(transferRequest);
 
-        log.info("Completed for transfer: " + transferRequest);
+        log.info("Completed for request: " + transferRequest);
         return new TransferResponse(transferRequest, transferStatus);
     }
 
     @Override
-    public void changeTransferStatus(TransferStatus transferStatus) {
+    public void setTransferStatus(TransferStatus transferStatus) {
         this.transferStatus = transferStatus;
     }
 

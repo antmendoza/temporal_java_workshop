@@ -136,7 +136,7 @@ public class TransferViewController {
 
     //TODO make post
     @GetMapping("/pending-transfers/{requestId}/{status}")
-    public String changeTransferStatus(@PathVariable String requestId,
+    public String setTransferStatus(@PathVariable String requestId,
                                        @PathVariable String status,
                                        Model model,
                                        RedirectAttributes redirectAttrs) {
@@ -155,7 +155,7 @@ public class TransferViewController {
             //Signal to approve / deny operation.
             //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
             // reception of the request
-            moneyTransferWorkflow.changeTransferStatus(transferStatus);
+            moneyTransferWorkflow.setTransferStatus(transferStatus);
 
             return "redirect:/accounts"; //navigate to view
 
