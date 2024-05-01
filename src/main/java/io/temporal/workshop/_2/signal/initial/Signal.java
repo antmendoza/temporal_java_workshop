@@ -5,6 +5,7 @@ import io.temporal.client.WorkflowClientOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.workshop.Constants;
+import io.temporal.workshop.model.TransferStatus;
 
 import static io.temporal.workshop._2.signal.initial.Starter.MY_BUSINESS_ID;
 
