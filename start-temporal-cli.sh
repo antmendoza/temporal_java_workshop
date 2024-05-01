@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# If the script does not work for see "start-temporal-cli.md"
+
 : "${DEFAULT_NAMESPACE:=default}"
 
 : "${FILE_DB:=my_test.db}"
