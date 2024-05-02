@@ -3,20 +3,18 @@
 This exercise will guide you, step by step, on how to:
 - implement a workflow
 - implement activities
-- register workflow and activity implementation to the worker
-- send a request to the server to start the execution
+- register workflow and activity implementation in the worker
+- start and run a workflow execution
 
 
 ## Exercise: Implement your first Temporal Workflows
 
 This folder contains two sub-folders: 
-- `initial` is you starting point, the code skeleton you have to work in to complete the exercise following the
-  steps described below.
+- `initial` is you starting point, the code skeleton within which you must work to complete the exercise following the steps described below..
 - `solution` contains the final code, after all steps are implemented.
 
 
-Start working with the code in the `initial` folder. 
-Take your time to familiarize yourself with the following pieces of code: 
+Begin by working with the code in the `initial` folder. Take your time to familiarize yourself with the following pieces of code: 
 - [./initial/MoneyTransferWorkflow.java](./initial/MoneyTransferWorkflow.java): Workflow interface
 - [./initial/AccountService.java](./initial/AccountService.java): Activity interface
 - [./initial/AccountServiceImpl.java](./initial/AccountServiceImpl.java): Activity implementation
@@ -30,7 +28,7 @@ Take your time to familiarize yourself with the following pieces of code:
 
 Create a class called `MoneyTransferWorkflowImpl.java` that implements `MoneyTransferWorkflow.java`. 
 
-Our implementation will be very simple for now, it will print a log and returns a String.
+Our implementation is very simple for now, it prints a log and returns a String.
 
 
 ```
@@ -57,7 +55,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
 ```
 
-####  Create the Worker and register the Workflow implementation
+####  Register the Workflow implementation in the worker
 
 
 Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and comment out the following lines.
@@ -88,17 +86,21 @@ See [prepare-your-environment.md](./../../../../../../../../prepare-your-environ
 - Execute the file Starter [./initial/Starter.java](./initial/Starter.java), that sends a request to the server to start the workflow.
 
 ```bash
+# Go to the root directory
 cd ./../../../../../../../../
+# from the root directory execute
  ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._1.firstworkflow.initial.Starter"
 
 ```
 If we go to [http://localhost:8080/](http://localhost:8080/) we will see the workflow in `Running` state, but nothing else
-will happen until we start our application (the worker)
+will happen until we start our application (the worker).
 
 - Start the worker
 
 ```bash
+# Go to the root directory
 cd ./../../../../../../../../
+# from the root directory execute
  ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._1.firstworkflow.initial.WorkerProcess"
 
 ```
@@ -190,7 +192,9 @@ Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and 
 - Schedule the workflow [./initial/Starter.java](./initial/Starter.java).
 
 ```bash
+# Go to the root directory
 cd ./../../../../../../../../
+# from the root directory execute
  ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._1.firstworkflow.initial.Starter"
 
 ```
@@ -198,7 +202,9 @@ cd ./../../../../../../../../
 - Start the worker
 
 ```bash
+# Go to the root directory
 cd ./../../../../../../../../
+# from the root directory execute
  ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._1.firstworkflow.initial.WorkerProcess"
 
 ```
@@ -232,4 +238,7 @@ Deposit end: DepositRequest[accountId=toAccount, amount=200.0]
 ```
 
 
- 
+- Navigate to  [http://localhost:8080/](http://localhost:8080/), open the workflow execution and familiarize yourself
+with the information the UI provides by clicking in the different tabs (Compact, Timeline and Full history)
+
+![img.png](img.png)

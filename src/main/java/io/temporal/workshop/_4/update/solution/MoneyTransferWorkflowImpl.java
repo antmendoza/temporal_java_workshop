@@ -70,7 +70,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
     public String setTransferStatus(final TransferStatus transferStatus) {
         Workflow.sleep(Duration.ofSeconds(5));
         this.transferStatus = transferStatus;
-        return transferStatus.name();
+        return this.transferStatus.name();
     }
 
 

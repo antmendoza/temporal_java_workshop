@@ -30,7 +30,7 @@ public class Signal {
                 client.newWorkflowStub(MoneyTransferWorkflow.class, Starter.MY_BUSINESS_ID);
 
 
-        workflow.setTransferStatus(TransferStatus.Denied);
+        workflow.setTransferStatus(TransferStatus.Approved);
         System.exit(0);
 
     }

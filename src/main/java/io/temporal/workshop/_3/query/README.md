@@ -2,20 +2,20 @@
 
 - [What is a Query?](https://docs.temporal.io/workflows#query)
 
-## Exercise: Add a QueryMethod that returns the current status
+## Exercise: Modify the workflow implementation to retrieve the internal state
 
 A Query is a synchronous operation that is used to get the state of a Workflow Execution.
 
 Modify the workflow to add a query method that returns the value of `this.transfeStatus`.
 
+Use [Query](https://docs.temporal.io/workflows#query) and `Workflow.await` with duration to implement this feature.
+
 This folder contains two sub-folders:
-- `initial` is you starting point, the code skeleton you have to work in to complete the exercise following the
-  steps described below.
+- `initial` is you starting point, the code skeleton within which you must work to complete the exercise following the steps described below..
 - `solution` contains the final code, after all steps are implemented.
 
 
-Start working with the code in the `initial` folder.
-Take your time to familiarize yourself with the following pieces of code:
+Begin by working with the code in the `initial` folder. Take your time to familiarize yourself with the following pieces of code:
 - [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java): Workflow interface.
 - [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImpl.java): Workflow implementation.
 - [./initial/StarterAndQuery.java](initial/StarterAndQuery.java): Client that sends the request to the server and 
@@ -25,32 +25,10 @@ query the workflow two times to show how the internal state/variable changes.
 
 ####  Implementation
 
-- Declare the @QueryMethod in the workflow interface:
-
-Open [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java) and comment out the following code:
-
-```
-    @QueryMethod
-    TransferStatus getStatus();
-```
 
 
-- Implement the signal method:
-
-Open [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImpl.java) and implement the new method returning `this.transferStatus`.
-
-```
-    @Override
-    public TransferStatus getStatus() {
-        return this.transferStatus;
-    }
-
-```
-
-> Note that queries shouldn't change the workflow state.
-
-- Change the workflow main method to wait for an input if amount > 100. 
-If the input is not received after 5 seconds the operation is marked as TimedOut.
+- Change the workflow main method to wait for an input if amount > 100.
+  If the input is not received after 5 seconds the operation is marked as TimedOut.
 
 Open [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImpl.java) and paste the following code after `transferStatus = TransferStatus.Approved;`.
 
@@ -73,8 +51,30 @@ Open [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImp
 
 
 > `Workflow.await` blocks the current Workflow Execution until the provided unblock condition is evaluated to true.
-The method accepts a timer, and return false if the timer fires
+The method accepts a timer, and it returns false if the timer fires
 
+
+- Declare the @QueryMethod in the workflow interface:
+
+Open [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java) and comment out the following code:
+
+```
+    @QueryMethod
+    TransferStatus getStatus();
+```
+
+
+- Implement the new method:
+
+Open [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImpl.java) and implement the new method returning `this.transferStatus`.
+
+```
+    @Override
+    public TransferStatus getStatus() {
+        return this.transferStatus;
+    }
+
+```
 
 - Implement the client to query the workflow two times, after the workflow start and 6 seconds later.
 
@@ -98,7 +98,9 @@ Open [./initial/StarterAndQuery.java](initial/StarterAndQuery.java) and comment 
 - Start the worker
 
 ```bash
+# Go to the root directory
 cd ./../../../../../../../../
+# from the root directory execute
  ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._3.query.initial.WorkerProcess"
 
 ```
@@ -106,7 +108,9 @@ cd ./../../../../../../../../
 - Execute the file Starter [./initial/StarterAndQuery.java](initial/StarterAndQuery.java), to start and query the workflow.
 
 ```bash
+# Go to the root directory
 cd ./../../../../../../../../
+# from the root directory execute
 ./mvnw compile exec:java -Dexec.mainClass="io.temporal.workshop._3.query.initial.StarterAndQuery"
 
 ```
@@ -114,7 +118,7 @@ cd ./../../../../../../../../
 > Note that the amount > 100
 
 `StarterAndQuery` start and query the workflow two times. 
-Note that `getStatus` returns a different value each time, since `transferStatus` changes.
+Note that `getStatus` returns a different value each time, since `transferStatus` value changes after 5 seconds.
 
 ```
 TransferStatusAfterStart: ApprovalRequired
@@ -123,8 +127,7 @@ TransferStatusAfter6Seconds: TimedOut
 
 ```
 
-
-Navigate to  [http://localhost:8080/](http://localhost:8080/), open the workflow execution look into the workflow history.
-- `Workflow.await` creates a timer that fires after 5 seconds. 
-![img.png](img.png)
-- Querying the workflow do not add events to the event history.
+- Navigate to  [http://localhost:8080/](http://localhost:8080/) and open the workflow execution.
+  - Queries are not recorded in the event history (no new events are added).
+  - `Workflow.await` creates a timer that fires after 5 seconds.
+        ![img.png](img.png)
