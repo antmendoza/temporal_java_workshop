@@ -1,14 +1,15 @@
-package io.temporal.workshop._final.initial.workflow.child;
+package io.temporal.workshop._final.solution;
 
-import io.temporal.workshop.activity.AccountService;
+import io.temporal.activity.ActivityOptions;
+import io.temporal.workshop._final.MoneyTransferWorkflow;
 import io.temporal.workshop.activity.NotificationService;
 import io.temporal.workshop.model.TransferRequest;
-import io.temporal.workshop.model.TransferResponse;
-import io.temporal.workshop.model.TransferStatus;
 import io.temporal.workshop.service.DepositRequest;
 import io.temporal.workshop.service.WithdrawRequest;
-import io.temporal.activity.ActivityOptions;
 import io.temporal.common.SearchAttributeKey;
+import io.temporal.workshop.model.TransferResponse;
+import io.temporal.workshop.model.TransferStatus;
+import io.temporal.workshop.activity.AccountService;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 

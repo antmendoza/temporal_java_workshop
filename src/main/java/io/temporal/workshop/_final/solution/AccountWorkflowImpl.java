@@ -1,8 +1,9 @@
-package io.temporal.workshop._final.solution.workflow;
+package io.temporal.workshop._final.solution;
 
+import io.temporal.workshop._final.AccountCleanUpWorkflow;
+import io.temporal.workshop._final.AccountWorkflow;
+import io.temporal.workshop._final.MoneyTransferWorkflow;
 import io.temporal.workshop.model.*;
-import io.temporal.workshop._final.solution.workflow.child.AccountCleanUpWorkflow;
-import io.temporal.workshop._final.solution.workflow.child.MoneyTransferWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.ParentClosePolicy;
 import io.temporal.workflow.Async;

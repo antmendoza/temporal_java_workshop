@@ -1,6 +1,6 @@
-package io.temporal.workshop._final.solution.activity;
+package io.temporal.workshop._final.solution;
 
-import io.temporal.workshop._final.solution.workflow.AccountWorkflow;
+import io.temporal.workshop._final.AccountWorkflow;
 import io.temporal.workshop.activity.AccountService;
 import io.temporal.workshop.service.DepositRequest;
 import io.temporal.workshop.service.WithdrawRequest;

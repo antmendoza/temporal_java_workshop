@@ -1,5 +1,7 @@
 package io.temporal.workshop;
 
+import io.temporal.workshop._final.solution.WorkerProcess;
+
 public class Constants {
 
     public static final String namespace = "default";// Default value

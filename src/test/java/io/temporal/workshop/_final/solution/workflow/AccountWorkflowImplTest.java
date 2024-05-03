@@ -2,12 +2,14 @@ package io.temporal.workshop._final.solution.workflow;
 
 import io.temporal.workshop.TestUtilInterceptorTracker;
 import io.temporal.workshop.TestUtilWorkerInterceptor;
-import io.temporal.workshop._final.solution.activity.AccountServiceWithTemporalClient;
+import io.temporal.workshop._final.solution.AccountServiceWithTemporalClient;
+import io.temporal.workshop._final.AccountWorkflow;
+import io.temporal.workshop._final.solution.AccountWorkflowImpl;
 import io.temporal.workshop.activity.NotificationService;
 import io.temporal.workshop.activity.NotificationServiceImpl;
-import io.temporal.workshop._final.solution.workflow.child.AccountCleanUpWorkflow;
-import io.temporal.workshop._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
-import io.temporal.workshop._final.solution.workflow.child.MoneyTransferWorkflowImpl;
+import io.temporal.workshop._final.AccountCleanUpWorkflow;
+import io.temporal.workshop._final.solution.AccountCleanUpWorkflowImpl;
+import io.temporal.workshop._final.solution.MoneyTransferWorkflowImpl;
 import io.temporal.api.workflowservice.v1.ListClosedWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;

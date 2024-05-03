@@ -1,8 +1,8 @@
 package io.temporal.workshop._final.springrunner;
 
 import io.temporal.workshop.Constants;
-import io.temporal.workshop._final.solution.workflow.AccountWorkflow;
-import io.temporal.workshop._final.solution.workflow.child.MoneyTransferWorkflow;
+import io.temporal.workshop._final.AccountWorkflow;
+import io.temporal.workshop._final.MoneyTransferWorkflow;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.WorkflowExecutionStatus;
 import io.temporal.api.workflowservice.v1.DescribeWorkflowExecutionRequest;
@@ -31,7 +31,6 @@ public class TemporalService {
     public TemporalService() {
         if (workflowClientExecutionAPI == null) {
 
-            //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
             final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
                     .newBuilder()
                     .setTarget(Constants.targetGRPC)
@@ -77,9 +76,6 @@ public class TemporalService {
     public List<AccountInfoView> getAccounts() {
 
         // Visibility API is eventually consistent.
-        // Real word applications that requires high throughput and real time data should
-        // store/query data in external DBs
-
         // http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22AccountWorkflow%22
         final String query = "WorkflowType=\"AccountWorkflow\"";
         return workflowClientQueryAPI

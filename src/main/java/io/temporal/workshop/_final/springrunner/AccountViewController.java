@@ -2,12 +2,12 @@ package io.temporal.workshop._final.springrunner;
 
 import com.github.javafaker.Faker;
 import io.temporal.workshop.Constants;
-import io.temporal.workshop._final.WorkerProcess;
-import io.temporal.workshop._final.solution.workflow.AccountWorkflow;
+import io.temporal.workshop._final.AccountWorkflow;
 import io.temporal.api.workflowservice.v1.WorkflowServiceGrpc;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.failure.TemporalException;
+import io.temporal.workshop._final.TASK_QUEUE;
 import io.temporal.workshop.model.Account;
 import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
@@ -27,21 +27,15 @@ import static io.temporal.workshop._final.springrunner.TemporalService.getAccoun
 @Controller
 public class AccountViewController {
 
-
-
     private final TemporalService temporalService;
-
-
-
     private static Faker fakerInstance;
     private static WorkflowClient workflowClientExecutionAPI;
-    final String taskQueue = WorkerProcess.TASK_QUEUE;
+    final String taskQueue = TASK_QUEUE.name;
 
     public AccountViewController(final TemporalService temporalService) {
         this.temporalService = temporalService;
 
         if (workflowClientExecutionAPI == null) {
-            //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
             final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
                     .newBuilder()
                     .setTarget(Constants.targetGRPC)
@@ -63,7 +57,6 @@ public class AccountViewController {
 
     @GetMapping("/")
     public String defaultView(Model model) {
-
         return "redirect:/accounts"; //navigate to view
     }
 
@@ -115,8 +108,7 @@ public class AccountViewController {
 
             final AccountWorkflow accountWorkflow = workflowClientExecutionAPI.newWorkflowStub(AccountWorkflow.class,
                     WorkflowOptions.newBuilder()
-                            // workflowId should be our business id
-                            .setWorkflowId(workflowId)
+                            .setWorkflowId(workflowId) // Our business id
                             .setTaskQueue(taskQueue)
                             .build());
 

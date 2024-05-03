@@ -2,8 +2,8 @@ package io.temporal.workshop._final.springrunner;
 
 import com.github.javafaker.Faker;
 import io.temporal.workshop.Constants;
-import io.temporal.workshop._final.solution.workflow.AccountWorkflow;
-import io.temporal.workshop._final.solution.workflow.child.MoneyTransferWorkflow;
+import io.temporal.workshop._final.AccountWorkflow;
+import io.temporal.workshop._final.MoneyTransferWorkflow;
 import io.temporal.workshop.model.RequestTransferResponse;
 import io.temporal.workshop.model.TransferRequest;
 import io.temporal.workshop.model.TransferStatus;
@@ -39,7 +39,6 @@ public class TransferViewController {
         }
 
         if (workflowClientExecutionAPI == null) {
-            //We could have used https://github.com/temporalio/sdk-java/tree/master/temporal-spring-boot-autoconfigure-alpha
             final WorkflowServiceStubs service = WorkflowServiceStubs.newServiceStubs(WorkflowServiceStubsOptions
                     .newBuilder()
                     .setTarget(Constants.targetGRPC)
@@ -153,8 +152,8 @@ public class TransferViewController {
 
 
             //Signal to approve / deny operation.
-            //Signals are async request to server-> workflow execution. This line will unblock when the server ack the
-            // reception of the request
+            //Signals are async request to server-> workflow execution.
+            // This line will unblock when the server ack the reception of the request (and not when the signal method finish)
             moneyTransferWorkflow.setTransferStatus(transferStatus);
 
             return "redirect:/accounts"; //navigate to view

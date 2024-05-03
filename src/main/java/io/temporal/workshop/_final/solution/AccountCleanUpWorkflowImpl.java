@@ -1,5 +1,6 @@
-package io.temporal.workshop._final.solution.workflow.child;
+package io.temporal.workshop._final.solution;
 
+import io.temporal.workshop._final.AccountCleanUpWorkflow;
 import io.temporal.workshop.activity.NotificationService;
 import io.temporal.workshop.model.Account;
 import io.temporal.activity.ActivityOptions;

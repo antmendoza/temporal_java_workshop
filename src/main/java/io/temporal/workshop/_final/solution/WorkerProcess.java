@@ -1,11 +1,8 @@
-package io.temporal.workshop._final;
+package io.temporal.workshop._final.solution;
 
 import io.temporal.workshop.Constants;
+import io.temporal.workshop._final.TASK_QUEUE;
 import io.temporal.workshop.activity.NotificationServiceImpl;
-import io.temporal.workshop._final.solution.activity.AccountServiceWithTemporalClient;
-import io.temporal.workshop._final.solution.workflow.AccountWorkflowImpl;
-import io.temporal.workshop._final.solution.workflow.child.AccountCleanUpWorkflowImpl;
-import io.temporal.workshop._final.solution.workflow.child.MoneyTransferWorkflowImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -16,9 +13,9 @@ import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
 
 
+
 public class WorkerProcess {
 
-    public static final String TASK_QUEUE = WorkerProcess.class.getPackageName() + ":" + "MoneyTransfer";
 
 
     public static void main(String[] args) {
@@ -48,7 +45,7 @@ public class WorkerProcess {
          * workflows and activities.
          */
         Worker worker =
-                factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
+                factory.newWorker(TASK_QUEUE.name, WorkerOptions.newBuilder().build());
 
         worker.registerWorkflowImplementationTypes(
                 AccountWorkflowImpl.class, MoneyTransferWorkflowImpl.class, AccountCleanUpWorkflowImpl.class);

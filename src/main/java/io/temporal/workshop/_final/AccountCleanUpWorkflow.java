@@ -1,4 +1,4 @@
-package io.temporal.workshop._final.initial.workflow.child;
+package io.temporal.workshop._final;
 
 import io.temporal.workshop.model.Account;
 import io.temporal.workflow.WorkflowInterface;
