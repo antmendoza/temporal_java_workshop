@@ -81,10 +81,13 @@ the request and send it to the Temporal Server. From here we will start, query, 
 ###  Implementation
 
 
+WIP
+
+
 ### Run the code 
 
 
-###  Run the code
+###  Run the code (solution)
 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
@@ -111,7 +114,4 @@ cd ./../../../../../../../
 
 ```
 
-Navigate to  [http://localhost:3030/](http://localhost:3030/), where the application exposes the UI.
-It has links `(View in Temporal UI)` to help relate what is shown in this UI with the Temporal UI. 
-
-![img.png](img.png)
+Navigate to  [http://localhost:3030/](http://localhost:3030/), where our application exposes the UI.
