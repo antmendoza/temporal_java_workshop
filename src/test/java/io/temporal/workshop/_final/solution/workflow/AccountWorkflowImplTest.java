@@ -2,7 +2,7 @@ package io.temporal.workshop._final.solution.workflow;
 
 import io.temporal.workshop.TestUtilInterceptorTracker;
 import io.temporal.workshop.TestUtilWorkerInterceptor;
-import io.temporal.workshop._final.solution.AccountServiceWithTemporalClient;
+import io.temporal.workshop._final.solution.ActivityWithTemporalClient;
 import io.temporal.workshop._final.AccountWorkflow;
 import io.temporal.workshop._final.solution.AccountWorkflowImpl;
 import io.temporal.workshop.activity.NotificationService;
@@ -56,7 +56,7 @@ public class AccountWorkflowImplTest {
     @Test
     public void testE2E() {
 
-        final AccountService accountService = new AccountServiceWithTemporalClient(testWorkflowRule.getWorkflowClient());
+        final AccountService accountService = new ActivityWithTemporalClient(testWorkflowRule.getWorkflowClient());
         final NotificationService notificationService = Mockito.mock(NotificationServiceImpl.class);
 
         //Setup worker, register workflows and activities

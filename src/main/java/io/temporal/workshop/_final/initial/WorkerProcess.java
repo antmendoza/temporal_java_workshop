@@ -1,8 +1,5 @@
-package io.temporal.workshop._final.solution;
+package io.temporal.workshop._final.initial;
 
-import io.temporal.workshop.Constants;
-import io.temporal.workshop._final.TASK_QUEUE;
-import io.temporal.workshop.activity.NotificationServiceImpl;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
 import io.temporal.serviceclient.WorkflowServiceStubs;
@@ -11,6 +8,9 @@ import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
 import io.temporal.worker.WorkerFactoryOptions;
 import io.temporal.worker.WorkerOptions;
+import io.temporal.workshop.Constants;
+import io.temporal.workshop._final.TASK_QUEUE;
+import io.temporal.workshop.activity.NotificationServiceImpl;
 
 
 

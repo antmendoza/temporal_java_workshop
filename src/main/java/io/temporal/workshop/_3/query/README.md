@@ -23,7 +23,7 @@ query the workflow two times to show how the internal state/variable changes.
 - [./initial/WorkerProcess.java](initial/WorkerProcess.java): This is our application, this process executes our code.
 
 
-####  Implementation
+###  Implementation
 
 
 
@@ -88,7 +88,7 @@ Open [./initial/StarterAndQuery.java](initial/StarterAndQuery.java) and comment 
       System.out.println("TransferStatusAfter6Seconds: " + transferStatusAfter6Seconds);
 ```
 
-####  Run the code
+###  Run the code
 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).

@@ -8,13 +8,12 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.workflow.Workflow;
 import org.slf4j.Logger;
 
-public class AccountServiceWithTemporalClient implements AccountService {
+public class ActivityWithTemporalClient implements AccountService {
 
-    private final Logger log = Workflow.getLogger(AccountServiceWithTemporalClient.class.getSimpleName());
+    private final Logger log = Workflow.getLogger(ActivityWithTemporalClient.class.getSimpleName());
     private final WorkflowClient client;
 
-
-    public AccountServiceWithTemporalClient(WorkflowClient client) {
+    public ActivityWithTemporalClient(WorkflowClient client) {
         this.client = client;
     }
 

@@ -127,7 +127,7 @@ public class TemporalService {
                     //For each workflow running and waiting for approval
                     final String workflowId = execution.getExecution().getWorkflowId();
 
-                    // Query the workflow through the queryMethod getTransferRequest to retrieve internal state (stored as a workflow variable)
+                    // Query the workflow to retrieve internal state (stored as a workflow variable)
                     final TransferRequest transferRequest =
                             workflowClientExecutionAPI.newWorkflowStub(MoneyTransferWorkflow.class, workflowId).getTransferRequest();
 

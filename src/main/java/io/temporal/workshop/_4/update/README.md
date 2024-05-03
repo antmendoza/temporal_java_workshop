@@ -26,7 +26,7 @@ Begin by working with the code in the `initial` folder. Take your time to famili
 - [./initial/Update.java](initial/Update.java): Client that send an input to a running workflow and waits until the method returns.
 
 
-####  Implementation
+###  Implementation
 
 
 - Change the workflow main method to wait for an input if amount > 100
@@ -92,7 +92,7 @@ String updateResult = workflow.setTransferStatus(TransferStatus.Approved);
 System.out.println("Update result "+ updateResult);
 ```
 
-####  Run the code
+###  Run the code
 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).

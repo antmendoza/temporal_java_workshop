@@ -22,7 +22,7 @@ Begin by working with the code in the `initial` folder. Take your time to famili
 - [./initial/Signal.java](./initial/Signal.java): Client that send a signal to a running workflow.
 
 
-####  Implementation
+###  Implementation
 
 - Change the workflow main method to wait for an input if amount > 100
 
@@ -81,7 +81,7 @@ Open [./initial/Signal.java](./initial/Signal.java) and comment out the followin
 workflow.setTransferStatus(TransferStatus.Approved);
 ```
 
-####  Run the code
+###  Run the code
 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
