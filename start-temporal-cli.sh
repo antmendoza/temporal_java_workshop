@@ -42,5 +42,5 @@ setup_server &
 
 temporal server start-dev \
 --dynamic-config-value frontend.enableUpdateWorkflowExecution=true \
---db-filename "${FILE_DB}" \
---ui-port "8080"
+--ui-port "8080" \
+#--db-filename "${FILE_DB}" \

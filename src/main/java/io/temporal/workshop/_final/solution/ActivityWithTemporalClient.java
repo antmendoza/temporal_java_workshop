@@ -25,8 +25,6 @@ public class ActivityWithTemporalClient implements AccountService {
         client
                 .newWorkflowStub(AccountWorkflow.class,
                         workflowId)
-                //Update workflow, this is a blocking operations that will
-                // return once the returns once deposit method has completed
                 .withdraw(withdrawRequest.amount());
 
         log.info("End withdraw : " + withdrawRequest);
@@ -40,8 +38,6 @@ public class ActivityWithTemporalClient implements AccountService {
         client
                 .newWorkflowStub(AccountWorkflow.class,
                         workflowId)
-                //Update workflow, this is a blocking operations that will
-                // return once the returns once deposit method has completed
                 .deposit(depositRequest.amount());
 
         log.info("Init deposit : " + depositRequest);

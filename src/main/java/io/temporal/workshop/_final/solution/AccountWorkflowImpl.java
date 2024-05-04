@@ -24,7 +24,7 @@ public class AccountWorkflowImpl implements
     private List<Operation> operations = new ArrayList<>();
     private Account account;
     private boolean closeAccount = false;
-    private final Map<TransferRequest, WorkflowExecution> map = new HashMap<TransferRequest, WorkflowExecution>();
+    private final Map<TransferRequest, WorkflowExecution> map = new HashMap<>();
 
     @Override
     public void open(final Account account) {
@@ -95,7 +95,6 @@ public class AccountWorkflowImpl implements
         Workflow.getWorkflowExecution(accountCleanUpWorkflow).get();
 
         // By exiting here we are closing the current workflow execution
-        //TODO add return
     }
 
     @Override
