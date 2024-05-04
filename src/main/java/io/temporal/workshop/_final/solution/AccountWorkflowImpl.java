@@ -1,15 +1,15 @@
 package io.temporal.workshop._final.solution;
 
-import io.temporal.workshop._final.AccountCleanUpWorkflow;
-import io.temporal.workshop._final.AccountWorkflow;
-import io.temporal.workshop._final.MoneyTransferWorkflow;
-import io.temporal.workshop.model.*;
 import io.temporal.api.common.v1.WorkflowExecution;
 import io.temporal.api.enums.v1.ParentClosePolicy;
 import io.temporal.workflow.Async;
 import io.temporal.workflow.ChildWorkflowOptions;
 import io.temporal.workflow.Promise;
 import io.temporal.workflow.Workflow;
+import io.temporal.workshop._final.AccountCleanUpWorkflow;
+import io.temporal.workshop._final.AccountWorkflow;
+import io.temporal.workshop._final.MoneyTransferWorkflow;
+import io.temporal.workshop.model.*;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ import java.util.Map;
 public class AccountWorkflowImpl implements
         AccountWorkflow {
     private final Logger log = Workflow.getLogger(AccountWorkflowImpl.class.getSimpleName());
-    private final List<TransferRequest> pendingRequest = new ArrayList<>();
+    private final List<TransferRequest> pendingTransferRequests = new ArrayList<>();
+    private final Map<TransferRequest, String> startedRequest = new HashMap<>();
     private List<Operation> operations = new ArrayList<>();
     private Account account;
     private boolean closeAccount = false;
-    private final Map<TransferRequest, WorkflowExecution> map = new HashMap<>();
 
     @Override
     public void open(final Account account) {
@@ -33,13 +33,22 @@ public class AccountWorkflowImpl implements
         this.account = account;
         this.operations = new ArrayList<>();
 
+
+        //while the workflow is open
         while (!closeAccount) {
 
-            Workflow.await(() -> !pendingRequest.isEmpty() || closeAccount);
 
-            if (!pendingRequest.isEmpty()) {
+            //Block until a new transfer request come, or the request to close the account
+            Workflow.await(() -> !pendingTransferRequests.isEmpty() || closeAccount);
 
-                final TransferRequest transferRequest = pendingRequest.get(0);
+
+            //If there is a pending request
+            if (!pendingTransferRequests.isEmpty()) {
+
+
+                //Process it starting the MoneyTransferWorkflow
+                // (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) asynchronously.
+                final TransferRequest transferRequest = pendingTransferRequests.get(0);
 
                 final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
                         "_TO_" + transferRequest.toAccountId() +
@@ -56,22 +65,24 @@ public class AccountWorkflowImpl implements
                                                 moneyTransferWorkflowId)
                                         .build());
 
-                // Starting child workflow async
-                // Wait for child to start
+                // We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
                 // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
                 final Promise<TransferResponse> request = Async.function(moneyTransferWorkflow::transfer, transferRequest);
                 WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
 
 
-                //#2
-                pendingRequest.remove(transferRequest);
+                //After the workflow has started,
+                // remove the request from pending request
+                pendingTransferRequests.remove(transferRequest);
 
-                //Unblock #1 in method requestTransfer
-                map.put(transferRequest, execution);
+                // Unblock #1
+                // And add the workflowId what we want to return to the caller of `requestTransfer`
+                startedRequest.put(transferRequest, execution.getWorkflowId());
 
-                // wait for the child to complete
+                // wait until the ChildWorkflow completes and add the result to the list or operations to track it
                 final TransferResponse transferResponse = request.get();
-                this.operations.add(new Operation(execution.getWorkflowId(),transferResponse));
+                this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
+
 
             }
         }
@@ -100,21 +111,22 @@ public class AccountWorkflowImpl implements
     @Override
     public RequestTransferResponse requestTransfer(final TransferRequest transferRequest) {
 
-        this.pendingRequest.add(transferRequest);
+        //Add the operation to the list of pending reqeust, that we will process in the main workflow thread
+        this.pendingTransferRequests.add(transferRequest);
 
-        //#1
-        Workflow.await(() -> map.get(transferRequest) != null);
+        //#1 wait until the operation starts, to return the operationId
+        Workflow.await(() -> startedRequest.get(transferRequest) != null);
 
         //Return workflowId
-        final String operationId = map.get(transferRequest).getWorkflowId();
+        final String operationId = startedRequest.get(transferRequest);
         return new RequestTransferResponse(operationId);
 
     }
 
     @Override
     public void validateCloseAccount() {
-        //#2
-        if(!pendingRequest.isEmpty()){
+
+        if (!pendingTransferRequests.isEmpty()) {
             throw new RuntimeException("Account can't be closed, there are transfer requests in progress");
         }
     }

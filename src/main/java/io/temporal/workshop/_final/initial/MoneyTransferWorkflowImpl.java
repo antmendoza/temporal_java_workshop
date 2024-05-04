@@ -45,11 +45,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 
             transferStatus = TransferStatus.ApprovalRequired;
 
-            //Setting this SA will allow query workflows by `TransferRequestStatus="ApprovalRequired"`
-            //http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22
-            Workflow.upsertTypedSearchAttributes(
-                    TransferRequestStatus.valueSet(transferStatus.name())
-            );
+            //TODO add code here
 
             log.info("Request need approval: " + transferRequest);
 

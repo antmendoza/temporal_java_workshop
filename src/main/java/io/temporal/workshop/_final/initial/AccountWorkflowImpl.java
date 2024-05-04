@@ -20,11 +20,11 @@ import java.util.Map;
 public class AccountWorkflowImpl implements
         AccountWorkflow {
     private final Logger log = Workflow.getLogger(AccountWorkflowImpl.class.getSimpleName());
-    private final List<TransferRequest> pendingRequest = new ArrayList<>();
+    private final List<TransferRequest> pendingTransferRequests = new ArrayList<>();
     private List<Operation> operations = new ArrayList<>();
     private Account account;
     private boolean closeAccount = false;
-    private final Map<TransferRequest, WorkflowExecution> map = new HashMap<>();
+    private final Map<TransferRequest, String> startedRequest = new HashMap<>();
 
     @Override
     public void open(final Account account) {

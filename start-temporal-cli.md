@@ -13,9 +13,8 @@ This document describe the steps you will have to follow if for some reason the 
 ```bash
 temporal server start-dev \
 --dynamic-config-value frontend.enableUpdateWorkflowExecution=true \
---db-filename "my_test.db" \
---ui-port "8080"
-
+--ui-port "8080" \
+#--db-filename "my_test.db" \
 ```
 
 The previous command persist the data in the filesystem (in a file called my_test.db). To clean 
