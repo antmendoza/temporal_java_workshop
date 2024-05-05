@@ -38,7 +38,7 @@ public class AccountWorkflowImpl implements
         while (!closeAccount) {
 
 
-            //Block until a new transfer request come, or the request to close the account
+            //Block until a new transfer request comes, or the request to close the account
             Workflow.await(() -> !pendingTransferRequests.isEmpty() || closeAccount);
 
 
@@ -51,10 +51,7 @@ public class AccountWorkflowImpl implements
                 final TransferRequest transferRequest = pendingTransferRequests.get(0);
 
                 final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
-                        "_TO_" + transferRequest.toAccountId() +
-                        // Why we use Workflow.currentTimeMillis()?
-                        // https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
-                        "_" + Workflow.currentTimeMillis();
+                        "_TO_" + transferRequest.toAccountId()+"_AMOUNT_" + transferRequest.amount();
 
                 log.info("Scheduling workflow " + moneyTransferWorkflowId);
 
@@ -65,22 +62,23 @@ public class AccountWorkflowImpl implements
                                                 moneyTransferWorkflowId)
                                         .build());
 
-                // We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
+                // We start the ChildWorkflow asynchronously, we don't want to block the user request until the child workflow completes.
                 // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
                 final Promise<TransferResponse> request = Async.function(moneyTransferWorkflow::transfer, transferRequest);
                 WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
 
 
-                // Remove the request from after the workflow start
+                // Remove the request from pendingTransfer after the workflow start
                 pendingTransferRequests.remove(transferRequest);
 
                 // Unblock #1
-                // And add the workflowId what we want to return to the caller of `requestTransfer`
+                // This is the workflowId we return to the client as response to `requestTransfer`
                 startedRequest.put(transferRequest, execution.getWorkflowId());
 
                 request.thenApply((response)->{
 
-                    // wait until the ChildWorkflow completes and add the result to the list or operations to track it
+                    // wait until the ChildWorkflow completes and add the result to the list or operations to track it.
+                    //This list is returned as part of `getAccountSummary`
                     final TransferResponse transferResponse = request.get();
                     this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
 
@@ -113,10 +111,10 @@ public class AccountWorkflowImpl implements
     @Override
     public RequestTransferResponse requestTransfer(final TransferRequest transferRequest) {
 
-        //Add the operation to the list of pending request, that we will process in the main workflow thread
+        //add the operation to `pendingTransferRequests`. We will process each request in the main workflow thread.
         this.pendingTransferRequests.add(transferRequest);
 
-        //#1 wait until the operation starts, to return the operationId
+        //#1 wait until the operation starts, to get the workflowId or the moneyTransfer workflow
         Workflow.await(() -> startedRequest.get(transferRequest) != null);
 
         //Return workflowId

@@ -46,7 +46,7 @@ and
 You will notice that our UI has links
  `(View in Temporal UI)` to help relate what is shown in it with the Temporal UI.
 
-![img.png](img/img.png)
+![img.png](../../../../../../../doc_img/img.png)
 
 
 Begin by working with the code in the `initial` folder. Take your time to familiarize yourself with the following pieces of code:
@@ -92,10 +92,10 @@ public void open(final Account account) {
 
 ```
 
-If we run the code now, the workflow will close immediately after starting (you can test it), but we want the accounts 
-workflows to be long-running, allowing interaction. 
+If we run the code now, the workflow will close immediately after starting (you can test it). We want the account Workflow to be long-running,
+allowing interaction. 
 
-Set the value `account` passed to the method as instance variables and block `Workflow.await` until `closeAccount` becomes true:
+Assign the value `account` passed to the `open` method to `this.account`, and block `Workflow.await` until `closeAccount` becomes true:
 ```
     @Override
     public void open(final Account account) {
@@ -107,7 +107,7 @@ Set the value `account` passed to the method as instance variables and block `Wo
     }
 ```
 
-Now the Workfow will be running until the `Workflow.await` condition is true.
+Now the Workfow execution won't close, it will be running until the `Workflow.await` condition is true.
 
 Note that `this.account` is used by `getAccountSummary` method to return the account info shown in our UI.
 
@@ -118,17 +118,17 @@ Let's create some accounts in our system.
 accounts. 
   - Click `New Account`, it will show a form with dummy data (feel free to modify it), once the form is ready submit the information.
   - Now we have one account in our system
-  ![img_1.png](img/img_1.png)
+  ![img_1.png](../../../../../../../doc_img/img_1.png)
   - if you click `View in Temporal UI` it will take you to the Temporal UI showing the workflow in running state.
 
 #### Users can send money from one account to another account.
 During the previous exercises we have implemented [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowImpl.java), 
 responsible from moving money from one account to another. Let's use it in our AccountWorkflow.
 
-To do that, we are going to implement the method [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`requestTransfer`.
+To do that, we have to implement the method [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`requestTransfer`.
 
-- add the operation to the list or pending request, that we will process in the main workflow thread.
-- wait until the operation start to return the operationId.
+- add the operation to `pendingTransferRequests`. We will process each request in the main workflow thread.
+- wait until the operation starts, to get the workflowId or the moneyTransfer workflow.
 - return workflowId.
 
 The implementation will be as follows:
@@ -137,10 +137,10 @@ The implementation will be as follows:
     @Override
     public RequestTransferResponse requestTransfer(final TransferRequest transferRequest) {
 
-        //Add the operation to the list of pending reqeust, that we will process in the main workflow thread
+        //add the operation to `pendingTransferRequests`. We will process each request in the main workflow thread.
         this.pendingTransferRequests.add(transferRequest);
 
-        //#1 wait until the operation starts, to return the operationId 
+        //#1 wait until the operation starts, to get the workflowId or the moneyTransfer workflow
         Workflow.await(() -> startedRequest.get(transferRequest) != null);
 
         //Return workflowId
@@ -150,18 +150,19 @@ The implementation will be as follows:
     }
 
 ```
-Now lets implement the main workflow thread to process each request:
+Now, let's implement the main workflow method to process each request:
 
 - We want to process requests while the workflow is open, and block until a new transfer request come to process it 
-or the request to close the account arrive.
+or the request to close the account arrives.
 
 - If there is a pending request, process it starting the MoneyTransferWorkflow (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) 
 asynchronously. We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
 
 - After the workflow has started, remove the request from pending request and add the workflowId we want to return 
-to the caller of `requestTransfer` method, to unblock `Workflow.await` and returns.
+to the caller of `requestTransfer` method. This will unblock `Workflow.await` in `requestTransfer`.
 
-- Finally, wait until the ChildWorkflow completes and add the result to the list or operations to track it.
+- Finally, when ChildWorkflow completes add the result to the list or operations to track it. This list is 
+returned as part of `getAccountSummary`
 
 The implementation will be as follows:
 ```
@@ -171,66 +172,62 @@ The implementation will be as follows:
         log.info("Account created " + account);
         this.account = account;
         this.operations = new ArrayList<>();
-
-
+    
+    
         //while the workflow is open
         while (!closeAccount) {
-
-
-            //Block until a new transfer request come, or the request to close the account
+    
+    
+            //Block until a new transfer request comes, or the request to close the account
             Workflow.await(() -> !pendingTransferRequests.isEmpty() || closeAccount);
-
-
+    
+    
             //If there is a pending request
             if (!pendingTransferRequests.isEmpty()) {
-
-
+    
+    
                 //Process it starting the MoneyTransferWorkflow
                 // (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) asynchronously.
                 final TransferRequest transferRequest = pendingTransferRequests.get(0);
-
+    
                 final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
-                        "_TO_" + transferRequest.toAccountId() +
-                        // Why we use Workflow.currentTimeMillis()?
-                        // https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
-                        "_" + Workflow.currentTimeMillis();
-
+                        "_TO_" + transferRequest.toAccountId()+"_AMOUNT_" + transferRequest.amount();
+    
                 log.info("Scheduling workflow " + moneyTransferWorkflowId);
-
+    
                 final MoneyTransferWorkflow moneyTransferWorkflow =
                         Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
                                 ChildWorkflowOptions.newBuilder()
                                         .setWorkflowId(
                                                 moneyTransferWorkflowId)
                                         .build());
-
-                // We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
+    
+                // We start the ChildWorkflow asynchronously, we don't want to block the user request until the child workflow completes.
                 // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
                 final Promise<TransferResponse> request = Async.function(moneyTransferWorkflow::transfer, transferRequest);
                 WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
-
-
-                // Remove the request from after the workflow start
+    
+    
+                // Remove the request from pendingTransfer after the workflow start
                 pendingTransferRequests.remove(transferRequest);
-
+    
                 // Unblock #1
-                // And add the workflowId what we want to return to the caller of `requestTransfer`
+                // This is the workflowId we return to the client as response to `requestTransfer`
                 startedRequest.put(transferRequest, execution.getWorkflowId());
-
+    
                 request.thenApply((response)->{
-
-                    // wait until the ChildWorkflow completes and add the result to the list or operations to track it
+    
+                    // wait until the ChildWorkflow completes and add the result to the list or operations to track it.
+                    //This list is returned as part of `getAccountSummary`
                     final TransferResponse transferResponse = request.get();
                     this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
-
+    
                    return response;
                });
-
-
+    
+    
             }
         }
-
-    }
 
 ```
 
@@ -244,39 +241,42 @@ Let's test the new implementation:
 
 Take some time to understand what has happened, there is a lot going on:
 - Click `View in Temporal UI` for the source account, the one that started the `Request transfer`.
- ![img_3.png](img/img_3.png)
+ ![img_3.png](../../../../../../../doc_img/img_3.png)
   - `requestTransfer` is the operation we have initiated from the UI
   - `MoneyTransferWorkflow` is the ChildWorkflow, started from our java code.
   - `withdraw` is the method, in [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java), 
 the activity implementation [./initial/ActivityWithTemporalClient.java](./initial/ActivityWithTemporalClient.java) 
 (used by [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowImpl.java)) calls to take money from the account. 
-    - The [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`deposit` method is invoked 
+  - The [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`deposit` method is invoked 
 by [./initial/ActivityWithTemporalClient.java](./initial/ActivityWithTemporalClient.java) to add money to the account. 
 Open the target workflow and verify it.
-![img_4.png](img/img_4.png)
-- Inspect the workflow history of the source account `Full history` too.
-![img_6.png](img/img_6.png)
+![img_4.png](../../../../../../../doc_img/img_4.png)
+- Inspect the `Full history` of the source account too.
+
+![img_6.png](../../../../../../../doc_img/img_6.png)
   - Note how the ChildWorkflow completes (event 20) after the method `requestTransfer` returns (event 14).
 - Click `relationships`, it will show the ChildWorkflow started from our account workflow.
-![img_2.png](img/img_2.png)
+![img_2.png](../../../../../../../doc_img/img_2.png)
   - We can access to the same information in our application if we click `Show details`
-![img_7.png](img/img_7.png)
-![img_8.png](img/img_8.png)
+![img_7.png](../../../../../../../doc_img/img_7.png)
+![img_8.png](../../../../../../../doc_img/img_8.png)
   [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`getAccountSummary` contains the list of operations showed in this view.
+
+
 
 - **If the amount to transfer is > 100, the operation needs to be approved**.
 
 We already have the logic in our [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowImpl.java) workflow
 to wait for approval if the amount > 100, but we don't have a way to list workflows on this state.
 
-The script (and the instructions) to start the server constains a command to create a Custom Search Attribute
+The script (and the instructions) to start the server contains a command to create a Custom Search Attribute
 in the namespace.
 `temporal operator search-attribute create --namespace "default" --name TransferRequestStatus --type Keyword`
 
-Now we can add this Search Attribute to workflows awaiting approval. This will allow us to run queries like 
+Now we can add this Search Attribute to workflows awaiting approval. No we can run queries like 
 `WorkflowType="MoneyTransferWorkflow" and ExecutionStatus="Running" and TransferRequestStatus="ApprovalRequired"`
-using the [Temporal UI](http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22)
-or using the SDK (see `TemporalService.getPendingRequests` implementation)
+from the [Temporal UI](http://localhost:8080/namespaces/default/workflows?query=WorkflowType%3D%22MoneyTransferWorkflow%22+and+ExecutionStatus%3D%22Running%22+and+TransferRequestStatus%3D%22ApprovalRequired%22)
+or the SDK (see `TemporalService.getPendingRequests` implementation)
 
 - Modify the [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowImpl.java) to make the workflow
 searchable if amount > 100. Add the following code to the main method, within the `if (transferRequest.amount() > 100)` block.
@@ -295,14 +295,15 @@ Let's test the new it:
 - [Run the code initial folder](./run-the-code-initial-folder.md). Don't forget to restart the [./initial/WorkerProcess.java](./initial/WorkerProcess.java).
   - Navigate to [http://localhost:3030/accounts](http://localhost:3030/accounts) and create two accounts.
   - Click `Request transfer` for one of the accounts, it will show a form with dummy data, **change amount to a value > 100** and submit the information.
-  - Our UI will show a pending operation, click and Approve/Deny the operation. 
-![img_9.png](img/img_9.png)
+  - Our UI will show a pending operation, click and Approve/Deny the operation.
+
+  ![img_9.png](../../../../../../../doc_img/img_9.png)
   - Note that there is a timer in the MoneyTransferWorkflow workflow that will fire if the operation is not Approved/Denied within 30 seconds, 
-and the operation will be marked as `TimedOut`.
+and the operation will be marked as `TimedOut`. Create one request and let it times out.
 
 As we did before, take your time to understand what is going on by looking into the workflow histories using the Temporal UI.
 
-> There are several ways to implement this, Custom SA is used to introduce the concept.
+> There are several ways to implement this functionality, Custom SA is used to introduce the concept.
 
 #### Users can access account details, like transactions started from the account and the current amount.
 
@@ -312,19 +313,24 @@ When we click `Show details` for one of the accounts, our Spring App invokes [./
 
 #### Users can close the account.
 
-Now that users can open accounts and order money transfer operations, let's give them the posibility to close the account too.
+Now that users can open accounts and transfer money, let's give them the possibility to close the account too.
 
 - Implement the method [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`closeAccount` to set `closeAccount` variable to `true`.
+This will make `while (!closeAccount) {` exits. 
 
 To test this: 
 - Restart the Temporal Server.
 - [Run the code initial folder](./run-the-code-initial-folder.md). Don't forget to restart the [./initial/WorkerProcess.java](./initial/WorkerProcess.java).
-  - Navigate to [http://localhost:3030/accounts](http://localhost:3030/accounts) and create two accounts.
-  - Click `Close account` for one of the accounts.
+  - Navigate to [http://localhost:3030/accounts](http://localhost:3030/accounts) and create one account.
+  - Click `Close account`.
   - This will end the while loop in the main workflow method and the workflow will complete.
   - Go to the temporal UI and verify it.
-![img_10.png](img/img_10.png)
+
+![img_10.png](../../../../../../../doc_img/img_10.png)
+
   - Did you click `Close account` by mistake? No problem, go to the UI and [reset](https://docs.temporal.io/workflows#reset) the workflow.
+
+![img_12.png](../../../../../../../doc_img/img_12.png)
 
 
 - **After the account is close, the system send a notification to the customer.**
@@ -375,14 +381,14 @@ To test this:
   30 seconds (according the sleep we added to the implementation)
 
 
-![img11.png](./img/img11.png)
+![img11.png](../../../../../../../doc_img/img11.png)
 
 ---
 
 
 ### Run the code (solution)
 
-You can run this code to play with the application anytime:
+You can run this code to play with the final implementation:
 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).
