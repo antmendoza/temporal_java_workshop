@@ -46,7 +46,7 @@ and
 You will notice that our UI has links
  `(View in Temporal UI)` to help relate what is shown in it with the Temporal UI.
 
-![img.png](img.png)
+![img.png](img/img.png)
 
 
 Begin by working with the code in the `initial` folder. Take your time to familiarize yourself with the following pieces of code:
@@ -118,7 +118,7 @@ Let's create some accounts in our system.
 accounts. 
   - Click `New Account`, it will show a form with dummy data (feel free to modify it), once the form is ready submit the information.
   - Now we have one account in our system
-  ![img_1.png](img_1.png)
+  ![img_1.png](img/img_1.png)
   - if you click `View in Temporal UI` it will take you to the Temporal UI showing the workflow in running state.
 
 #### Users can send money from one account to another account.
@@ -244,7 +244,7 @@ Let's test the new implementation:
 
 Take some time to understand what has happened, there is a lot going on:
 - Click `View in Temporal UI` for the source account, the one that started the `Request transfer`.
- ![img_3.png](img_3.png)
+ ![img_3.png](img/img_3.png)
   - `requestTransfer` is the operation we have initiated from the UI
   - `MoneyTransferWorkflow` is the ChildWorkflow, started from our java code.
   - `withdraw` is the method, in [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java), 
@@ -253,15 +253,15 @@ the activity implementation [./initial/ActivityWithTemporalClient.java](./initia
     - The [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`deposit` method is invoked 
 by [./initial/ActivityWithTemporalClient.java](./initial/ActivityWithTemporalClient.java) to add money to the account. 
 Open the target workflow and verify it.
-![img_4.png](img_4.png)
+![img_4.png](img/img_4.png)
 - Inspect the workflow history of the source account `Full history` too.
-![img_6.png](img_6.png)
+![img_6.png](img/img_6.png)
   - Note how the ChildWorkflow completes (event 20) after the method `requestTransfer` returns (event 14).
 - Click `relationships`, it will show the ChildWorkflow started from our account workflow.
-![img_2.png](img_2.png)
+![img_2.png](img/img_2.png)
   - We can access to the same information in our application if we click `Show details`
-![img_7.png](img_7.png)
-![img_8.png](img_8.png)
+![img_7.png](img/img_7.png)
+![img_8.png](img/img_8.png)
   [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`getAccountSummary` contains the list of operations showed in this view.
 
 - **If the amount to transfer is > 100, the operation needs to be approved**.
@@ -296,7 +296,7 @@ Let's test the new it:
   - Navigate to [http://localhost:3030/accounts](http://localhost:3030/accounts) and create two accounts.
   - Click `Request transfer` for one of the accounts, it will show a form with dummy data, **change amount to a value > 100** and submit the information.
   - Our UI will show a pending operation, click and Approve/Deny the operation. 
-![img_9.png](img_9.png)
+![img_9.png](img/img_9.png)
   - Note that there is a timer in the MoneyTransferWorkflow workflow that will fire if the operation is not Approved/Denied within 30 seconds, 
 and the operation will be marked as `TimedOut`.
 
@@ -323,18 +323,66 @@ To test this:
   - Click `Close account` for one of the accounts.
   - This will end the while loop in the main workflow method and the workflow will complete.
   - Go to the temporal UI and verify it.
-![img_10.png](img_10.png)
+![img_10.png](img/img_10.png)
   - Did you click `Close account` by mistake? No problem, go to the UI and [reset](https://docs.temporal.io/workflows#reset) the workflow.
 
 
 - **After the account is close, the system send a notification to the customer.**
 
-//WIP
+ChildWorkflows has their own life cycle, they can continue running after the parent closes. When starting 
+a child workflow we can indicate the [Parent Close Policy](https://docs.temporal.io/encyclopedia/child-workflows#parent-close-policy), 
+to determine what will happen to a Child Workflow Execution if its Parent changes to a Closed.
+
+
+The workflow `AccountCleanUpWorkflowImpl` send a notification to the customer regarding their closed account. We can 
+start this workflow in ABANDON mode before closing the account. The child workflow will continue running and complete on 
+their own pace.
+
+Take your time to familiarize yourself with the [./initial/AccountCleanUpWorkflowImpl.java](./initial/AccountCleanUpWorkflowImpl.java) implementation.
+
+- Similar to the previous implementation where we started the MoneyTransferWorkflow, add the logic to
+the main workflow method to start this `AccountCleanUpWorkflowImpl` workflow, but this time in ABANDON mode.
+After the while loop:
+
+```
+
+    // Closing account
+    // Start AccountCleanUpWorkflow that will be responsible for sending a notification to the customer,
+    final AccountCleanUpWorkflow accountCleanUpWorkflow = Workflow.newChildWorkflowStub(AccountCleanUpWorkflow.class,
+            ChildWorkflowOptions
+                    .newBuilder()
+                    .setWorkflowId(AccountCleanUpWorkflow.workflowIdFromAccountId(account.accountId()))
+                    // AccountCleanUpWorkflow will continue running due to PARENT_CLOSE_POLICY_ABANDON
+                    // More info PARENT_CLOSE_POLICY https://docs.temporal.io/workflows#parent-close-policy
+                    .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
+                    .build());
+
+
+    Async.procedure(accountCleanUpWorkflow::run, this.account);
+    Workflow.getWorkflowExecution(accountCleanUpWorkflow).get();
+
+    // By exiting here we are closing the current workflow execution
+
+```
+
+
+To test this:
+- Restart the Temporal Server.
+- [Run the code initial folder](./run-the-code-initial-folder.md). Don't forget to restart the [./initial/WorkerProcess.java](./initial/WorkerProcess.java).
+  - Navigate to [http://localhost:3030/accounts](http://localhost:3030/accounts) and create one account.
+  - Click `Close account` for one of the accounts.
+  - Navigate to the [Temporal UI](http://localhost:8080) and note the child workflow is still running, it will close after 
+  30 seconds (according the sleep we added to the implementation)
+
+
+![img11.png](./img/img11.png)
 
 ---
 
 
 ### Run the code (solution)
+
+You can run this code to play with the application anytime:
 
 - Ensure you have everything you need to run the code, and the Temporal Server is running.
   See [prepare-your-environment.md](./../../../../../../../../prepare-your-environment.md).

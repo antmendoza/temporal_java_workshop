@@ -94,7 +94,6 @@ public class AccountWorkflowImpl implements
 
         // Closing account
         // Start AccountCleanUpWorkflow that will be responsible for sending a notification to the customer,
-        // among other things...
         final AccountCleanUpWorkflow accountCleanUpWorkflow = Workflow.newChildWorkflowStub(AccountCleanUpWorkflow.class,
                 ChildWorkflowOptions
                         .newBuilder()
@@ -106,7 +105,6 @@ public class AccountWorkflowImpl implements
 
 
         Async.procedure(accountCleanUpWorkflow::run, this.account);
-        // Wait for child to start https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
         Workflow.getWorkflowExecution(accountCleanUpWorkflow).get();
 
         // By exiting here we are closing the current workflow execution
