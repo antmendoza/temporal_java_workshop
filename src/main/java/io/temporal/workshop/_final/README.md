@@ -118,7 +118,9 @@ Let's create some accounts in our system.
 accounts. 
   - Click `New Account`, it will show a form with dummy data (feel free to modify it), once the form is ready submit the information.
   - Now we have one account in our system
-  ![img_1.png](../../../../../../../doc_img/img_1.png)
+
+![img_1.png](../../../../../../../doc_img/img_1.png)
+
   - if you click `View in Temporal UI` it will take you to the Temporal UI showing the workflow in running state.
 
 #### Users can send money from one account to another account.
@@ -242,6 +244,7 @@ Let's test the new implementation:
 Take some time to understand what has happened, there is a lot going on:
 - Click `View in Temporal UI` for the source account, the one that started the `Request transfer`.
  ![img_3.png](../../../../../../../doc_img/img_3.png)
+
   - `requestTransfer` is the operation we have initiated from the UI
   - `MoneyTransferWorkflow` is the ChildWorkflow, started from our java code.
   - `withdraw` is the method, in [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java), 
@@ -250,16 +253,25 @@ the activity implementation [./initial/ActivityWithTemporalClient.java](./initia
   - The [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`deposit` method is invoked 
 by [./initial/ActivityWithTemporalClient.java](./initial/ActivityWithTemporalClient.java) to add money to the account. 
 Open the target workflow and verify it.
-![img_4.png](../../../../../../../doc_img/img_4.png)
+
+  ![img_4.png](../../../../../../../doc_img/img_4.png)
+
 - Inspect the `Full history` of the source account too.
 
-![img_6.png](../../../../../../../doc_img/img_6.png)
+  ![img_6.png](../../../../../../../doc_img/img_6.png)
+
   - Note how the ChildWorkflow completes (event 20) after the method `requestTransfer` returns (event 14).
+
 - Click `relationships`, it will show the ChildWorkflow started from our account workflow.
-![img_2.png](../../../../../../../doc_img/img_2.png)
-  - We can access to the same information in our application if we click `Show details`
-![img_7.png](../../../../../../../doc_img/img_7.png)
-![img_8.png](../../../../../../../doc_img/img_8.png)
+
+  ![img_2.png](../../../../../../../doc_img/img_2.png)
+ 
+  - We can access the same information in our application if we click `Show details`
+
+  ![img_7.png](../../../../../../../doc_img/img_7.png)
+
+  ![img_8.png](../../../../../../../doc_img/img_8.png)
+
   [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`getAccountSummary` contains the list of operations showed in this view.
 
 
@@ -298,6 +310,7 @@ Let's test the new it:
   - Our UI will show a pending operation, click and Approve/Deny the operation.
 
   ![img_9.png](../../../../../../../doc_img/img_9.png)
+
   - Note that there is a timer in the MoneyTransferWorkflow workflow that will fire if the operation is not Approved/Denied within 30 seconds, 
 and the operation will be marked as `TimedOut`. Create one request and let it times out.
 
@@ -326,11 +339,13 @@ To test this:
   - This will end the while loop in the main workflow method and the workflow will complete.
   - Go to the temporal UI and verify it.
 
-![img_10.png](../../../../../../../doc_img/img_10.png)
+  ![img_10.png](../../../../../../../doc_img/img_10.png)
 
-  - Did you click `Close account` by mistake? No problem, go to the UI and [reset](https://docs.temporal.io/workflows#reset) the workflow.
+- Now [reset](https://docs.temporal.io/workflows#reset) the workflow you just closed. Go to the UI and it, 
 
-![img_12.png](../../../../../../../doc_img/img_12.png)
+  ![img_12.png](../../../../../../../doc_img/img_12.png)
+  it will create a new workflow execution that continues from the reset point.
+
 
 
 - **After the account is close, the system send a notification to the customer.**
@@ -382,6 +397,24 @@ To test this:
 
 
 ![img11.png](../../../../../../../doc_img/img11.png)
+
+
+
+
+###  Add more features to this app
+
+There is much more you can do with Temporal, here some ideas on how you can continue playing with this example:
+
+- **What if you want to cancel a pending request?** You can run the ChildWorkflow (MoneyTransferWorkflow) within a
+  [CancellationScope](https://github.com/temporalio/samples-java/blob/01b6ba14b7e98378e9de960a89958fcdd8973ce3/core/src/main/java/io/temporal/samples/hello/HelloCancellationScope.java#L145)
+  and have a Signal/Update method in the main workflow to allow cancel the operation.
+
+
+- **Use data converters to encrypt the payload**
+  - [Example](https://github.com/temporalio/samples-java/tree/main/core/src/main/java/io/temporal/samples/encryptedpayloads)
+  - [Documentation](https://docs.temporal.io/dataconversion#custom-data-converter)
+
+- WIP
 
 ---
 
