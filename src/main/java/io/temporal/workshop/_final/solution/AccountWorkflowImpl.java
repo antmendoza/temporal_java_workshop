@@ -90,22 +90,6 @@ public class AccountWorkflowImpl implements
         }
 
 
-        // Closing account
-        // Start AccountCleanUpWorkflow that will be responsible for sending a notification to the customer,
-        final AccountCleanUpWorkflow accountCleanUpWorkflow = Workflow.newChildWorkflowStub(AccountCleanUpWorkflow.class,
-                ChildWorkflowOptions
-                        .newBuilder()
-                        .setWorkflowId(AccountCleanUpWorkflow.workflowIdFromAccountId(account.accountId()))
-                        // AccountCleanUpWorkflow will continue running due to PARENT_CLOSE_POLICY_ABANDON
-                        // More info PARENT_CLOSE_POLICY https://docs.temporal.io/workflows#parent-close-policy
-                        .setParentClosePolicy(ParentClosePolicy.PARENT_CLOSE_POLICY_ABANDON)
-                        .build());
-
-
-        Async.procedure(accountCleanUpWorkflow::run, this.account);
-        Workflow.getWorkflowExecution(accountCleanUpWorkflow).get();
-
-        // By exiting here we are closing the current workflow execution
     }
 
     @Override

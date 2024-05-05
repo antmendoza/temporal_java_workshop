@@ -344,8 +344,14 @@ To test this:
 - Now [reset](https://docs.temporal.io/workflows#reset) the workflow you just closed. Go to the UI and it, 
 
   ![img_12.png](../../../../../../../doc_img/img_12.png)
-  it will create a new workflow execution that continues from the reset point.
+  
+  it will create a new workflow execution that continues from the reset point 
 
+  ![img_14.png](../../../../../../../doc_img/img_14.png)
+
+  and has a link to the previous one.
+
+  ![img_13.png](../../../../../../../doc_img/img_13.png)
 
 
 - **After the account is close, the system send a notification to the customer.**
