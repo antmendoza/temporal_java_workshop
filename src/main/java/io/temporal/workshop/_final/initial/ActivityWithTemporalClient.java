@@ -23,8 +23,8 @@ public class ActivityWithTemporalClient implements AccountService {
         log.info("Init withdraw : " + withdrawRequest);
         final String workflowId =
                 AccountWorkflow.workflowIdFromAccountId(withdrawRequest.accountId());
-        client
-                .newWorkflowStub(AccountWorkflow.class,
+
+        client.newWorkflowStub(AccountWorkflow.class,
                         workflowId)
                 .withdraw(withdrawRequest.amount());
 
@@ -36,8 +36,8 @@ public class ActivityWithTemporalClient implements AccountService {
         log.info("Init deposit : " + depositRequest);
         final String workflowId =
                 AccountWorkflow.workflowIdFromAccountId(depositRequest.accountId());
-        client
-                .newWorkflowStub(AccountWorkflow.class,
+
+        client.newWorkflowStub(AccountWorkflow.class,
                         workflowId)
                 .deposit(depositRequest.amount());
 

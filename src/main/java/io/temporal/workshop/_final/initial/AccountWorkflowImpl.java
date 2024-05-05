@@ -38,10 +38,6 @@ public class AccountWorkflowImpl implements
         return null;
     }
 
-    @Override
-    public void validateCloseAccount() {
-
-    }
 
     @Override
     public CloseAccountResponse closeAccount() {

@@ -4,10 +4,10 @@ During this exercise, we are going to create an application to manage accounts a
 
 
 ## During development
-We will need to restart the server several times during the course of this exercise to start with a fresh environment after each change. 
-As we are making changes in your workflows the code will become incompatible with the existing running workflows,
+We will need to restart the server several times during the course of this exercise, to start with a fresh environment after each change. 
+As we are making changes in your code, the code will become incompatible with the existing running workflows,
 and we will run into non-deterministic errors (in this case because SDK is not able to recover the workflow state because the code is different). 
-There are several techniques to make the code backward compatible, for now don't worry too much but if you want to learn more 
+There are several techniques to make the code backward compatible, for now don't worry about this, but if you want to learn more 
 about `Non Deterministic Errors` and versioning you can refer to this documentation later:
 - [Deterministic constraints](https://docs.temporal.io/workflows#deterministic-constraints)
 - [Intrinsic non-deterministic logic](https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic)
@@ -26,11 +26,10 @@ The application simulates a bank with the following features:
   - If the amount to transfer is > 100, the operation needs to be approved.
 - Users can access account details, like transactions started from the account and the current amount.
 - Users can close the account.
-  - If there are pending transactions, the request will be rejected.
   - After the account is close, the system send a notification to the customer.
 
 
-"During this exercise, we are going to apply the concepts learned in the previous one, and:
+During this exercise, we are going to apply the concepts learned in the previous one, and:
 - [Child workflows](https://docs.temporal.io/encyclopedia/child-workflows):
   A Child Workflow Execution is a Workflow Execution that is spawned from within another Workflow.
 - [Custom Search Attributes](https://docs.temporal.io/visibility#custom-search-attributes):
@@ -39,9 +38,12 @@ The application simulates a bank with the following features:
 This folder contains two main sub-folders:
 - `initial` is you starting point, the code skeleton within which you must work to complete the exercise following the steps described below..
 - `solution` contains the final code, after all steps are implemented.
+
 and 
 - `springrunner` that contains REST Controllers and the SpringBootApplication class.
-- We use thymeleaf for the view, you can find the views in `src/main/resources/templates`. You will notice that our UI has links
+- We use thymeleaf for the view, you can find the views in `src/main/resources/templates`. 
+
+You will notice that our UI has links
  `(View in Temporal UI)` to help relate what is shown in it with the Temporal UI.
 
 ![img.png](img.png)
@@ -107,7 +109,7 @@ Set the value `account` passed to the method as instance variables and block `Wo
 
 Now the Workfow will be running until the `Workflow.await` condition is true.
 
-Note that `this.account` is used by `getAccountSummary` method to return the account info shown in the table.
+Note that `this.account` is used by `getAccountSummary` method to return the account info shown in our UI.
 
 Let's create some accounts in our system.
 - Restart the Temporal Server.
@@ -150,80 +152,85 @@ The implementation will be as follows:
 ```
 Now lets implement the main workflow thread to process each request:
 
-- We want to process requests while the workflow is open, and block until a new transfer request come, 
-or the request to close the account
+- We want to process requests while the workflow is open, and block until a new transfer request come to process it 
+or the request to close the account arrive.
 
-- If there is a pending request process it starting the MoneyTransferWorkflow (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) 
+- If there is a pending request, process it starting the MoneyTransferWorkflow (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) 
 asynchronously. We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
 
 - After the workflow has started, remove the request from pending request and add the workflowId we want to return 
-to the caller of `requestTransfer` method to unblock `Workflow.await` and returns.
+to the caller of `requestTransfer` method, to unblock `Workflow.await` and returns.
 
 - Finally, wait until the ChildWorkflow completes and add the result to the list or operations to track it.
 
 The implementation will be as follows:
 ```
-  @Override
-  public void open(final Account account) {
+    @Override
+    public void open(final Account account) {
 
-      log.info("Account created " + account);
-      this.account = account;
-      this.operations = new ArrayList<>();
-
-
-      //while the workflow is open
-      while (!closeAccount) {
+        log.info("Account created " + account);
+        this.account = account;
+        this.operations = new ArrayList<>();
 
 
-          //Block until a new transfer request come, or the request to close the account
-          Workflow.await(() -> !pendingTransferRequests.isEmpty() || closeAccount);
+        //while the workflow is open
+        while (!closeAccount) {
 
 
-          //If there is a pending request
-          if (!pendingTransferRequests.isEmpty()) {
+            //Block until a new transfer request come, or the request to close the account
+            Workflow.await(() -> !pendingTransferRequests.isEmpty() || closeAccount);
 
 
-              //Process it starting the MoneyTransferWorkflow
-              // (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) asynchronously.
-              final TransferRequest transferRequest = pendingTransferRequests.get(0);
-
-              final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
-                      "_TO_" + transferRequest.toAccountId() +
-                      // Why we use Workflow.currentTimeMillis()?
-                      // https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
-                      "_" + Workflow.currentTimeMillis();
-
-              log.info("Scheduling workflow " + moneyTransferWorkflowId);
-
-              final MoneyTransferWorkflow moneyTransferWorkflow =
-                      Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
-                              ChildWorkflowOptions.newBuilder()
-                                      .setWorkflowId(
-                                              moneyTransferWorkflowId)
-                                      .build());
-
-              // We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
-              // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
-              final Promise<TransferResponse> request = Async.function(moneyTransferWorkflow::transfer, transferRequest);
-              WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
+            //If there is a pending request
+            if (!pendingTransferRequests.isEmpty()) {
 
 
-              //After the workflow has started,
-              // remove the request from pending request
-              pendingTransferRequests.remove(transferRequest);
+                //Process it starting the MoneyTransferWorkflow
+                // (as [ChildWorkflow](https://docs.temporal.io/dev-guide/java/features#child-workflows)) asynchronously.
+                final TransferRequest transferRequest = pendingTransferRequests.get(0);
 
-              // Unblock #1
-              // And add the workflowId what we want to return to the caller of `requestTransfer`
-              startedRequest.put(transferRequest, execution.getWorkflowId());
+                final String moneyTransferWorkflowId = "money-transfer-FROM_" + transferRequest.fromAccountId() +
+                        "_TO_" + transferRequest.toAccountId() +
+                        // Why we use Workflow.currentTimeMillis()?
+                        // https://docs.temporal.io/dev-guide/java/durable-execution#intrinsic-non-deterministic-logic
+                        "_" + Workflow.currentTimeMillis();
 
-              // wait until the ChildWorkflow completes and add the result to the list or operations to track it
-              final TransferResponse transferResponse = request.get();
-              this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
+                log.info("Scheduling workflow " + moneyTransferWorkflowId);
 
-          }
-      }
+                final MoneyTransferWorkflow moneyTransferWorkflow =
+                        Workflow.newChildWorkflowStub(MoneyTransferWorkflow.class,
+                                ChildWorkflowOptions.newBuilder()
+                                        .setWorkflowId(
+                                                moneyTransferWorkflowId)
+                                        .build());
 
-  }
+                // We start the ChildWorkflow asynchronously because we don't want to block the user request until the child workflow completes.
+                // https://community.temporal.io/t/best-way-to-create-an-async-child-workflow/114/2
+                final Promise<TransferResponse> request = Async.function(moneyTransferWorkflow::transfer, transferRequest);
+                WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
+
+
+                // Remove the request from after the workflow start
+                pendingTransferRequests.remove(transferRequest);
+
+                // Unblock #1
+                // And add the workflowId what we want to return to the caller of `requestTransfer`
+                startedRequest.put(transferRequest, execution.getWorkflowId());
+
+                request.thenApply((response)->{
+
+                    // wait until the ChildWorkflow completes and add the result to the list or operations to track it
+                    final TransferResponse transferResponse = request.get();
+                    this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
+
+                   return response;
+               });
+
+
+            }
+        }
+
+    }
 
 ```
 
@@ -319,10 +326,10 @@ To test this:
 ![img_10.png](img_10.png)
   - Did you click `Close account` by mistake? No problem, go to the UI and [reset](https://docs.temporal.io/workflows#reset) the workflow.
 
-- **If there are pending transactions, the request will be rejected.**
 
 - **After the account is close, the system send a notification to the customer.**
 
+//WIP
 
 ---
 

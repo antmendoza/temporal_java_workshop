@@ -71,17 +71,21 @@ public class AccountWorkflowImpl implements
                 WorkflowExecution execution = Workflow.getWorkflowExecution(moneyTransferWorkflow).get();
 
 
-                //After the workflow has started,
-                // remove the request from pending request
+                // Remove the request from after the workflow start
                 pendingTransferRequests.remove(transferRequest);
 
                 // Unblock #1
                 // And add the workflowId what we want to return to the caller of `requestTransfer`
                 startedRequest.put(transferRequest, execution.getWorkflowId());
 
-                // wait until the ChildWorkflow completes and add the result to the list or operations to track it
-                final TransferResponse transferResponse = request.get();
-                this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
+                request.thenApply((response)->{
+
+                    // wait until the ChildWorkflow completes and add the result to the list or operations to track it
+                    final TransferResponse transferResponse = request.get();
+                    this.operations.add(new Operation(execution.getWorkflowId(), transferResponse));
+
+                   return response;
+               });
 
 
             }
@@ -111,7 +115,7 @@ public class AccountWorkflowImpl implements
     @Override
     public RequestTransferResponse requestTransfer(final TransferRequest transferRequest) {
 
-        //Add the operation to the list of pending reqeust, that we will process in the main workflow thread
+        //Add the operation to the list of pending request, that we will process in the main workflow thread
         this.pendingTransferRequests.add(transferRequest);
 
         //#1 wait until the operation starts, to return the operationId
@@ -123,13 +127,6 @@ public class AccountWorkflowImpl implements
 
     }
 
-    @Override
-    public void validateCloseAccount() {
-
-        if (!pendingTransferRequests.isEmpty()) {
-            throw new RuntimeException("Account can't be closed, there are transfer requests in progress");
-        }
-    }
 
     @Override
     public CloseAccountResponse closeAccount() {

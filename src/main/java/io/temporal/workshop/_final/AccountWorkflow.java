@@ -25,9 +25,6 @@ public interface AccountWorkflow {
     void deposit(double amount);
 
 
-    @UpdateValidatorMethod(updateName = "closeAccount")
-    void validateCloseAccount();
-
     @UpdateMethod
     CloseAccountResponse closeAccount();
 
