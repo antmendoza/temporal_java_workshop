@@ -417,10 +417,16 @@ There is much more you can do with Temporal, here some ideas on how you can cont
 
 
 - **Use data converters to encrypt the payload**
-  - [Example](https://github.com/temporalio/samples-java/tree/main/core/src/main/java/io/temporal/samples/encryptedpayloads)
   - [Documentation](https://docs.temporal.io/dataconversion#custom-data-converter)
+  - [Example](https://github.com/temporalio/samples-java/tree/main/core/src/main/java/io/temporal/samples/encryptedpayloads)
 
-- WIP
+- **Continue as new before the workflow history reaches the event history limit.**
+  - [What is Continue-As-New?](https://docs.temporal.io/workflows#continue-as-new)
+  - [How to Continue-As-New](https://docs.temporal.io/dev-guide/java/features#continue-as-new)
+  - `if Workflow.getInfo().isContinueAsNewSuggested() then CAN` or 
+  `if Workflow.getInfo().getHistoryLength() > number of events then CAN`
+
+
 
 ---
 
