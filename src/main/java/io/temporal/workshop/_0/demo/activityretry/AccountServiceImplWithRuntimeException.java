@@ -36,6 +36,8 @@ public class AccountServiceImplWithRuntimeException implements AccountService {
         if (depositRequest.amount() != 0) {
 
             String message = "Error: Can not reach service...Number of attend: " + attend;
+            //Imagine an error is returned by an external service (API, db is down), and this invocation fails
+            // and this method throw this exception
             throw new RuntimeException(message);
         }
 

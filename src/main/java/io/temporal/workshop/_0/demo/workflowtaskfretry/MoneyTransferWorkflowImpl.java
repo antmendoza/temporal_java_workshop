@@ -28,8 +28,9 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
                         transferRequest.fromAccountId(), amount));
 
         double depositAmount = amount;
+
+
         if (amount > 20) {
-            // The purpose is to demonstrate how, in presence of a runtime error,
             // after fixing the code the workflow execution will continue from where the execution was
             // stopped
 
@@ -38,6 +39,8 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
             //depositAmount = amount - amount * 0.1;
             depositAmount = amount - (int) amount / 0;
         }
+
+
         accountService.deposit(
                 new DepositRequest(
                         transferRequest.toAccountId(), depositAmount));
