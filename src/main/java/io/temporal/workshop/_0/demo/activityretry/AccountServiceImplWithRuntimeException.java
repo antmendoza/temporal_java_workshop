@@ -28,12 +28,12 @@ public class AccountServiceImplWithRuntimeException implements AccountService {
     @Override
     public void deposit(DepositRequest depositRequest) {
         log.info("Init deposit : " + depositRequest);
+        int attend = Activity.getExecutionContext().getInfo().getAttempt();
+        log.info("Attend number : " + attend);
 
 
         //throwing fake error, after some retries we can fix this and re-start the worker
         if (depositRequest.amount() != 0) {
-            int attend = Activity.getExecutionContext().getInfo().getAttempt();
-            log.info("Attend number : " + attend);
 
             String message = "Error: Can not reach service...Number of attend: " + attend;
             throw new RuntimeException(message);

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# If the script does not work for see "start-temporal-cli.md"
+# If the script does not work for you, you can follow the instructions in "start-temporal-cli.md"
 
 : "${DEFAULT_NAMESPACE:=default}"
 

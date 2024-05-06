@@ -415,12 +415,11 @@ There is much more you can do with Temporal, here some ideas on how you can cont
   [CancellationScope](https://github.com/temporalio/samples-java/blob/01b6ba14b7e98378e9de960a89958fcdd8973ce3/core/src/main/java/io/temporal/samples/hello/HelloCancellationScope.java#L145)
   and have a Signal/Update method in the main workflow to allow cancel the operation.
 
-
 - **Use data converters to encrypt the payload**
   - [Documentation](https://docs.temporal.io/dataconversion#custom-data-converter)
   - [Example](https://github.com/temporalio/samples-java/tree/main/core/src/main/java/io/temporal/samples/encryptedpayloads)
 
-- **Continue as new before the workflow history reaches the event history limit.**
+- **Continue-As-New before the workflow history reaches the event history limit.**
   - [What is Continue-As-New?](https://docs.temporal.io/workflows#continue-as-new)
   - [How to Continue-As-New](https://docs.temporal.io/dev-guide/java/features#continue-as-new)
   - `if Workflow.getInfo().isContinueAsNewSuggested() then CAN` or 
