@@ -27,7 +27,7 @@ git clone https://github.com/temporalio/docker-compose.git
 cd  docker-compose
 ```
 
-- Open `dynamicconfig/development-sql.yaml`and add 
+- Open `dynamicconfig/development-sql.yaml` and add 
 ```
 frontend.enableUpdateWorkflowExecution:
   - value: true
