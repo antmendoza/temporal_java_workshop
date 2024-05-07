@@ -4,7 +4,7 @@ During this exercise, we are going to create an application to manage accounts a
 
 
 ## During development
-We will need to restart the server several times during the course of this exercise, to start with a fresh environment after each change. 
+We will need to restart the server several times during the course of this exercise, to start with a fresh environment after each change.
 As we are making changes in your code, the code will become incompatible with the existing running workflows,
 and we will run into non-deterministic errors (in this case because SDK is not able to recover the workflow state because the code is different). 
 There are several techniques to make the code backward compatible, for now don't worry about this, but if you want to learn more 
@@ -16,6 +16,12 @@ about `Non Deterministic Errors` and versioning you can refer to this documentat
 - [Move Fast WITHOUT Breaking Anything - Workflow Versioning with Temporal](https://www.youtube.com/watch?v=kkP899WxgzY)
 - [Workflow Versioning Strategies](https://community.temporal.io/t/workflow-versioning-strategies/6911)
 
+### How to start with a fresh / clean environment
+- If you run the server with `Temporal CLI`: restarting the server is enough (we are not persisting the data in the filesystem).
+- If you run the server with `docker-compose`: run `docker-compose down -v`.
+
+> This exercise utilizes the execution API (to start, signal, query workflow executions..) and the visibility API (to list workflow). 
+Data in the visibility store is eventually consistent, so you might need to refresh the UI to see the latest data.
 
 ## Exercise
 

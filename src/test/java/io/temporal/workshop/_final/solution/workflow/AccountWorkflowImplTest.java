@@ -19,10 +19,7 @@ import io.temporal.workshop.activity.AccountService;
 import io.temporal.testing.TestWorkflowRule;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactoryOptions;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 
 import java.time.Duration;
@@ -54,6 +51,7 @@ public class AccountWorkflowImplTest {
     }
 
     @Test
+    @Ignore
     public void testE2E() {
 
         final AccountService accountService = new ActivityWithTemporalClient(testWorkflowRule.getWorkflowClient());

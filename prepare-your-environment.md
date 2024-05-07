@@ -2,7 +2,7 @@
 
 ## Prerequisites
 - Java JDK 17
-- Maven is not required, you can use the wrapper in this repository to run the code.
+- Maven is not required, you can use the wrapper in this repository to compile and run the code.
 
 ## Install temporal cli
 
@@ -14,7 +14,47 @@ Once you have Temporal CLI installed you can use the script [start-temporal-cli.
 server.
 
 
-
 After starting the Server, enable "Experimental mode" in the UI.
 
 ![labs.png](labs.png)
+
+
+
+## Alternatively you can use [docker-compose](https://github.com/temporalio/docker-compose) 
+
+```bash
+git clone https://github.com/temporalio/docker-compose.git
+cd  docker-compose
+```
+
+- Open `dynamicconfig/development-sql.yaml`and add 
+```
+frontend.enableUpdateWorkflowExecution:
+  - value: true
+
+```
+
+- Start the server
+
+```bash
+cd  docker-compose
+docker-compose up
+```
+
+- To clean the environment/server run
+
+```bash
+cd  docker-compose
+docker-compose down -v
+```
+#### Only for the `_final` exercise
+
+- Login into the container `temporal-admin-tools`
+
+`docker exec -it temporal-admin-tools bash`
+
+- And add the `TransferRequestStatus` Search Attribute
+
+`temporal operator search-attribute create --namespace "default" \
+--name TransferRequestStatus --type Keyword`
+

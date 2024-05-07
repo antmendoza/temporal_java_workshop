@@ -1,2 +1,4 @@
 /target/
 *.db
+/docker-compose/
+*MoneyTransferWorkflowImpl_.java*
