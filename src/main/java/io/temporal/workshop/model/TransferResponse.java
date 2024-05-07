@@ -10,4 +10,11 @@ public record TransferResponse(TransferRequest transferRequest, TransferStatus t
         TransferStatus.ApprovalNotRequired.equals(this.transferStatus());
     }
 
+
+    public String toReadableString() {
+        return System.lineSeparator() +
+                 transferRequest.toReadableString()
+                + System.lineSeparator() +
+                "   Status = " + transferStatus;
+    }
 }
