@@ -38,6 +38,7 @@ public class AccountServiceImplWithRuntimeException implements AccountService {
             String message = "Error: Can not reach service...Number of attend: " + attend;
             //Imagine an error is returned by an external service (API, db is down), and this invocation fails
             // and this method throw this exception
+            // TODO comment this line
             throw new RuntimeException(message);
         }
 
