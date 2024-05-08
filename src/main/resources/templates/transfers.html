@@ -62,8 +62,9 @@
                     </a>
                 </td>
 
-                <td th:text="${transfer.toString()}"/>
-
+                <td>
+                    <pre th:text="${transfer.toReadableString()}"></pre>
+                <td/>
             </tr>
 
             </tbody>

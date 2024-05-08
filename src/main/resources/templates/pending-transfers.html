@@ -46,7 +46,6 @@
         <table class="table">
             <thead>
             <tr>
-
                 <th scope="col">
                     Temporal-WorkflowId
                 </th>
@@ -64,8 +63,9 @@
                         target="_blank">View in Temporal UI
                     </a>
                 </td>
-
-                <td th:text="${pendingApproval.toString()}"/>
+                <td>
+                    <pre th:text="${pendingApproval.toReadableString()}"></pre>
+                <td/>
                 <td>
                     <a th:href="@{'/pending-transfers/' + ${pendingApproval.workflowId()}+'/approve' }">Approve
                         operation</a>
