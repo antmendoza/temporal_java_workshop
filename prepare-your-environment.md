@@ -62,7 +62,7 @@ docker-compose down -v
 
 
 
-### Compile the project
+## Compile the project
 
 Run the following command to test whether you can compile the project.
 
