@@ -36,7 +36,7 @@ Open [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImp
       if (transferRequest.amount() >= 100) {
           transferStatus = TransferStatus.ApprovalRequired;
 
-          final Duration timeout = Duration.ofSeconds(5); // Can be days, years...
+          final java.time.Duration timeout = java.time.Duration.ofSeconds(5); // Can be days, years...
           boolean transferStatusUpdatedWithinTimeOut =
                   Workflow.await(timeout, () ->
                           transferStatus != TransferStatus.ApprovalRequired);

@@ -132,7 +132,7 @@ Let's add activity invocations to the workflow implementation (`MoneyTransferWor
             Workflow.newActivityStub(
                     AccountService.class,
                     ActivityOptions.newBuilder()
-                            .setStartToCloseTimeout(Duration.ofSeconds(3))
+                            .setStartToCloseTimeout(java.time.Duration.ofSeconds(3))
 //                            .setRetryOptions(
 //                                    RetryOptions.newBuilder()
 //                                            .setMaximumAttempts(5)

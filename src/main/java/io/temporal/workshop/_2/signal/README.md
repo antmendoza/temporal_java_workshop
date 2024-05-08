@@ -46,8 +46,8 @@ Open [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowI
 
 > `Workflow.await` blocks the current Workflow Execution until the provided unblock condition is evaluated to true.
 The method can accept a timer to unblock after the provided duration. E.g.:
-> - `Workflow.await(Duration.ofDays(5), () -> this.transferStatus != TransferStatus.ApprovalRequired);`
-> - `Workflow.await(Duration.ofSeconds(30), () -> this.transferStatus != TransferStatus.ApprovalRequired);`
+> - `Workflow.await(java.time.Duration.ofDays(5), () -> this.transferStatus != TransferStatus.ApprovalRequired);`
+> - `Workflow.await(java.time.Duration.ofSeconds(30), () -> this.transferStatus != TransferStatus.ApprovalRequired);`
 
 
 
