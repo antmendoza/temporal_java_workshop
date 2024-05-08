@@ -4,7 +4,9 @@
 - Java JDK 17
 - Maven is not required, you can use the wrapper in this repository to compile and run the code.
 
-## Install temporal cli
+## Install temporal 
+
+### Temporal CLI
 
 The only thing you need to follow this workshop is have `Temporal cli` installed in your computer.
 Follow the instructions [here](https://docs.temporal.io/cli#install) to install it. 
@@ -20,7 +22,7 @@ After starting the Server, enable "Experimental mode" in the UI.
 
 
 
-## Alternatively you can use [docker-compose](https://github.com/temporalio/docker-compose) 
+### Alternatively you can use [docker-compose](https://github.com/temporalio/docker-compose) 
 
 ```bash
 git clone https://github.com/temporalio/docker-compose.git
@@ -58,3 +60,10 @@ docker-compose down -v
 `temporal operator search-attribute create --namespace "default" \
 --name TransferRequestStatus --type Keyword`
 
+
+
+### Compile the project
+
+Run the following command to test whether you can compile the project.
+
+`./mvnw clean install`
