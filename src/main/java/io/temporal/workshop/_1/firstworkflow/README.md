@@ -58,7 +58,7 @@ public class MoneyTransferWorkflowImpl implements MoneyTransferWorkflow {
 ####  Register the Workflow implementation in the worker
 
 
-Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and comment out the following lines.
+Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and uncomment the following lines.
 
 ```
 //Worker worker = factory.newWorker(TASK_QUEUE, WorkerOptions.newBuilder().build());
@@ -174,7 +174,7 @@ with the following code.
 ####  Register the Activity implementation in the Worker
 
 
-Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and comment out the following line.
+Go to the file [./initial/WorkerProcess.java](./initial/WorkerProcess.java) and uncomment the following line.
 
 ```
 //worker.registerActivitiesImplementations(new AccountServiceImpl(new BankingClient()));

@@ -56,7 +56,7 @@ The method accepts a timer, and it returns false if the timer fires
 
 - Declare the @QueryMethod in the workflow interface:
 
-Open [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java) and comment out the following code:
+Open [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java) and uncomment the following code:
 
 ```
     @QueryMethod
@@ -78,7 +78,7 @@ Open [./initial/MoneyTransferWorkflowImpl.java](initial/MoneyTransferWorkflowImp
 
 - Implement the client to query the workflow two times, after the workflow start and 6 seconds later.
 
-Open [./initial/StarterAndQuery.java](initial/StarterAndQuery.java) and comment out the following lines.
+Open [./initial/StarterAndQuery.java](initial/StarterAndQuery.java) and uncomment the following lines.
 
 ```
       TransferStatus transferStatusAfterStart = getTransferStatus(client).getStatus();

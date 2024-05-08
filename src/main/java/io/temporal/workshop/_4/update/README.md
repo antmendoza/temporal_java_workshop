@@ -57,7 +57,7 @@ The method can accept a timer to unblock after the provided duration. E.g.:
 
 - Declare an @UpdateMethod in the workflow interface:
 
-Open [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java) and comment out the following code:
+Open [./initial/MoneyTransferWorkflow.java](initial/MoneyTransferWorkflow.java) and uncomment the following code:
 
 ```
     @UpdateMethod
@@ -85,7 +85,7 @@ a persisted timer in the server, the workers don't consume additional resources 
 
 - Change the client to execute the UpdateMethod.
 
-Open [./initial/Update.java](initial/Update.java) and comment out the following line.
+Open [./initial/Update.java](initial/Update.java) and uncomment the following line.
 
 ```
 String updateResult = workflow.setTransferStatus(TransferStatus.Approved);

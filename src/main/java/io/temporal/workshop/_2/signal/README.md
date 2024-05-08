@@ -53,7 +53,7 @@ The method can accept a timer to unblock after the provided duration. E.g.:
 
 - Declare the @SignalMethod in the workflow interface.
 
-Open [./initial/MoneyTransferWorkflow.java](./initial/MoneyTransferWorkflow.java) and comment out the following code:
+Open [./initial/MoneyTransferWorkflow.java](./initial/MoneyTransferWorkflow.java) and uncomment the following code:
 
 ```
     @SignalMethod
@@ -75,7 +75,7 @@ Open [./initial/MoneyTransferWorkflowImpl.java](./initial/MoneyTransferWorkflowI
 
 - Change the client to Signal the workflow.
 
-Open [./initial/Signal.java](./initial/Signal.java) and comment out the following line.
+Open [./initial/Signal.java](./initial/Signal.java) and uncomment the following line.
 
 ```
 workflow.setTransferStatus(TransferStatus.Approved);
