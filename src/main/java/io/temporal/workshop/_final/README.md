@@ -1,6 +1,6 @@
 # Bank application
 
-During this exercise, we are going to create an application to manage accounts and transfers using Temporal and Spring Boot.
+During this exercise, we are going to create an application for managing accounts and transfers using Temporal and Spring Boot.
 
 
 ## During development
