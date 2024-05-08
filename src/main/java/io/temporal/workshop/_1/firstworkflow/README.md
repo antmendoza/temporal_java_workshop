@@ -141,7 +141,7 @@ Let's add activity invocations to the workflow implementation (`MoneyTransferWor
 ```
 
 
-This is a proxy that allows us to invoke activities from workflow code and define other options like max number or retires, timeouts etc... 
+This is a proxy that allows us to invoke activities from workflow code and define other options like max number of retires, timeouts etc... 
 
 
 - Modify the main workflow method to invoke `withdraw` and `deposit` method. Replace the method implementation 
@@ -238,7 +238,7 @@ Deposit end: DepositRequest[accountId=toAccount, amount=200.0]
 ```
 
 
-- Navigate to  [http://localhost:8080/](http://localhost:8080/), open the workflow execution and familiarize yourself
-with the information the UI provides by clicking in the different tabs (Compact, Timeline and Full history)
+- Navigate to  [http://localhost:8080/](http://localhost:8080/), open the workflow execution and familiarize yourself 
+with the information provided by the UI by clicking through the different tabs (Compact, Timeline and Full history)
 
 ![img.png](img.png)
