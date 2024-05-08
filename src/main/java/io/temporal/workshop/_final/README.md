@@ -375,9 +375,20 @@ Take your time to familiarize yourself with the [./initial/AccountCleanUpWorkflo
 
 - Similar to the previous implementation where we started the MoneyTransferWorkflow, add the logic to
 the main workflow method to start this `AccountCleanUpWorkflowImpl` workflow, but this time in ABANDON mode.
-After the while loop:
+After the while loop in [./initial/AccountWorkflowImpl.java](initial/AccountWorkflowImpl.java).`open`:
 
 ```
+
+  //while the workflow is open
+  while (!closeAccount) {
+  .....
+  .....
+  }
+```
+
+add: 
+```
+
 
     // Closing account
     // Start AccountCleanUpWorkflow that will be responsible for sending a notification to the customer,
